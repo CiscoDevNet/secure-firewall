@@ -1,1 +1,0 @@
-### Templates & Automation Resources
