@@ -3,7 +3,7 @@
 ## Templates & Automation Resources
 The `secure-firewall` repository provides a collection of Templates and Automation Resources to get you started with  Cisco Secure Firewall on diverse cloud platforms like AWS, Azure, others.
 
-Repos are organized per Cloud Platform >>  Infrastructure as a Code Type >>  Software and Architecture  scenario
+Repos are organized per Cloud Platform >>  Infrastructure as a Code Type >>  Software and Architecture
 
 Each template contains a README file with instructions on usage and deployment.
 
