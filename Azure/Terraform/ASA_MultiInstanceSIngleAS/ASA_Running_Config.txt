@@ -1,9 +1,0 @@
-!
-interface GigabitEthernet0/0
- no shutdown
- ip address dhcp
-!
-interface GigabitEthernet0/1
- no shutdown
- ip address dhcp
-!
