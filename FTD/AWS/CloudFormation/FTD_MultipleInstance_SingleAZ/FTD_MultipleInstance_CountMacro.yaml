@@ -1,0 +1,1007 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Deploy FTD in a VPC infrastructure.
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Label:
+          default: VPC Configuration
+        Parameters:
+          - AvailabilityZone
+          - VpcCidr
+          - MgmtSubnetCidr
+          - InsideSubnetCidr
+          - OutsideSubnetCidr
+          - KeyName
+      - Label:
+          default: Cisco FTD Configuration
+        Parameters:
+          - NumberOfFtd
+          - FTDVersion
+          - FTDLicType
+          - FTDInstanceType
+          - FTDHostname
+          - MgmtIp
+          - InsideIp
+          - OutsideIp
+          - MgmtExternalAccessCidr
+      - Label:
+          default: DMZ Interface Settings (only supported for 4Xlarge instances)
+        Parameters:
+          - AddDMZInterface
+          - DmzSubnetCidr
+          - DmzIp
+      - Label:
+          default: Cisco FMC Configuration
+        Parameters:
+          - AddFMC
+          - FMCLicType
+          - FMCVersion
+          - FMCInstanceType
+          - FMCHostname
+          - FMCMgmtIp
+      - Label:
+          default: Load balancer configuration
+        Parameters:
+          - LoadBalancerPort
+    ParameterLabels:
+      AvailabilityZone:
+        default: Availability zone
+      VpcCidr:
+        default: VPC CIDR
+      NumberOfFtd:
+        default: Number of FTDv
+      FTDVersion:
+        default: FTD Version
+      FTDLicType:
+        default: FTD License Type
+      FTDInstanceType:
+        default: FTD Instance type
+      FTDHostname:
+        default: Hostname of the FTD
+      MgmtSubnetCidr:
+        default: Management subnet CIDR
+      MgmtIp:
+        default: Management interface IP address
+      FMCMgmtIp:
+        default: FMC Management interface IP address
+      InsideSubnetCidr:
+        default: Inside subnet CIDR
+      InsideIp:
+        default: Inside interface IP address
+      OutsideSubnetCidr:
+        default: Outside subnet CIDR
+      OutsideIp:
+        default: Outside interface IP address
+      DmzSubnetCidr:
+        default: DMZ subnet CIDR
+      DmzIp:
+        default: DMZ interface IP address
+      AddDMZInterface:
+        default: Configure DMZ port on FTD
+      MgmtExternalAccessCidr:
+        default: External management access CIDR
+      FMCVersion:
+        default: FMC Version
+      FMCLicType:
+        default: FTD License Type
+      FMCInstanceType:
+        default: FMC Instance type
+      FMCHostname:
+        default: Hostname of the FMC
+      LoadBalancerPort:
+        default: Port configured for loadbalancing on the NLB
+Parameters:
+  AvailabilityZone:
+    Description: The availability zone in which to deploy the stack
+    Type: 'AWS::EC2::AvailabilityZone::Name'
+    MinLength: '1'
+  VpcCidr:
+    Description: The CIDR block for a new VPC
+    Type: String
+    AllowedPattern: >-
+      ^((25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)(\.|\/)){4}([0-9]|[1-2][0-9]|3[0-2])$
+    Default: 10.0.0.0/16
+  MgmtSubnetCidr:
+    Description: The management subnet of the security gateway
+    Type: String
+    AllowedPattern: >-
+      ^((25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)(\.|\/)){4}([0-9]|[1-2][0-9]|3[0-2])$
+    Default: 10.0.0.0/24
+  MgmtIp:
+    Description: Optionally provide an IP for the FTD management interface
+    Type: String
+    Default: 0.0.0.0
+    AllowedPattern: >-
+      ^((25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)$
+  FMCMgmtIp:
+    Description: Optionally provide an IP for the FMC management interface
+    Type: String
+    Default: 0.0.0.0
+    AllowedPattern: >-
+      ^((25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)$
+  InsideSubnetCidr:
+    Description: 'The inside subnet of the security gateway '
+    Type: String
+    AllowedPattern: >-
+      ^((25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)(\.|\/)){4}([0-9]|[1-2][0-9]|3[0-2])$
+    Default: 10.0.1.0/24
+  InsideIp:
+    Description: Optionally provide an IP for the FTD inside interface
+    Type: String
+    Default: 0.0.0.0
+    AllowedPattern: >-
+      ^((25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)$
+  OutsideSubnetCidr:
+    Description: The outside subnet of the security gateway
+    Type: String
+    AllowedPattern: >-
+      ^((25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)(\.|\/)){4}([0-9]|[1-2][0-9]|3[0-2])$
+    Default: 10.0.2.0/24
+  OutsideIp:
+    Description: Provide the IP list for the outside interfaces of the FTDv instances. Provide n+1 ip addresses or greater where n is the number of FTDv instances.
+    Type: CommaDelimitedList
+    Default: "10.0.2.50,10.0.2.51,10.0.2.52,10.0.2.53,10.0.2.54,10.0.2.55"
+    
+  DmzSubnetCidr:
+    Description: >-
+      The DMZ subnet of the security gateway NOTE: DMZ only supported on the
+      instance types which support 5 interfaces.
+    Type: String
+    AllowedPattern: >-
+      ^((25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)(\.|\/)){4}([0-9]|[1-2][0-9]|3[0-2])$
+    Default: 10.0.3.0/24
+  DmzIp:
+    Description: Optionally provide an IP for the FTD DMZ interface
+    Type: String
+    Default: 0.0.0.0
+    AllowedPattern: >-
+      ^((25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)$
+  AddDMZInterface:
+    Description: Whether or not to add a DMZ interface to FTD
+    Type: String
+    Default: 'false'
+    AllowedValues:
+      - 'true'
+      - 'false'
+  AddFMC:
+    Description: Whether or not to Deploy a FMC along with FTD
+    Type: String
+    Default: 'false'
+    AllowedValues:
+      - 'true'
+      - 'false'
+  KeyName:
+    Description: The EC2 Key Pair to allow SSH access to FTD
+    Type: 'AWS::EC2::KeyPair::KeyName'
+  NumberOfFtd:
+    Description: Number of Ftdv instances needed
+    Type: Number
+    Default: 3
+    # Change the default count based on the number of FTDv instances here or in the Cloudformation UI when deploying
+    AllowedValues:
+      - 2
+      - 3
+      - 4
+      - 5
+  FTDVersion:
+    Description: Cisco FTDv Version
+    Type: String
+    Default: ftdv-6.7.0-65
+    AllowedValues:
+      - ftdv-6.6.1-91
+      - ftdv-6.7.0-65
+  FMCVersion:
+    Description: Cisco FMCv Version
+    Type: String
+    Default: fmcv-6.7.0-65
+    AllowedValues:
+      - fmcv-6.6.1-91
+      - fmcv-6.7.0-65
+  FTDLicType:
+    Description: Cisco FTDv License Type
+    Type: String
+    Default: BYOL
+    AllowedValues:
+      - BYOL
+      - HOURLY
+  FMCLicType:
+    Description: Cisco FTDv License Type
+    Type: String
+    Default: BYOL
+    AllowedValues:
+      - BYOL
+  FTDInstanceType:
+    Description: Cisco FTDv EC2 instance type
+    Type: String
+    Default: c5.xlarge
+    AllowedValues:
+      - c5.xlarge
+      - c5.2xlarge
+      - c5.4xlarge
+  FMCInstanceType:
+    Description: Cisco FMCv EC2 instance type
+    Type: String
+    Default: c5.4xlarge
+    AllowedValues:
+      - c4.4xlarge
+      - c5.4xlarge
+  FTDHostname:
+    Description: Hostname of the FTD
+    Type: String
+    Default: ciscoFTD
+  FMCHostname:
+    Description: Hostname of the FMC
+    Type: String
+    Default: ciscoFMC
+  MgmtExternalAccessCidr:
+    Description: >-
+      CAUTION: by default, the management port is accessed from any public IP
+      addresses, Please restrict it to access it only from the specific IP
+      address
+    Type: String
+    AllowedPattern: >-
+      ^((25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)(\.|\/)){4}([0-9]|[1-2][0-9]|3[0-2])$
+    Default: 0.0.0.0/0
+  LoadBalancerPort:
+    Description: >-
+      TCP port to be loadbalanced on to the FTDs, specified on the Network load balancer created.
+      You can add further ports as needed from the NLB configuration as needed.
+    Type: Number
+    MinValue: 1
+    MaxValue: 65535
+    Default: 80
+Conditions:
+  SupportsDmz: !And 
+    - !Or 
+      - !Equals 
+        - !Ref FTDInstanceType
+        - c4.4xlarge
+      - !Equals 
+        - !Ref FTDInstanceType
+        - c5.4xlarge
+    - !Equals 
+      - !Ref AddDMZInterface
+      - 'true'
+  NoDmz: !Or 
+    - !Equals 
+      - !Ref AddDMZInterface
+      - 'false'
+    - !Equals 
+      - !Ref FTDInstanceType
+      - c5.xlarge
+  DeployFMC: !And 
+    - !Equals 
+      - !Ref FMCInstanceType
+      - c5.4xlarge
+    - !Equals 
+      - !Ref AddFMC
+      - 'true'
+  NoFMC: !Equals 
+    - !Ref AddFMC
+    - 'false'
+  IsGovCloud1: !Equals 
+    - !Ref 'AWS::Region'
+    - us-gov-east-1
+  IsGovCloud2: !Equals 
+    - !Ref 'AWS::Region'
+    - us-gov-west-1
+  UseStaticMgmtIp: !Not 
+    - !Equals 
+      - 0.0.0.0
+      - !Ref MgmtIp
+  UseStaticFMCMgmtIp: !Not 
+    - !Equals 
+      - 0.0.0.0
+      - !Ref FMCMgmtIp
+  UseStaticInsideIp: !Not 
+    - !Equals 
+      - 0.0.0.0
+      - !Ref InsideIp
+  UseStaticOutsideIp: !Not 
+    - !Equals 
+      - 0.0.0.0
+      - !Select [ 0, !Ref OutsideIp ]
+  UseStaticDmzIp: !Not 
+    - !Equals 
+      - 0.0.0.0
+      - !Ref DmzIp
+  IsTwo: !Equals 
+    - !Ref NumberOfFtd
+    - 2
+  IsThree: !Equals 
+    - !Ref NumberOfFtd
+    - 3
+  IsFour: !Equals 
+    - !Ref NumberOfFtd
+    - 4
+  
+Mappings:
+  KeynameMap:
+    ftdv-6.6.1-91:
+      BYOL: BYOLv66191
+      HOURLY: HOURLYv66191
+    ftdv-6.7.0-65:
+      BYOL: BYOLv67065
+      HOURLY: HOURLY67065
+    fmcv-6.6.1-91:
+      BYOL: FMCBYOLv66191
+    fmcv-6.7.0-65:
+      BYOL: FMCBYOLv67065
+  AWSAMIRegionMap:
+    AMI:
+      BYOLv66191: >-
+        ftdv-6.6.1-91-ENA-ad0af76e-c569-4a81-84d0-cff2308179ef-ami-054413fe26fb8ded2.4
+      BYOLv67065: >-
+        ftdv-6.7.0-65-ENA-ad0af76e-c569-4a81-84d0-cff2308179ef-ami-0957248a8d92c6ffb.4
+      HOURLYv66191: >-
+        ftdv-6.6.1-91-ENA-b28c8fc5-cc45-4a81-998e-6896ff098646-ami-054413fe26fb8ded2.4
+      HOURLY67065: >-
+        ftdv-6.7.0-65-ENA-b28c8fc5-cc45-4a81-998e-6896ff098646-ami-0957248a8d92c6ffb.4
+      FMCBYOLv66191: >-
+        fmcv-6.6.1-91-ENA-c2367183-ca3b-4173-9972-962164f5e75f-ami-0f3be9e657dd29eae.4
+      FMCBYOLv67065: >-
+        fmcv-6.7.0-65-ENA-c2367183-ca3b-4173-9972-962164f5e75f-ami-0d1365544b4850eb8.4
+    ap-south-1:
+      BYOLv66191: ami-0b7eef059a49035f9
+      BYOLv67065: ami-08a2c83c59a66fe1e
+      HOURLYv66191: ami-09266537e8a32361a
+      HOURLY67065: ami-095fd5469dee2ff31
+      FMCBYOLv66191: ami-0ec2f47ad46d24878
+      FMCBYOLv67065: ami-0eb58cd56c6cf778d
+    eu-north-1:
+      BYOLv66191: ami-0c2f7fc8effe3c3bd
+      BYOLv67065: ami-0e5312764a53bb03d
+      HOURLYv66191: ami-0cfaad61bfc2bfa71
+      HOURLY67065: ami-0808f2df1948e1545
+      FMCBYOLv66191: ami-07b150aeb56508a9a
+      FMCBYOLv67065: ami-0b816869cc85e1911
+    eu-west-3:
+      BYOLv66191: ami-050f0ed8d26aede8c
+      BYOLv67065: ami-058321764fced59e0
+      HOURLYv66191: ' ami-00c02a48efbe75450'
+      HOURLY67065: ami-0d5d982ccc140e252
+      FMCBYOLv66191: ami-004a7819ff47a0e24
+      FMCBYOLv67065: ami-05b08ec1ba165efa0
+    eu-west-1:
+      BYOLv66191: ami-042c4182e8a398bf1
+      BYOLv67065: ami-0da09346c7a6e9a62
+      HOURLYv66191: 'ami-088d30368eabe0179 '
+      HOURLY67065: ami-06d29df04b73bd144
+      FMCBYOLv66191: ami-030c1f7a873ca8238
+      FMCBYOLv67065: ami-04f9b9b415d697bda
+    eu-west-2:
+      BYOLv66191: ami-094cc9969a60a3ee4
+      BYOLv67065: ami-01c0e4ce97137708f
+      HOURLYv66191: 'ami-022af9ec2ba5f48a5 '
+      HOURLY67065: ami-0459e907f3a2be4b3
+      FMCBYOLv66191: ami-07646167e91c8276c
+      FMCBYOLv67065: ami-047040ce9689807d9
+    eu-south-1:
+      BYOLv66191: ami-00a50c1e5bfd97eba
+      BYOLv67065: ami-0f6767008870bc265
+      HOURLYv66191: ami-0d0b495f0edec9957
+      HOURLY67065: ami-025ea3ea39d470e10
+      FMCBYOLv66191: ami-07822aa2b34fcb393
+      FMCBYOLv67065: ami-047040ce9689807d9
+    eu-central-1:
+      BYOLv66191: ami-0fd62f572d4a110be
+      BYOLv67065: ami-0ab0d04820a798874
+      HOURLYv66191: ami-0162f17f39e8f0e29
+      HOURLY67065: ami-07da0b829c4c0a564
+      FMCBYOLv66191: ami-0d5e019040edbf7a5
+      FMCBYOLv67065: ami-09cf3d0d8446e921b
+    us-east-1:
+      BYOLv66191: ami-01132cc1bf9e21ad1
+      BYOLv67065: ami-08ec348387b80324f
+      HOURLYv66191: ami-03f3a0732e04a063c
+      HOURLY67065: ami-0fdea9adf90ed1996
+      FMCBYOLv66191: ami-020790e9a294ea856
+      FMCBYOLv67065: ami-0b2a7a329b9ded487
+    us-east-2:
+      BYOLv66191: ami-0b51e298db5bc5f70
+      BYOLv67065: ami-071414791b8cdefee
+      HOURLYv66191: ami-0f7c422b095ab74e4
+      HOURLY67065: ami-058e5caac0648cbcb
+      FMCBYOLv66191: ami-0e883f19cdf986f13
+      FMCBYOLv67065: ami-0e6d094f0a3845268
+    us-west-1:
+      BYOLv66191: ami-0f61b248924539063
+      BYOLv67065: ami-09ec385d1e4b3064
+      HOURLYv66191: ami-06327ee71843e5cbd
+      HOURLY67065: ami-0f9eeacc79922ae9e
+      FMCBYOLv66191: ami-0db08446455cc13a2
+      FMCBYOLv67065: ami-0f4a66343609b1964
+    us-west-2:
+      BYOLv66191: ami-081cb92e2b5f0bbcd
+      BYOLv67065: ami-0f60c5dd409c31d63
+      HOURLYv66191: ami-0338b7922fe4be11d
+      HOURLY67065: ami-010f1430c2e966f6f
+      FMCBYOLv66191: ami-0af70f9f6c4999f83
+      FMCBYOLv67065: ami-01c54eb71703bb6f9
+    ca-central-1:
+      BYOLv66191: ami-0b3be9326313aa4db
+      BYOLv67065: ami-0194fe9bb1fc4c1e1
+      HOURLYv66191: ami-01612aa06236bf9b6
+      HOURLY67065: ami-0d6ea80350b3cc509
+      FMCBYOLv66191: ami-076ebd01b840da693
+      FMCBYOLv67065: ami-0d82a4518f4ab2512
+    af-south-1:
+      BYOLv66191: ami-03cdcb7fe694379d1
+      BYOLv67065: ami-081ef5f2a436f6171
+      HOURLYv66191: ami-0e9391de7c663d463
+      HOURLY67065: ami-0a3e54d3b8f91d699
+      FMCBYOLv66191: ami-0e36cfe3295e7745f
+      FMCBYOLv67065: ami-0ea65404be6364884
+    ap-east-1:
+      BYOLv66090: ami-0e722ab1f58dc1cbe
+      BYOLv66190: ami-0e761a6782d2043d7
+      BYOLv66191: ami-03cdcb7fe694379d1
+      BYOLv67065: ami-0a3e54d3b8f91d699
+      FMCBYOLv66191: ami-09bcebacd127532d5
+      FMCBYOLv67065: ami-08369b38c0777addd
+    ap-northeast-1:
+      BYOLv66191: ami-07fbd0a32988d2b02
+      BYOLv67065: ami-03a471cfeaff17605
+      HOURLYv66191: ami-0c7d2627d0c200cd9
+      HOURLY67065: ' ami-0fbb8c6c0f3fd778a'
+      FMCBYOLv66191: ami-07625608234b2df3e
+      FMCBYOLv67065: ami-05202f380329d6fac
+    ap-northeast-2:
+      BYOLv66191: ami-07fbd0a32988d2b02
+      BYOLv67065: ami-03a471cfeaff17605
+      HOURLYv66191: ' ami-0b09a3a64a58c1e97'
+      HOURLY67065: ami-01fc52abdec3e323a
+      FMCBYOLv66191: ami-047e0a65d6912455b
+      FMCBYOLv67065: ami-0a54e4a551b7fb973
+    ap-northeast-3:
+      BYOLv66090: ami-0c6f4e78aabadb60d
+      BYOLv66190: ami-039dc5f96cfa3dbe1
+      BYOLv66191: ami-0f24c91e554c97050
+      BYOLv67065: ami-004efc398b863d173
+      FMCBYOLv66191: ami-05577edd84c54cb65
+      FMCBYOLv67065: ami-09f58423ea47716cf
+    ap-southeast-1:
+      BYOLv66090: ami-008ba318e87fcc0ae
+      BYOLv66190: ami-069118218ee3b50c0
+      BYOLv66191: ami-0ac4ca7c7b8ac4188
+      BYOLv67065: ami-0938a2a376c67d560
+      FMCBYOLv66191: ami-05dda38dedf41e7df
+      FMCBYOLv67065: ami-0b8097d32be8a7c9c
+    ap-southeast-2:
+      BYOLv66090: ami-0800301cdf0c2bc80
+      BYOLv66190: ami-0699e87cf0bf8b4b5
+      BYOLv66191: ami-0b1626690f8f67592
+      BYOLv67065: ami-010cbd3d075215b52
+      FMCBYOLv66191: ami-09f8d1fe23bb8255e
+      FMCBYOLv67065: ami-0488ba909e349c831
+    me-south-1:
+      BYOLv66191: ami-0d09915652ca52ffc
+      BYOLv67065: ami-09a0fbe2cd1e5757d
+      FMCBYOLv66191: ami-01dee15b928203d04
+      FMCBYOLv67065: ami-03370f1f88e86de4f
+    sa-east-1:
+      BYOLv66191: ami-0b1626690f8f67592
+      BYOLv67065: ami-010cbd3d075215b52
+      HOURLYv66191: ami-0ac478df153397452
+      HOURLY67065: ami-0500e1c06f3701ba1
+      FMCBYOLv66191: ami-0d2e21991f7811b1d
+      FMCBYOLv67065: ami-08bd807e8199303fd
+    us-gov-west-1:
+      BYOLv66191: ami-0198618ffee2901f7
+      BYOLv67065: ami-06e6a00750ac5e8e9
+      HOURLYv66191: ami-01bcea8f04d82784e
+      HOURLY67065: ami-00c2b359cdb710f9c
+      FMCBYOLv66191: ami-01dee15b928203d04
+      FMCBYOLv67065: ami-0fbdd7d65ca56d589
+    us-gov-east-1:
+      BYOLv66191: ami-091fd895f06b80c61
+      BYOLv67065: ami-0d37247f8d352a269
+      HOURLYv66191: ami-08dc45ff0baf572a5
+      HOURLY67065: ami-0e1b84bf848c7ddb7
+      FMCBYOLv66191: ami-01da631b568436f27
+      FMCBYOLv67065: ami-0fb578a1dc6b1ef61
+Transform: Count
+Resources:
+  vpc:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      CidrBlock: !Ref VpcCidr
+      InstanceTenancy: default
+      EnableDnsSupport: 'true'
+      EnableDnsHostnames: 'true'
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref 'AWS::StackName'
+              - '-vpc'
+  subnetInside:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      CidrBlock: !Ref InsideSubnetCidr
+      AvailabilityZone: !Select 
+        - '0'
+        - !GetAZs 
+          Ref: 'AWS::Region'
+      VpcId: !Ref vpc
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref 'AWS::StackName'
+              - '-subnet-inside'
+  subnetOutside:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      CidrBlock: !Ref OutsideSubnetCidr
+      AvailabilityZone: !Select 
+        - '0'
+        - !GetAZs 
+          Ref: 'AWS::Region'
+      VpcId: !Ref vpc
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref 'AWS::StackName'
+              - '-subnet-outside'
+  subnetDmz:
+    Condition: SupportsDmz
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      CidrBlock: !Ref DmzSubnetCidr
+      AvailabilityZone: !Select 
+        - '0'
+        - !GetAZs 
+          Ref: 'AWS::Region'
+      VpcId: !Ref vpc
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref 'AWS::StackName'
+              - '-subnet-dmz'
+  subnetMgmt:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      CidrBlock: !Ref MgmtSubnetCidr
+      AvailabilityZone: !Select 
+        - '0'
+        - !GetAZs 
+          Ref: 'AWS::Region'
+      VpcId: !Ref vpc
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref 'AWS::StackName'
+              - '-subnet-mgmt'
+  igw:
+    Type: 'AWS::EC2::InternetGateway'
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref 'AWS::StackName'
+              - '-igw'
+  gw1:
+    Type: 'AWS::EC2::VPCGatewayAttachment'
+    Properties:
+      VpcId: !Ref vpc
+      InternetGatewayId: !Ref igw
+  dopt:
+    Type: 'AWS::EC2::DHCPOptions'
+    Properties:
+      DomainName: !Join 
+        - ''
+        - - !Ref 'AWS::Region'
+          - .compute.internal
+      DomainNameServers:
+        - AmazonProvidedDNS
+  rtb:
+    Type: 'AWS::EC2::RouteTable'
+    Properties:
+      VpcId: !Ref vpc
+  subnetrouteInside:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref rtb
+      SubnetId: !Ref subnetInside
+  subnetrouteOutside:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref rtb
+      SubnetId: !Ref subnetOutside
+  subnetrouteDmz:
+    Condition: SupportsDmz
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref rtb
+      SubnetId: !Ref subnetDmz
+  subnetrouteMgmt:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref rtb
+      SubnetId: !Ref subnetMgmt
+  route1:
+    Type: 'AWS::EC2::Route'
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      RouteTableId: !Ref rtb
+      GatewayId: !Ref igw
+    DependsOn: gw1
+  dchpassoc1:
+    Type: 'AWS::EC2::VPCDHCPOptionsAssociation'
+    Properties:
+      VpcId: !Ref vpc
+      DhcpOptionsId: !Ref dopt
+  SecurityGroupAll:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Allow all traffic on vpc1
+      VpcId: !Ref vpc
+      SecurityGroupIngress:
+        - IpProtocol: '-1'
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref 'AWS::StackName'
+              - '-allow-all-vpc1'
+  sgManagementInterface:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Allow only traffic from MgmtExternalAccessCidr IP Ranges
+      VpcId: !Ref vpc
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: !Ref MgmtExternalAccessCidr
+        - IpProtocol: tcp
+          FromPort: '443'
+          ToPort: '443'
+          CidrIp: !Ref MgmtExternalAccessCidr
+        - IpProtocol: tcp
+          FromPort: '8305'
+          ToPort: '8305'
+          CidrIp: !Ref MgmtExternalAccessCidr
+        - IpProtocol: icmp
+          FromPort: '-1'
+          ToPort: '-1'
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref 'AWS::StackName'
+              - '-allow-SSH-vpc1'
+  eipFTDMgmt:
+    Type: 'AWS::EC2::EIP'
+    Properties:
+      Domain: !Ref vpc
+    Count: 3
+    # Change the count based on the number of FTDv instances.
+  eipFMCMgmt:
+    Type: 'AWS::EC2::EIP'
+    Properties:
+      Domain: !Ref vpc
+  eipaFTDMgmt:
+    Type: 'AWS::EC2::EIPAssociation'
+    Properties:
+      AllocationId: !GetAtt 
+        - eipFTDMgmt%d
+        - AllocationId
+      NetworkInterfaceId: !Ref eniFTDMgmt%d
+    Count: 3
+    # Change the count based on the number of FTDv instances.
+  eipaFMCMgmt:
+    Type: 'AWS::EC2::EIPAssociation'
+    Properties:
+      AllocationId: !GetAtt 
+        - eipFMCMgmt
+        - AllocationId
+      NetworkInterfaceId: !Ref eniFMCMgmt
+  eniFTDMgmt:
+    Type: 'AWS::EC2::NetworkInterface'
+    Properties:
+      SubnetId: !Ref subnetMgmt
+      Tags:
+        - Key: Name
+          Value: FTD-Mgmt-01
+      PrivateIpAddress: !If 
+        - UseStaticMgmtIp
+        - !Ref MgmtIp
+        - !Ref 'AWS::NoValue'
+      Description: Interface for management traffic of FTD
+      GroupSet:
+        - !Ref sgManagementInterface
+      SourceDestCheck: 'false'
+    Count: 3
+    # Change the count based on the number of FTDv instances.
+  eniFMCMgmt:
+    Type: 'AWS::EC2::NetworkInterface'
+    Properties:
+      SubnetId: !Ref subnetMgmt
+      Tags:
+        - Key: Name
+          Value: FMC-Mgmt-01
+      PrivateIpAddress: !If 
+        - UseStaticMgmtIp
+        - !Ref FMCMgmtIp
+        - !Ref 'AWS::NoValue'
+      Description: Interface for FMC management
+      GroupSet:
+        - !Ref sgManagementInterface
+      SourceDestCheck: 'false'
+  eniFTDdiag:
+    Type: 'AWS::EC2::NetworkInterface'
+    Properties:
+      SubnetId: !Ref subnetMgmt
+      Tags:
+        - Key: Name
+          Value: FTD-Diag-01
+      Description: Interface for diag traffic of FTD
+      GroupSet:
+        - !Ref sgManagementInterface
+      SourceDestCheck: 'false'
+    Count: 3
+    # Change the count based on the number of FTDv instances.
+  eniFTDInside:
+    Type: 'AWS::EC2::NetworkInterface'
+    Properties:
+      SubnetId: !Ref subnetInside
+      Tags:
+        - Key: Name
+          Value: FTD-Inside-01
+      PrivateIpAddress: !If 
+        - UseStaticInsideIp
+        - !Ref InsideIp
+        - !Ref 'AWS::NoValue'
+      Description: Inside Interface of FTD
+      GroupSet:
+        - !Ref SecurityGroupAll
+      SourceDestCheck: 'false'
+    Count: 3
+    # Change the count based on the number of FTDv instances.
+  eniFTDOutside:
+    Type: 'AWS::EC2::NetworkInterface'
+    Properties:
+      SubnetId: !Ref subnetOutside
+      Tags:
+        - Key: Name
+          Value: FTD-Outside-01
+      PrivateIpAddress: !If 
+        - UseStaticOutsideIp
+        - !Select [ "%d", !Ref OutsideIp ]
+        - !Ref 'AWS::NoValue'
+      Description: Outside Interface of FTD
+      GroupSet:
+        - !Ref SecurityGroupAll
+      SourceDestCheck: 'false'
+    Count: 3
+    # Change the count based on the number of FTDv instances.
+  eniFTDDmz:
+    Condition: SupportsDmz
+    Type: 'AWS::EC2::NetworkInterface'
+    Properties:
+      SubnetId: !Ref subnetDmz
+      Tags:
+        - Key: Name
+          Value: FTD-DMZ-01
+      PrivateIpAddress: !If 
+        - UseStaticDmzIp
+        - !Ref DmzIp
+        - !Ref 'AWS::NoValue'
+      Description: DMZ interface of FTD
+      GroupSet:
+        - !Ref SecurityGroupAll
+      SourceDestCheck: 'false'
+    Count: 3
+    # Change the count based on the number of FTDv instances.
+  CiscoFTD:
+    Condition: SupportsDmz
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      DisableApiTermination: 'false'
+      InstanceInitiatedShutdownBehavior: stop
+      ImageId: !FindInMap 
+        - AWSAMIRegionMap
+        - !Ref 'AWS::Region'
+        - !FindInMap 
+          - KeynameMap
+          - !Ref FTDVersion
+          - !Ref FTDLicType
+      InstanceType: !Ref FTDInstanceType
+      KeyName: !Ref KeyName
+      Monitoring: 'false'
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref 'AWS::StackName'
+              - '-FTDv'
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            DeleteOnTermination: true
+      NetworkInterfaces:
+        - Description: Management interface
+          DeviceIndex: 0
+          NetworkInterfaceId: !Ref eniFTDMgmt%d
+        - Description: Diag interface
+          DeviceIndex: 1
+          NetworkInterfaceId: !Ref eniFTDdiag%d
+        - Description: Inside network interface
+          DeviceIndex: 2
+          NetworkInterfaceId: !Ref eniFTDInside%d
+        - Description: Outside network interface
+          DeviceIndex: 3
+          NetworkInterfaceId: !Ref eniFTDOutside%d
+        - Description: DMZ network interface
+          DeviceIndex: 4
+          NetworkInterfaceId: !Ref eniFTDDmz%d
+      UserData: !Base64 
+        'Fn::Join':
+          - ''
+          - []
+    Count: 3
+    # Change the count based on the number of FTDv instances.
+  CiscoFTDnoDmz:
+    Condition: NoDmz
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      DisableApiTermination: 'false'
+      InstanceInitiatedShutdownBehavior: stop
+      ImageId: !FindInMap 
+        - AWSAMIRegionMap
+        - !Ref 'AWS::Region'
+        - !FindInMap 
+          - KeynameMap
+          - !Ref FTDVersion
+          - !Ref FTDLicType
+      InstanceType: !Ref FTDInstanceType
+      KeyName: !Ref KeyName
+      Monitoring: 'false'
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref 'AWS::StackName'
+              - '-FTDv'
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            DeleteOnTermination: true
+      NetworkInterfaces:
+        - Description: Management interface
+          DeviceIndex: 0
+          NetworkInterfaceId: !Ref eniFTDMgmt%d
+        - Description: Diag interface
+          DeviceIndex: 1
+          NetworkInterfaceId: !Ref eniFTDdiag%d
+        - Description: Inside network interface
+          DeviceIndex: 2
+          NetworkInterfaceId: !Ref eniFTDInside%d
+        - Description: Outside network interface
+          DeviceIndex: 3
+          NetworkInterfaceId: !Ref eniFTDOutside%d
+      UserData: !Base64 
+        'Fn::Join':
+          - ''
+          - []
+    Count: 3
+    # Change the count based on the number of FTDv instances.
+  CiscoFMC:
+    Condition: DeployFMC
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      DisableApiTermination: 'false'
+      InstanceInitiatedShutdownBehavior: stop
+      ImageId: !FindInMap 
+        - AWSAMIRegionMap
+        - !Ref 'AWS::Region'
+        - !FindInMap 
+          - KeynameMap
+          - !Ref FMCVersion
+          - !Ref FMCLicType
+      InstanceType: !Ref FMCInstanceType
+      KeyName: !Ref KeyName
+      Monitoring: 'false'
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref 'AWS::StackName'
+              - '-FMCv'
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            DeleteOnTermination: true
+      NetworkInterfaces:
+        - Description: Management interface
+          DeviceIndex: 0
+          NetworkInterfaceId: !Ref eniFMCMgmt
+      UserData: !Base64 
+        'Fn::Join':
+          - ''
+          - []
+  loadBalancer:
+    Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
+    Properties:
+      Type: network
+      IpAddressType: ipv4
+      SubnetMappings:
+        - SubnetId: !Ref subnetOutside
+    
+
+  TargetGroup:
+    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+    Properties:
+      HealthCheckEnabled: true 
+      HealthCheckPort: !Ref LoadBalancerPort
+      HealthCheckProtocol: TCP
+      Name: !Ref FTDHostname
+      Port: !Ref LoadBalancerPort
+      Protocol: TCP
+      TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: '20'
+      TargetType: ip
+      Targets:
+        !If
+          - IsTwo
+          -
+            - Id: !Select [ 1, !Ref OutsideIp ]
+            - Id: !Select [ 2, !Ref OutsideIp ]
+          -
+            !If
+              - IsThree
+              -
+                - Id: !Select [ 1, !Ref OutsideIp ]
+                - Id: !Select [ 2, !Ref OutsideIp ]
+                - Id: !Select [ 3, !Ref OutsideIp ]
+              -
+                !If
+                  - IsFour
+                  -
+                    - Id: !Select [ 1, !Ref OutsideIp ]
+                    - Id: !Select [ 2, !Ref OutsideIp ]
+                    - Id: !Select [ 3, !Ref OutsideIp ]
+                    - Id: !Select [ 4, !Ref OutsideIp ]
+                  -
+                    - Id: !Select [ 1, !Ref OutsideIp ]
+                    - Id: !Select [ 2, !Ref OutsideIp ]
+                    - Id: !Select [ 3, !Ref OutsideIp ]
+                    - Id: !Select [ 4, !Ref OutsideIp ]
+                    - Id: !Select [ 5, !Ref OutsideIp ]
+      VpcId: !Ref vpc
+    
+  Listener:
+    Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+      LoadBalancerArn: !Ref loadBalancer
+      Port: !Ref LoadBalancerPort
+      Protocol: TCP
+    
+Outputs:
+  FTDVersion:
+    Description: Version of FTDv Instance created
+    Value: !Ref FTDVersion
+  FMCVersion:
+    Description: Version of FMCv Instance created
+    Value: !Ref FMCVersion
+  FTDLicType:
+    Description: License Type of FTDv Instance created
+    Value: !Ref FTDLicType
+  FMCLicType:
+    Description: License Type of FTDv Instance created
+    Value: !Ref FMCLicType
+  FTDInstanceType:
+    Description: Type of FTDv Instance created
+    Value: !Ref FTDInstanceType
