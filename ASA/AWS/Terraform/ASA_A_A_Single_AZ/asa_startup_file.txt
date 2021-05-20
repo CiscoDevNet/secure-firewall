@@ -1,0 +1,38 @@
+
+  interface management0/0
+    management-only
+    nameif management
+    ip address dhcp setroute
+    no shutdown
+interface tengig 0/0
+    nameif outside
+    ip address dhcp setroute
+    no shutdown
+interface tengig 0/1
+    nameif inside
+    ip address dhcp
+    no shutdown
+
+hostname ASA01
+crypto key generate rsa mod 1024
+
+dns domain-lookup outside
+dns name-server 208.67.220.220 208.67.222.222
+
+ssh timeout 60
+ssh 0.0.0.0 0.0.0.0 inside
+ssh 0.0.0.0 0.0.0.0 management
+ssh 0.0.0.0 0.0.0.0 outside
+
+http server enable
+http 0.0.0.0 0.0.0.0 inside
+http 0.0.0.0 0.0.0.0 management
+
+http 0.0.0.0 0.0.0.0 outside
+
+enable password Cisco@123
+username admin password Cisco@123 privilege 15
+
+aaa authentication ssh console LOCAL
+aaa authentication http console LOCAL
+
