@@ -1,4 +1,4 @@
-# Multiple ASA instances in a single AZ
+# Multiple ASA instances in multiple AZ
 
 ## Topology
 
