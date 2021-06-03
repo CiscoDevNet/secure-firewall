@@ -9,37 +9,37 @@
 
 ## Overview
 
-Using this Terraform template, a single instance ASA can be deployed in a new VPC with the following components, 
+Using this Terraform template, a single instance ASA can be deployed in a new VPC with the following components: 
 
 - one new VPC with 4 subnets
-- Avilability Zone
-- Two network securit group (one default and other one is created to allow all traffic)
+- Availability Zone
+- Two network security groups (one default and other one is created to allow all traffic)
 
-*Note*: It is important to change the security group to allow only the traffic from and to the sepcific ip address and ports. 
+*Note*: It is important to change the security group to allow only the traffic from and to the specific IP address and port. 
 
 - Routing table attachment to these subnets 
-- EIP attachment to the Managment and Outside subnet. 
+- EIP attachment to the Management and Outside subnet. 
 
 The following parameters should be configured in the "terraform.tfvars" file before using the templates. 
-*Please note the value provided below is just for example.Please change it based on your requirements.*  
+*Please note the value provided below is just an example. Please change it based on your requirements.*  
 
 Specify your access key and secret key credentials 
 
 
-## AWS Creditials to access the AWS Cloud
+## AWS Credentials to access the AWS Cloud
 
 aws_access_key      = ""
 
 aws_secret_key      = ""
   
-## Define New VPC in a specific Region and Avilability Zone 
+## Define New VPC in a specific Region and Availability Zone 
 
 vpc_name            = "Transit-Service-VPC"
 
 region               = "ap-south-1"
 
 
-## Define CIDR, Subnets for managment and three for Inside, Outisde and DMZ
+## Define CIDR, Subnets for managment and three for Inside, Outside and DMZ
 
 vpc_cidr           = "10.1.0.0/16"
 
@@ -84,16 +84,16 @@ asa_dmz_ip        =     "10.1.3.10"
      - go to the specific terraform folder from the cli 
         $ cd xxxx
         $ terraform init 
- 4) submit the terraform plan 
+ 4) Submit the terraform plan 
        $ terraform plan -out <filename>
- 5) verify the output of the plan in the terminal, if everything is fine then apply the plan 
+ 5) Verify the output of the plan in the terminal, if everything is fine then apply the plan 
         $ terraform apply <out filename generated earlier>
- 6) if output is fine, configure it by typing "yes"
- 7) Once if exected, it will show you the ip addresss of the managment interface configured. use this to access the ASA
+ 6) If output is fine, configure it by typing "yes"
+ 7) Once if executed, it will show you the IP addresss of the management interface configured. Use this to access the ASA
 
 Note: Please don't delete or modify the file with the extension ".tfstate" file. This file maintained the current deployment status and used while modifying any parameters or while destroying this setup. 
 
-## To Destroy the setup and ASAv instance created thru terraform. 
+## To Destroy the setup and ASAv instance created through terraform. 
 To destroy the instance, use the command:
      $ terraform destroy 
  
