@@ -35,7 +35,8 @@ Each specific usecase contains a README file with installation instructions.
      * [Template coming soon...](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/Azure/ARM%20Template) 
   * _Terraform templates:_
      * [Template coming soon...](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/Azure/Terraform)
-* **CloudNative:**
+* **Cloud Native:**
+  * [SFCN GitHub Repository](https://github.com/CiscoDevNet/sfcn)
   * _[Templates coming soon...](https://github.com/CiscoDevNet/secure-firewall/tree/main/CloudNative)_
 
 ## Disclaimer
