@@ -1,3 +1,6 @@
 [submodule "SFCN/sfcn"]
 	path = SFCN/sfcn
 	url = git@github.com:CiscoDevNet/sfcn.git
+[submodule "FTD/FTDAnsible"]
+	path = FTD/FTDAnsible
+	url = https://github.com/CiscoDevNet/FTDAnsible

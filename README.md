@@ -35,6 +35,9 @@ Each specific usecase contains a README file with installation instructions.
      * [Template coming soon...](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/Azure/ARM%20Template) 
   * _Terraform templates:_
      * [Template coming soon...](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/Azure/Terraform)
+* **FTD Ansible Modules**
+  * [FTD Ansible Github](https://github.com/CiscoDevNet/FTDAnsible)
+  * [FTD Ansible Documentation](https://developer.cisco.com/site/ftd-ansible/)
 * **Cloud Native:**
   * [SFCN GitHub Repository](https://github.com/CiscoDevNet/sfcn)
   * _CloudFormation templates:_
