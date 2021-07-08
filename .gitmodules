@@ -4,3 +4,6 @@
 [submodule "FTD/FTDAnsible"]
 	path = FTD/FTDAnsible
 	url = https://github.com/CiscoDevNet/FTDAnsible
+[submodule "FMC/fmc-terraform-provider"]
+	path = FMC/fmc-terraform-provider
+	url = https://github.com/CiscoDevNet/terraform-provider-fmc
