@@ -42,6 +42,9 @@ Each specific usecase contains a README file with installation instructions.
   * [SFCN GitHub Repository](https://github.com/CiscoDevNet/sfcn)
   * _CloudFormation templates:_
      * [Templates coming soon...](https://github.com/CiscoDevNet/sfcn/tree/main/provisioning/aws)
+* **FMC**
+  * [FMC Terraform Provider](https://github.com/CiscoDevNet/terraform-provider-fmc)
+  
 
 ## Disclaimer
 These repositories should be used only as a **proof of concept**. It is your duty to secure the provisioned device's by following cloud provider and product based security best practices guidelines.
