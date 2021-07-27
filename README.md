@@ -20,7 +20,7 @@ Each specific usecase contains a README file with installation instructions.
   * _ARM Templates:_
      * [Templates coming soon...](https://github.com/CiscoDevNet/secure-firewall/tree/main/ASA/Azure/ARM%20Template)
   * _Terraform templates:_
-     * [Single ASA instance in single location](https://github.com/CiscoDevNet/secure-firewall/tree/main/ASA/Azure/Terraform/ASA_Single_Instance)
+     * [Single ASA instance in single location](https://github.com/CiscoDevNet/secure-firewall/tree/main/ASA/Azure/Terraform/Single%20Instance)
 * **FTD on AWS:**
   * _CloudFormation templates:_
      * [Multiple FTD instances in multiple AZ](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/AWS/CloudFormation/FTD_MultipleInstance_MultiAZ)
