@@ -44,9 +44,10 @@ Each specific usecase contains a README file with installation instructions.
      * [Templates coming soon...](https://github.com/CiscoDevNet/sfcn/tree/main/provisioning/aws)
 * **FMC**
   * [FMC Terraform Provider](https://github.com/CiscoDevNet/terraform-provider-fmc)
-  * Azure templates
+  * _Azure templates:_
     * [Standalone FMC](https://github.com/CiscoDevNet/secure-firewall/tree/main/FMC/Azure/Standalone)
-  
+  * _AWS templates:_
+    * [Standalone FMC](https://github.com/CiscoDevNet/secure-firewall/tree/main/FMC/AWS/Standalone) 
 
 ## Disclaimer
 These repositories should be used only as a **proof of concept**. It is your duty to secure the provisioned device's by following cloud provider and product based security best practices guidelines.
