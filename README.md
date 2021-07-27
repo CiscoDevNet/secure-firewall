@@ -44,6 +44,8 @@ Each specific usecase contains a README file with installation instructions.
      * [Templates coming soon...](https://github.com/CiscoDevNet/sfcn/tree/main/provisioning/aws)
 * **FMC**
   * [FMC Terraform Provider](https://github.com/CiscoDevNet/terraform-provider-fmc)
+  * Azure templates
+    * [Standalone FMC](https://github.com/CiscoDevNet/secure-firewall/tree/main/FMC/Azure/Standalone)
   
 
 ## Disclaimer
