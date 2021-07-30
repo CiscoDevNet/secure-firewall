@@ -45,11 +45,9 @@ Each specific usecase contains a README file with installation instructions.
   * _AWS templates:_
     * [Standalone FMC](https://github.com/CiscoDevNet/secure-firewall/tree/main/FMC/AWS/Standalone) 
  * **Cloud Native:**
-  * [SFCN GitHub Repository](https://github.com/CiscoDevNet/sfcn)
-  * _CloudFormation templates:_
-     * [Templates coming soon...](https://github.com/CiscoDevNet/sfcn/tree/main/provisioning/aws)
+   * [SFCN GitHub Repository](https://github.com/CiscoDevNet/sfcn)
  * **CSDAC - Cisco Secure Dynamic Attributes Connector:**
-  * [CSDAC Ansible](https://galaxy.ansible.com/cisco/csdac)
+   * [CSDAC Ansible](https://galaxy.ansible.com/cisco/csdac)
 
 ## Disclaimer
 These repositories should be used only as a **proof of concept**. It is your duty to secure the provisioned device's by following cloud provider and product based security best practices guidelines.
