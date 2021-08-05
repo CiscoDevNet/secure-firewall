@@ -40,7 +40,7 @@ Each specific usecase contains a README file with installation instructions.
   * [FTD Ansible Documentation](https://developer.cisco.com/site/ftd-ansible/)
 * **FTD on Vmware:**
   * _Terraform Templates:_
-    * Standalone FTD
+    * [Standalone FTD](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/Vmware/Terraform)
 * **FMC Terraform Provider:**
   * [FMC Terraform Provider Github](https://github.com/CiscoDevNet/terraform-provider-fmc)
   * [FMC Terraform Registry](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest)
