@@ -38,12 +38,21 @@ Each specific usecase contains a README file with installation instructions.
 * **FTD Ansible Modules**
   * [FTD Ansible Github](https://github.com/CiscoDevNet/FTDAnsible)
   * [FTD Ansible Documentation](https://developer.cisco.com/site/ftd-ansible/)
-* **FMC**
-  * [FMC Terraform Provider](https://github.com/CiscoDevNet/terraform-provider-fmc)
-  * _Azure templates:_
+* **FTD on Vmware:**
+  * _Terraform Templates:_
+    * Standalone FTD
+* **FMC Terraform Provider:**
+  * [FMC Terraform Provider Github](https://github.com/CiscoDevNet/terraform-provider-fmc)
+  * [FMC Terraform Registry](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest)
+* **FMC on Azure:**
+  * _Terraform templates:_
     * [Standalone FMC](https://github.com/CiscoDevNet/secure-firewall/tree/main/FMC/Azure/Standalone)
-  * _AWS templates:_
-    * [Standalone FMC](https://github.com/CiscoDevNet/secure-firewall/tree/main/FMC/AWS/Standalone) 
+* **FMC on AWS:**
+  * _Terraform templates:_
+    * [Standalone FMC](https://github.com/CiscoDevNet/secure-firewall/tree/main/FMC/AWS/Standalone)
+* **FMC on Vmware:**
+  * _Terraform templates:_
+    * [Standalone FMC](https://github.com/CiscoDevNet/secure-firewall/tree/main/FMC/Vmware/Terraform)
  * **Cloud Native:**
    * [SFCN GitHub Repository](https://github.com/CiscoDevNet/sfcn)
  * **CSDAC - Cisco Secure Dynamic Attributes Connector:**
