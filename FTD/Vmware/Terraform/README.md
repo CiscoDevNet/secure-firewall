@@ -61,7 +61,8 @@ The following variables should be defined with a value in the "terraform.tfvars"
 
 1) Clone or Download the Repository 
 2) Input the values in the terraform.tfvars file for variables in variables.tf 
-3) Initialize the providers and modules
+   Note: VI OVF file for the selected FTD Version should be used in the template for deploymennt
+4) Initialize the providers and modules
      - go to the specific terraform folder from the cli 
         $ cd xxxx
         $ terraform init 
