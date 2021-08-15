@@ -1,0 +1,49 @@
+
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-08-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "value": "as1-FMC"
+    },
+    "softwareDisplayVersion": {
+       "value": "7.0.0(94)"
+     },
+    "softwareVersionOther": {
+       "value": "None"
+     },
+    "FMCHostname": {
+      "value": "fmc.example.com"
+    },
+    "altUsername": {
+      "value": "altadmin"
+    },
+    "adminPassword": {
+      "value": "Passwd123!Azure"
+    },
+    "FMCAdminPassword": {
+      "value": "Passwd123!Azure"
+    },
+    "virtualNetworkName": {
+      "value": "pod0-vnet"
+    },
+    "virtualNetworkResourceGroup": {
+      "value": "pod0"
+    },
+    "subnetName": {
+      "value": "pod0-management-subnet"
+    },
+    "FMCprivateAddress": {
+      "value": "10.100.250.121"
+    },
+    "nsgName": {
+      "value": "pod0-management-nsg"
+    },
+    "nsgResourceGroup": {
+      "value": "pod0"
+    },
+    "storageAccountPrefix": {
+      "value": "pod0fm2"
+    }
+  }
+}

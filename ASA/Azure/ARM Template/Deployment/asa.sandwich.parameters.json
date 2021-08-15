@@ -1,0 +1,69 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-08-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "numberOfFirewalls": {
+      "value": 2
+    },
+    "useKey": {
+      "value": false
+    },
+    "keyData": {
+      "value": "None"
+    },
+    "vmName": {
+      "value": "pod0-ASAv"
+    },
+    "numberOfAvailabilityZones": {
+      "value": 2
+    },
+    "vmSize": {
+      "value": "Standard_D3_v2"
+    },
+    "vmSizeOther": {
+      "value": "None"
+    },
+    "softwareDisplayVersion": {
+      "value": "9.16.1"
+    },
+    "softwareVersionOther": {
+      "value": "None"
+    },
+    "adminUsername": {
+      "value": "cisco"
+    },
+    "adminPassword": {
+      "value": "Passwd123!Azure"
+    },
+    "virtualNetworkResourceGroup": {
+      "value": "pod0"
+    },
+    "virtualNetworkName": {
+      "value": "pod0-vnet"
+    },
+    "mgmtSubnetName": {
+      "value": "pod0-mgmt"
+    },
+    "outsideSubnetName": {
+      "value": "pod0-outside"
+    },
+    "insideSubnetName": {
+      "value": "pod0-inside"
+    },
+    "frontendIPAddress": {
+      "value": "10.100.100.123"
+    },
+    "nsgResourceGroup": {
+      "value": "pod0"
+    },
+    "mgmtNSGName": {
+      "value": "mgmt-nsg"
+    },
+    "outsideNSGName": {
+      "value": "outside-nsg"
+    },
+    "storageAccountPrefix": {
+      "value": "pod0asav"
+    }
+  }
+}

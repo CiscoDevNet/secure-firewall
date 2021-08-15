@@ -1,0 +1,90 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-08-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "value": "Cisco-FTD"
+    },
+    "aZone": {
+      "value": "1"
+    },
+    "FTDHostname": {
+      "value": "ftd.example.com"
+    },
+    "vmSize": {
+      "value": "Standard_D3_v2"
+    },
+    "vmSizeOther": {
+      "value": "None"
+    },
+    "softwareDisplayVersion": {
+      "value": "7.0.0(94)"
+    },
+    "softwareVersionOther": {
+      "value": "None"
+    },
+    "altUsername": {
+      "value": "altadmin"
+    },
+    "adminPassword": {
+      "value": "Passwd123!Azure"
+    },
+    "FTDAdminPassword": {
+      "value": "Passwd123!Azure"
+    },
+    "FMCIp": {
+      "value": "10.10.100.101"
+    },
+    "FMCRegKey": {
+      "value": "cisco123"
+    },
+    "FMCNatId": {
+      "value": ""
+    },
+    "manageLocally": {
+      "value": "no"
+    },
+    "virtualNetworkName": {
+      "value": "pod0-vnet"
+    },
+    "virtualNetworkResourceGroup": {
+      "value": "pod0"
+    },
+    "mgmtSubnetName": {
+      "value": "pod0-mgmt"
+    },
+    "mgmtFTDprivateAddress": {
+      "value": "10.10.100.10"
+    },
+    "diagSubnetName": {
+      "value": "pod0-diagnostic"
+    },
+    "diagFTDprivateAddress": {
+      "value": "10.10.101.10"
+    },
+    "outsideSubnetName": {
+      "value": "pod0-outside"
+    },
+    "outsideFTDprivateAddress": {
+      "value": "10.10.102.10"
+    },
+    "insideSubnetName": {
+      "value": "pod0-inside"
+    },
+    "insideFTDprivateAddress": {
+      "value": "10.10.103.10"
+    },
+    "nsgResourceGroup": {
+      "value": "pod0"
+    },
+    "mgmtNSGName": {
+      "value": "mgmt-nsg"
+    },
+    "outsideNSGName": {
+      "value": "outside-nsg"
+    },
+    "storageAccountPrefix": {
+      "value": "pod0ftd"
+    }
+  }
+}

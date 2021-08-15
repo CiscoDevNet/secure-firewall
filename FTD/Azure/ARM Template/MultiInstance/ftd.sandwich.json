@@ -1,0 +1,675 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-08-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "numberOfFirewalls": {
+      "type": "int",
+      "metadata": {
+        "description": "The number of FTD Virtual Machine."
+      }
+    },
+    "vmName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name, in Azure, for the FTD Virtual Machine."
+      }
+    },
+    "FTDHostname": {
+      "type": "string",
+      "metadata": {
+        "description": "FTD hostname - this is the FTD's own setting for its host-id"
+      }
+    },
+    "numberOfAvailabilityZones": {
+      "type": "int",
+      "allowedValues": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "metadata": {
+        "description": "Number of Availability Zones"
+      }
+    },
+    "vmSize": {
+      "type": "string",
+      "defaultValue": "Standard_D3_v2",
+      "allowedValues": [
+        "Standard_D5_v2",
+        "Standard_D4_v2",
+        "Standard_D3_v2",
+        "Other"
+      ],
+      "metadata": {
+        "description": "VM size to use. Be aware that not all regions support the same sizes."
+      }
+    },
+    "vmSizeOther": {
+      "type": "string",
+      "defaultValue": "None",
+      "metadata": {
+        "description": "Override VM Size. Be sure to check Cisco documentation for supported sizes. Be aware that not all regions support the same sizes." }
+    },
+    "softwareDisplayVersion": {
+      "type": "string",
+      "defaultValue": "7.0.0(94)",
+      "allowedValues": [
+        "7.0.0(94)",
+        "6.7.0(65)",
+        "6.6.4(59)",
+        "6.4.0(110)",
+        "Other"
+      ],
+      "metadata": {
+        "description": "Software version to use."
+      }
+    },
+    "softwareVersionOther": {
+      "type": "string",
+      "defaultValue": "None",
+      "metadata": {
+        "description": "Override Software Display Version with another value. Run the Azure CLI command 'az vm image list --all --publisher cisco --offer cisco-ftdv -o table' to see the current available versions." }
+    },
+    "imageSKU": {
+      "type": "string",
+      "defaultValue": "ftdv-azure-byol",
+      "allowedValues": [
+        "ftdv-azure-byol",
+        "ftdv-azure-payg"
+      ],
+      "metadata": {
+        "description": "License SKU. Bring Your Own License or Pay As You Go." }
+    },
+    "useKey": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Use SSH key"
+      }
+    },
+    "keyData": {
+      "type": "string",
+      "defaultValue": "none",
+      "metadata": {
+        "description": "SSH key"
+      }
+    },
+    "altUsername": {
+      "type": "string",
+      "defaultValue": "altadmin",
+      "metadata": {
+        "description": "Alternate Username for the Virtual Machine (it can not be 'admin').  This username is generally not used but is required by Azure"
+      }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password to use if logging in with the altUsername id"
+      }
+    },
+    "FTDAdminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Admin password for FTD. use this with the actual 'admin' username when using ssh or https"
+      }
+    },
+    "FMCIp": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "FMC IP address"
+      }
+    },
+    "FMCRegKey": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "FMC registration key"
+      }
+    },
+    "FMCNatId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "FMC NAT ID"
+      }
+    },
+    "manageLocally": {
+      "type": "string",
+      "defaultValue": "yes",
+      "allowedValues": [
+        "no",
+        "yes"
+      ],
+      "metadata": {
+        "description": "Is the device managed locally? (no,yes)"
+      }
+    },
+    "virtualNetworkName": {
+      "type": "string",
+      "metadata": {
+        "description": "Virtual Network name"
+      }
+    },
+    "virtualNetworkResourceGroup": {
+      "type": "string",
+      "metadata": {
+        "description": "Virtual Network resource group"
+      }
+    },
+    "mgmtSubnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of management subnet"
+      }
+    },
+    "diagSubnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of diagnostic subnet"
+      }
+    },
+    "outsideSubnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of outside subnet"
+      }
+    },
+    "insideSubnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of inside subnet"
+      }
+    },
+    "frontendIPAddress": {
+      "type": "String",
+      "metadata": {
+        "description": "Frontend (private) IP address of ILB. Must be on the inside subnet."
+      }
+    },
+    "nsgResourceGroup": {
+      "type": "string",
+      "metadata": {
+        "description": "NSG Resource Group"
+      }
+    },
+    "mgmtNSGName": {
+      "type": "string",
+      "metadata": {
+        "description": "NSG name for management NIC"
+      }
+    },
+    "outsideNSGName": {
+      "type": "string",
+      "metadata": {
+        "description": "NSG name for outside NIC"
+      }
+    },
+    "storageAccountPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Prefix for storage account name"
+      }
+    }
+  },
+  "variables": {
+    "vmEffectiveSize": "[if(equals(parameters('vmSize'), 'Other'), parameters('vmSizeOther'), parameters('vmSize'))]",
+    "PLB_Name": "[concat(parameters('vmName'),'-plb')]",
+    "ILB_Name": "[concat(parameters('vmName'),'-ilb')]",
+    "publicIpName": "[concat(variables('PLB_Name'), '-ip')]",
+    "publicIpId": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIpName'))]",
+    "sversion0": "[parameters('softwareDisplayVersion')]",
+    "sversion1": "[replace(variables('sversion0'),'7.0.0(94)','700.94.0')]",
+    "sversion2": "[replace(variables('sversion1'),'6.7.0(65)','67065.0.0')]",
+    "sversion3": "[replace(variables('sversion2'),'6.6.4(59)','66459.0.0')]",
+    "sversion4": "[replace(variables('sversion3'),'6.4.0(110)','640110.0.0')]",
+    "softwareVersion": "[if(equals(parameters('softwareDisplayVersion'), 'Other'), parameters('softwareVersionOther'), variables('sversion4'))]",
+    "mgmtNSGId": "[resourceId(parameters('nsgResourceGroup'),'Microsoft.Network/networkSecurityGroups', parameters('mgmtNSGName'))]",
+    "outsideNSGId": "[resourceId(parameters('nsgResourceGroup'),'Microsoft.Network/networkSecurityGroups', parameters('outsideNSGName'))]",
+    "imagePublisher": "cisco",
+    "imageOffer": "cisco-ftdv",
+    "vnetId": "[resourceId(parameters('virtualNetworkResourceGroup'),'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+    "mgmtSubnetRef": "[concat(variables('vnetId'),'/subnets/', parameters('mgmtSubnetName'))]",
+    "diagSubnetRef": "[concat(variables('vnetId'),'/subnets/', parameters('diagSubnetName'))]",
+    "outsideSubnetRef": "[concat(variables('vnetId'),'/subnets/', parameters('outsideSubnetName'))]",
+    "insideSubnetRef": "[concat(variables('vnetId'),'/subnets/', parameters('insideSubnetName'))]",
+    "customData": "[concat('{\"AdminPassword\":\"', parameters('FTDAdminPassword'), '\",\"Hostname\":\"', parameters('FTDHostname'), '\",\"FmcIp\":\"', parameters('FMCIp'), '\",\"FmcRegKey\":\"', parameters('FMCRegKey'), '\",\"FmcNatId\":\"', parameters('FMCNatId'), '\",\"ManageLocally\":\"', parameters('manageLocally'),'\"}') ]",
+    "storageAccountName": "[concat(parameters('storageAccountPrefix'),uniqueString(resourceGroup().id))]",
+    "managementPublicIPAddressName": "[concat(parameters('vmName'),'management-ip')]",
+    "managementPublicIPAddressId": {
+      "id": "[resourceId(resourceGroup().name,'Microsoft.Network/PublicIPAddresses',variables('managementPublicIPAddressName'))]"
+    },
+    "mgmtNICName": "[concat(parameters('vmName'),'-nic0')]",
+    "diagNICName": "[concat(parameters('vmName'),'-nic1')]",
+    "outsideNICName": "[concat(parameters('vmName'),'-nic2')]",
+    "insideNICName": "[concat(parameters('vmName'),'-nic3')]",
+    "linuxJSON": {
+     "disablePasswordAuthentication": true,
+     "ssh": {
+              "publicKeys": [
+                     {
+                       "path": "[concat('/home/',parameters('altUsername'),'/.ssh/authorized_keys')]",
+                       "keyData": "[parameters('keyData')]"
+                     }
+              ]
+     }
+    },
+    "osProfilepassword": {
+      "computername": "[parameters('vmName')]",
+      "adminUsername": "[parameters('altUsername')]",
+      "adminPassword": "[parameters('adminPassword')]",
+      "linuxConfiguration": "[if(parameters('useKey'),variables('linuxJSON'),json('null'))]",
+      "customData": "[base64(variables('customData'))]"
+    }
+  },
+  "resources": [
+              {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2020-05-01",
+      "name": "[variables('publicIpName')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "standard"
+      },
+      "properties": {
+        "publicIPAddressVersion": "IPv4",
+        "publicIPAllocationMethod": "Static",
+        "idleTimeoutInMinutes": 4,
+        "ipTags": []
+      }
+    },
+    {
+      "type": "Microsoft.Network/loadBalancers",
+      "apiVersion": "2020-05-01",
+      "name": "[variables('PLB_Name')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[variables('publicIpId')]"
+      ],
+      "sku": {
+        "name": "standard"
+      },
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "LoadBalancerFrontEnd",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[variables('publicIpId')]"
+              }
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "[concat(variables('PLB_Name'), '-pool')]",
+            "properties": {
+              "loadBalancerBackendAddresses": []
+            }
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "[concat(variables('PLB_Name'), '-HTTP')]",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('PLB_Name')), '/frontendIPConfigurations/LoadBalancerFrontEnd')]"
+              },
+              "frontendPort": 80,
+              "backendPort": 80,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 4,
+              "protocol": "Tcp",
+              "enableTcpReset": false,
+              "loadDistribution": "Default",
+              "disableOutboundSnat": false,
+              "backendAddressPool": {
+                "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('PLB_Name'), concat(variables('PLB_Name'), '-pool'))]"
+              },
+              "probe": {
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('PLB_Name')), concat('/probes/', variables('PLB_Name'), '-probe'))]"
+              }
+            }
+          },
+          {
+            "name": "[concat(variables('PLB_Name'), '-HTTPS')]",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('PLB_Name')), '/frontendIPConfigurations/LoadBalancerFrontEnd')]"
+              },
+              "frontendPort": 443,
+              "backendPort": 443,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 4,
+              "protocol": "Tcp",
+              "enableTcpReset": false,
+              "loadDistribution": "Default",
+              "disableOutboundSnat": false,
+              "backendAddressPool": {
+                "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('PLB_Name'), concat(variables('PLB_Name'), '-pool'))]"
+              },
+              "probe": {
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('PLB_Name')), concat('/probes/', variables('PLB_Name'), '-probe'))]"
+              }
+            }
+          }
+        ],
+        "probes": [
+          {
+            "name": "[concat(variables('PLB_Name'), '-probe')]",
+            "properties": {
+              "protocol": "Tcp",
+              "port": 22,
+              "intervalInSeconds": 5,
+              "numberOfProbes": 2
+            }
+          }
+        ],
+        "inboundNatRules": [],
+        "outboundRules": [],
+        "inboundNatPools": []
+      }
+    },
+        {
+      "type": "Microsoft.Network/loadBalancers",
+      "apiVersion": "2020-05-01",
+      "name": "[variables('ILB_Name')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "standard"
+      },
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "LoadBalancerFrontEnd",
+            "properties": {
+              "privateIPAddress": "[parameters('frontendIPAddress')]",
+              "privateIPAllocationMethod": "Static",
+              "subnet": {
+                "id": "[variables('insideSubnetRef')]"
+              },
+              "privateIPAddressVersion": "IPv4"
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "[concat(variables('ILB_Name'), '-pool')]",
+            "properties": {
+              "loadBalancerBackendAddresses": []
+            }
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "[concat(variables('ILB_Name'), '-rule')]",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('ILB_Name')), '/frontendIPConfigurations/LoadBalancerFrontEnd')]"
+              },
+              "frontendPort": 0,
+              "backendPort": 0,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 4,
+              "protocol": "All",
+              "enableTcpReset": false,
+              "loadDistribution": "Default",
+              "disableOutboundSnat": false,
+              "backendAddressPool": {
+                "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('ILB_Name'), concat(variables('ILB_Name'), '-pool'))]"
+              },
+              "probe": {
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('ILB_Name')), concat('/probes/', variables('ILB_Name'), '-probe'))]"
+              }
+            }
+          }
+        ],
+        "probes": [
+          {
+            "name": "[concat(variables('ILB_Name'), '-probe')]",
+            "properties": {
+              "protocol": "Tcp",
+              "port": "22",
+              "intervalInSeconds": 5,
+              "numberOfProbes": 2
+            }
+          }
+        ],
+        "inboundNatRules": [],
+        "outboundRules": [],
+        "inboundNatPools": []
+      }
+    },
+    {
+      "apiVersion": "2019-06-01",
+      "type": "Microsoft.Storage/storageAccounts",
+      "copy": {
+        "name": "storageAccountCopy",
+        "count": "[parameters('numberOfFirewalls')]"
+      },
+      "name": "[concat(variables('storageAccountName'),copyIndex(1))]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "Storage",
+      "location": "[resourceGroup().location]",
+      "properties": {}
+    },
+    {
+      "apiVersion": "2019-06-01",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "copy": {
+        "name": "managementPublicIPAddressNameCopy",
+        "count": "[parameters('numberOfFirewalls')]"
+      },
+      "name": "[concat(variables('managementPublicIPAddressName'),copyIndex(1))]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Standard"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static",
+        "idleTimeoutInMinutes": 30
+      }
+    },
+    {
+      "apiVersion": "2019-06-01",
+      "type": "Microsoft.Network/networkInterfaces",
+      "copy": {
+        "name": "managementNICCopy",
+        "count": "[parameters('numberOfFirewalls')]"
+      },
+      "name": "[concat(variables('mgmtNICName'),copyIndex(1))]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+           "managementPublicIPAddressNameCopy"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[variables('mgmtSubnetRef')]"
+              },
+              "publicIPAddress": {
+                  "id": "[concat(resourceId(resourceGroup().name,'Microsoft.Network/PublicIPAddresses',variables('managementPublicIPAddressName')),copyIndex(1))]"
+              }
+            }
+          }
+        ],
+        "networkSecurityGroup": {
+          "id": "[variables('mgmtNSGId')]"
+        }
+      }
+    },
+    {
+      "apiVersion": "2019-06-01",
+      "type": "Microsoft.Network/networkInterfaces",
+      "copy": {
+        "name": "diagNICCopy",
+        "count": "[parameters('numberOfFirewalls')]"
+      },
+      "name": "[concat(variables('diagNICName'),copyIndex(1))]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[variables('diagSubnetRef')]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2019-06-01",
+      "type": "Microsoft.Network/networkInterfaces",
+      "copy": {
+        "name": "outsideNICCopy",
+        "count": "[parameters('numberOfFirewalls')]"
+      },
+      "name": "[concat(variables('outsideNICName'),copyIndex(1))]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/loadBalancers', variables('PLB_Name'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[variables('outsideSubnetRef')]"
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('PLB_Name'), concat(variables('PLB_Name'), '-pool'))]"
+                }
+              ]
+            }
+          }
+        ],
+        "networkSecurityGroup": {
+          "id": "[variables('outsideNSGId')]"
+        },
+        "enableIPForwarding": true,
+        "enableAcceleratedNetworking": "[if(contains('62-63-64-65-66', substring(variables('softwareVersion'),0,2)), bool('false'), bool('true'))]"
+      }
+    },
+    {
+      "apiVersion": "2019-06-01",
+      "type": "Microsoft.Network/networkInterfaces",
+      "copy": {
+        "name": "insideNICCopy",
+        "count": "[parameters('numberOfFirewalls')]"
+      },
+      "name": "[concat(variables('insideNICName'),copyIndex(1))]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/loadBalancers', variables('ILB_Name'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[variables('insideSubnetRef')]"
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('ILB_Name'), concat(variables('ILB_Name'), '-pool'))]"
+                }
+              ]
+            }
+          }
+        ],
+        "enableIPForwarding": true,
+        "enableAcceleratedNetworking": "[if(contains('62-63-64-65-66', substring(variables('softwareVersion'),0,2)), bool('false'), bool('true'))]"
+      }
+    },
+    {
+      "apiVersion": "2020-06-01",
+      "type": "Microsoft.Compute/virtualMachines",
+      "copy": {
+        "name": "FTDCopy",
+        "count": "[parameters('numberOfFirewalls')]"
+      },
+      "name": "[concat(parameters('vmName'),copyIndex(1))]",
+      "location": "[resourceGroup().location]",
+      "plan": {
+        "name": "[parameters('imageSKU')]",
+        "publisher": "[variables('imagePublisher')]",
+        "product": "[variables('imageOffer')]"
+      },
+      "dependsOn": [
+           "managementNICCopy",
+           "diagNICCopy",
+           "outsideNICCopy",
+           "insideNICCopy"
+      ],
+      "zones": "[if(equals(parameters('numberOfAvailabilityZones'),0), json('null'),split(string(add(mod(copyIndex(),parameters('numberOfAvailabilityZones')),1)), ','))]",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[variables('vmEffectiveSize')]"
+        },
+        "osProfile": "[variables('osProfilepassword')]",
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[variables('imagePublisher')]",
+            "offer": "[variables('imageOffer')]",
+            "sku": "[parameters('imageSKU')]",
+            "version": "[variables('softwareVersion')]"
+          },
+          "osDisk": {
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "properties": {
+                "primary": true
+              },
+              "id": "[concat(resourceId('Microsoft.Network/networkInterfaces', variables('mgmtNICName')),copyIndex(1))]"
+            },
+            {
+              "properties": {
+                "primary": false
+              },
+              "id": "[concat(resourceId('Microsoft.Network/networkInterfaces', variables('diagNICName')),copyIndex(1))]"
+            },
+            {
+              "properties": {
+                "primary": false
+              },
+              "id": "[concat(resourceId('Microsoft.Network/networkInterfaces', variables('outsideNICName')),copyIndex(1))]"
+            },
+            {
+              "properties": {
+                "primary": false
+              },
+              "id": "[concat(resourceId('Microsoft.Network/networkInterfaces', variables('insideNICName')),copyIndex(1))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageuri": "[reference(concat(resourceId(resourceGroup().name, 'Microsoft.Storage/storageAccounts/', variables('storageAccountName')),copyIndex(1)), '2019-06-01').primaryEndpoints.blob]"
+          }
+        }
+      }
+    }
+  ]
+}
