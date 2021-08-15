@@ -18,7 +18,8 @@ Each specific usecase contains a README file with installation instructions.
      * [Single ASA instance in a AZ](https://github.com/CiscoDevNet/secure-firewall/tree/main/ASA/AWS/Terraform/ASA_Single_Instances_AZ)
 * **ASA on Azure:**
   * _ARM Templates:_
-     * [Templates coming soon...](https://github.com/CiscoDevNet/secure-firewall/tree/main/ASA/Azure/ARM%20Template)
+     * [Multiple ASA instances](https://github.com/CiscoDevNet/secure-firewall/tree/main/ASA/Azure/ARM%20Template/Deployment)
+     * [Single ASA instance in single location](https://github.com/CiscoDevNet/secure-firewall/tree/main/ASA/Azure/ARM%20Template/Deployment)
   * _Terraform templates:_
      * [Single ASA instance in single location](https://github.com/CiscoDevNet/secure-firewall/tree/main/ASA/Azure/Terraform/Single%20Instance)
 * **FTD on AWS:**
@@ -32,7 +33,8 @@ Each specific usecase contains a README file with installation instructions.
      * [FTDv single instance in an Availability Zone (AZ)](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/AWS/Terraform/FTD_Single_Instance_AZ)
 * **FTD on Azure:**
   * _ARM templates:_
-     * [Template coming soon...](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/Azure/ARM%20Template) 
+     * [Multiple FTD instances in AZ](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/Azure/ARM%20Template/MultiInstance)
+     * [Single FTD instance](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/Azure/ARM%20Template/Standalone) 
   * _Terraform templates:_
      * [Template coming soon...](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/Azure/Terraform)
 * **FTD Ansible Modules**
@@ -40,13 +42,15 @@ Each specific usecase contains a README file with installation instructions.
   * [FTD Ansible Documentation](https://developer.cisco.com/site/ftd-ansible/)
 * **FTD on Vmware:**
   * _Terraform Templates:_
-    * [Standalone FTD](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/Vmware/Terraform)
+    * [Single Instance FTD](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/Vmware/Terraform)
 * **FMC Terraform Provider:**
   * [FMC Terraform Provider Github](https://github.com/CiscoDevNet/terraform-provider-fmc)
   * [FMC Terraform Registry](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest)
 * **FMC on Azure:**
   * _Terraform templates:_
-    * [Standalone FMC](https://github.com/CiscoDevNet/secure-firewall/tree/main/FMC/Azure/Standalone)
+    * [Standalone FMC](https://github.com/CiscoDevNet/secure-firewall/tree/main/FMC/Azure/Terraform/standalone)
+  * _ARM Templates:_
+    * [Standalone FMC](https://github.com/CiscoDevNet/secure-firewall/tree/main/FMC/Azure/ARMTemplates/Standalone)
 * **FMC on AWS:**
   * _Terraform templates:_
     * [Standalone FMC](https://github.com/CiscoDevNet/secure-firewall/tree/main/FMC/AWS/Standalone)
