@@ -7,3 +7,6 @@
 [submodule "FMC/terraform-provider-fmc"]
 	path = FMC/terraform-provider-fmc
 	url = https://github.com/CiscoDevNet/terraform-provider-fmc
+[submodule "ASA/Autoscale/cisco-asav"]
+	path = ASA/Autoscale/cisco-asav
+	url = https://github.com/CiscoDevNet/cisco-asav.git
