@@ -10,3 +10,6 @@
 [submodule "ASA/Autoscale/cisco-asav"]
 	path = ASA/Autoscale/cisco-asav
 	url = https://github.com/CiscoDevNet/cisco-asav.git
+[submodule "FTD/Autoscale/cisco-ftdv"]
+	path = FTD/Autoscale/cisco-ftdv
+	url = https://github.com/CiscoDevNet/cisco-ftdv.git
