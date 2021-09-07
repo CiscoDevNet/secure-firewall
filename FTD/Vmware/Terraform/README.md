@@ -1,4 +1,4 @@
-# Terraform Template to create a single Instance of FTDv in VMware
+# Terraform Template to deploy FTDv instances in VMware
 
 ## Prerequisites
 
