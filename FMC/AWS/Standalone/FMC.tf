@@ -135,6 +135,7 @@ data "template_file" "fmc_startup_file" {
   template = file("fmc_startup_file.txt")
   vars = {
     hostname = "${var.hostname}%{if var.instances > 1}-${count.index}%{endif}"
+    password = var.password
   }
 }
 
