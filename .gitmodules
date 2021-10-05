@@ -13,3 +13,12 @@
 [submodule "FTD/Autoscale/cisco-ftdv"]
 	path = FTD/Autoscale/cisco-ftdv
 	url = https://github.com/CiscoDevNet/cisco-ftdv.git
+[submodule "ASA/AWS/CloudFormation/ASA_Autoscale/cisco-asav"]
+	path = ASA/AWS/CloudFormation/ASA_Autoscale/cisco-asav
+	url = https://github.com/CiscoDevNet/cisco-asav.git
+[submodule "ASA/Azure/ARM Template/Autoscale/cisco-asav"]
+	path = ASA/Azure/ARM Template/Autoscale/cisco-asav
+	url = https://github.com/CiscoDevNet/cisco-asav.git
+[submodule "FTD/AWS/CloudFormation/FTD_Autoscale/cisco-ftdv"]
+	path = FTD/AWS/CloudFormation/FTD_Autoscale/cisco-ftdv
+	url = https://github.com/CiscoDevNet/cisco-ftdv.git

@@ -1,0 +1,129 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resourceNamePrefix": {
+      "value": "ftdv"
+    },
+    "virtualNetworkRg": {
+      "value": "auto0"
+    },
+    "virtualNetworkName": {
+      "value": "auto0-vnet"
+    },
+    "internalNetworks": {
+      "value": "TenEleven"
+    },
+    "mgmtSubnet": {
+      "value": "auto0-management-subnet"
+    },
+    "diagSubnet": {
+      "value": "auto0-diagnostic-subnet"
+    },
+    "insideSubnet": {
+      "value": "auto0-inside-subnet"
+    },
+    "insideNetworkGatewayIp": {
+      "value": "10.100.100.1"
+    },
+    "internalLbIp": {
+      "value": "10.100.100.136"
+    },
+    "outsideSubnet": {
+      "value": "auto0-outside-subnet"
+    },
+    "outsideNetworkGatewayIp": {
+      "value": "10.100.200.1"
+    },
+    "insideZoneName": {
+      "value": "InZone"
+    },
+    "outsideZoneName": {
+      "value": "OutZone"
+    },
+    "softwareDisplayVersion": {
+      "value": "7.0.0(94)"
+    },
+    "softwareVersionOther": {
+      "value": "None"
+    },
+    "vmSize": {
+      "value": "Standard_D3_v2"
+    },
+    "ftdLicensingSku": {
+      "value": "ftdv-azure-byol"
+    },
+    "ftdVmManagementUserName": {
+      "value": "cisco"
+    },
+    "ftdVmManagementUserPassword": {
+      "value": "Passwd123!Azure"
+    },
+    "ftdAdminUserPassword": {
+      "value": "Passwd123!Azure"
+    },
+    "fmcIpAddress": {
+      "value": "10.100.250.121"
+    },
+    "fmcIpAddressType": {
+      "value": "private"
+    },
+    "createDelegatedSubnet": {
+      "value": true
+    },
+    "delegatedSubnet": {
+      "value": "ftdvdelasubnet"
+    },
+    "delegatedSubnetAddressPrefix": {
+      "value": "10.100.112.0/24"
+    },
+    "fmcUserName": {
+      "value": "fmcuser"
+    },
+    "fmcPassword": {
+      "value": "Passwd123!Azure"
+    },
+    "policyName": {
+      "value": "MinimalACP"
+    },
+    "deviceGroupName": {
+      "value": "AutoScaleGroup"
+    },
+    "licenseCapability": {
+      "value": "BASE, MALWARE, URLFilter, THREAT"
+    },
+    "scalingMetricsList": {
+      "value": "CPU"
+    },
+    "cpuScaleInThreshold": {
+      "value": "10"
+    },
+    "cpuScaleOutThreshold": {
+      "value": "80"
+    },
+    "memoryScaleInThreshold": {
+      "value": "0"
+    },
+    "memoryScaleOutThreshold": {
+      "value": "0"
+    },
+    "minFtdCount": {
+      "value": "1"
+    },
+    "maxFtdCount": {
+      "value": "5"
+    },
+    "metricsAverageDuration": {
+      "value": "1"
+    },
+    "initDeploymentMode": {
+      "value": "BULK"
+    },
+    "scalingPolicy": {
+      "value": "POLICY-1"
+    },
+    "performanceTier": {
+      "value": "FTDv20"
+    }
+  }
+}
