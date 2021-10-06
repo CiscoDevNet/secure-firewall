@@ -1,5 +1,0 @@
-#FMC
-{
-"AdminPassword": "${password}",
-"Hostname":      "${hostname}",
-}
