@@ -113,17 +113,6 @@ data "aws_ami" "fmcv" {
   }
 }
 
-data "template_file" "fmc_startup_file" {
-  count = var.instances
-  template = <<-EOF
-#FMC
-{
-"AdminPassword": "${var.password}",
-"Hostname":      "${var.hostname}%{if var.instances > 1}-${count.index}%{endif}",
-}
-EOF
-}
-
 locals {
   azs             = length(var.azs) > 0 ? var.azs : data.aws_availability_zones.available[0].names
   az_distribution = chunklist(sort(flatten(chunklist(setproduct(range(var.instances), local.azs), var.instances)[0])), var.instances)[1]
@@ -270,7 +259,13 @@ resource "aws_instance" "fmcv" {
     device_index         = 0
   }
 
-  user_data = data.template_file.fmc_startup_file[count.index].rendered
+  user_data = <<-EOF
+#FMC
+{
+"AdminPassword": "${var.password}",
+"Hostname":      "${var.hostname}%{if var.instances > 1}-${count.index}%{endif}",
+}
+EOF
 
   tags = {
     Name = "Cisco ${var.name_tag_prefix}%{if var.instances > 1} ${count.index}%{endif}"
