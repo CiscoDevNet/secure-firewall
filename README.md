@@ -28,6 +28,11 @@ Each specific usecase contains a README file with installation instructions.
      * [Multi Instances in Multiple AZ](https://github.com/CiscoDevNet/secure-firewall/tree/main/ASA/Azure/Terraform/MultiInstanceMultiAZ)
      * [Multi Instances in Multiple AZ using existing subnets](https://github.com/CiscoDevNet/secure-firewall/tree/main/ASA/Azure/Terraform/MultiInstanceMultiAZ_ExistingSubnets) 
 
+* **ASA on GCP:**
+  * _Terraform templates:_
+    * [Single ASA instance in single location](https://github.com/CiscoDevNet/secure-firewall/tree/main/ASA/GCP/Terraform/Deployment/examples/single-instance)
+    * [Multiple ASA Instances in Single or Multiple AZ](https://github.com/CiscoDevNet/secure-firewall/tree/main/ASA/GCP/Terraform/Deployment/examples/multi-instances)    
+
 * **FTD on AWS:**
   * _CloudFormation templates:_
      * [Multiple FTD instances in multiple AZ](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/AWS/CloudFormation/FTD_MultipleInstance_MultiAZ)
