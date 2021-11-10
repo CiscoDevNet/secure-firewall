@@ -1,27 +1,10 @@
 ############################################################################################################################
-# Terraform Template to install a FMCv using BYOL AMI with Mgmt subnet
+# Terraform Module to install a FMCv using BYOL AMI with Mgmt subnet
 ############################################################################################################################
-
-#########################################################################################################################
-# Providers
-#########################################################################################################################
-
-provider "aws" {
-  access_key = var.aws_access_key
-  secret_key = var.aws_secret_key
-  region     = var.region
-}
 
 #####################################################################################################################
 # Variables 
 #####################################################################################################################
-
-variable "aws_access_key" {}
-variable "aws_secret_key" {}
-
-variable "region" {
-  description = "AWS Region"
-}
 
 variable "azs" {
   default     = []
@@ -127,14 +110,6 @@ data "aws_ami" "fmcv" {
   filter {
     name   = "virtualization-type"
     values = ["hvm"]
-  }
-}
-
-data "template_file" "fmc_startup_file" {
-  count = var.instances
-  template = file("fmc_startup_file.txt")
-  vars = {
-    hostname = "${var.hostname}%{if var.instances > 1}-${count.index}%{endif}"
   }
 }
 
@@ -284,7 +259,13 @@ resource "aws_instance" "fmcv" {
     device_index         = 0
   }
 
-  user_data = data.template_file.fmc_startup_file[count.index].rendered
+  user_data = <<-EOF
+#FMC
+{
+"AdminPassword": "${var.password}",
+"Hostname":      "${var.hostname}%{if var.instances > 1}-${count.index}%{endif}",
+}
+EOF
 
   tags = {
     Name = "Cisco ${var.name_tag_prefix}%{if var.instances > 1} ${count.index}%{endif}"
