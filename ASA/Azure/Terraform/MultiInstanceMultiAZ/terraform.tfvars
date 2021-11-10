@@ -4,7 +4,7 @@
 location = "eastus2"
 
 // This would prefix all the component with this string.
-prefix = "Cisco-ASAv"
+prefix = "sameesin-Cisco-ASAv"
 
 // Limit the Management access to specific source
 source_address = "*"
@@ -19,10 +19,10 @@ image_version = "917.0.3"
 vm_size = "Standard_D3_v2"
 
 // Resource Group Name
-rg_name = "Cisco-ASAv-RG"
+rg_name = "sameesin-Cisco-RG"
 
 // Instance Name and properties of ASAv
-instancename = "ASAv"
+instancename = "sameesin-ASAv"
 
 // Count of ASAv to be deployed.
-instances = 2
+instances = 3

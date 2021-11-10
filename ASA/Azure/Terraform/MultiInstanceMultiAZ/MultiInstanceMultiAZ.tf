@@ -438,7 +438,7 @@ resource "azurerm_lb_rule" "ilbrule" {
   frontend_port                  = 0
   backend_port                   = 0
   frontend_ip_configuration_name = "InternalIPAddress"
-  backend_address_pool_id        = azurerm_lb_backend_address_pool.ILB-Backend-Pool[0].id
+  backend_address_pool_ids       = [azurerm_lb_backend_address_pool.ILB-Backend-Pool[0].id]
   probe_id                       = azurerm_lb_probe.ASA-ILB-Probe[0].id
 }
 
@@ -499,7 +499,7 @@ resource "azurerm_lb_rule" "elbrule" {
   frontend_port                  = 80
   backend_port                   = 80
   frontend_ip_configuration_name = "ExternalIPAddress"
-  backend_address_pool_id        = azurerm_lb_backend_address_pool.ELB-Backend-Pool[0].id
+  backend_address_pool_ids        = [azurerm_lb_backend_address_pool.ELB-Backend-Pool[0].id]
   probe_id                       = azurerm_lb_probe.ASA-ELB-Probe[0].id
 }
 
