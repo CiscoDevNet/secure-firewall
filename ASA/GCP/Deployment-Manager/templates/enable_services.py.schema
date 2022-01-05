@@ -1,0 +1,13 @@
+info:
+  title: Enable Services
+  author: IGNW
+  description: Enable GCP services
+  version: 1.0
+
+imports:
+- path: enable_services.py
+
+properties:
+  services:
+    type: array
+    description: List of services to be enabled

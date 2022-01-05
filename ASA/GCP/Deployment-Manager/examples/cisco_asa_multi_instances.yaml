@@ -1,0 +1,89 @@
+imports:
+- path: ../templates/helpers/common.py
+  name: helpers/common.py
+- path: ../templates/cisco_asa.py
+  name: cisco_asa.py
+- path: ../templates/enable_services.py
+  name: enable_services.py
+- path: ../templates/service_accounts.py
+  name: service_accounts.py
+- path: ../templates/networking.py
+  name: networking.py
+- path: ../templates/vm.py
+  name: vm.py
+- path: ../templates/load_balancer.py
+  name: load_balancer.py
+
+resources:
+
+#############################################
+# Provision Multiple CISCO ASA Appliances
+#############################################
+
+- name: cisco_asa
+  type: cisco_asa.py
+  properties:
+    services:
+      - iam.googleapis.com
+      - compute.googleapis.com
+    account_id: cisco-asa-sa
+    display_name: Cisco ASA Service Account
+    description: Deployment Manager managed service account
+    ha_enabled: false
+    region: asia-south1
+    networks:
+      - name: vpc-mgmt
+        cidr: 10.10.10.0/24
+        appliance_ip: ['10.10.10.10', '10.10.10.9']
+        external_ip: true
+      - name: vpc-inside
+        cidr: 10.10.11.0/24
+        appliance_ip: ['10.10.11.10', '10.10.11.9']
+        external_ip: false
+      - name: vpc-dmz1
+        cidr: 10.10.12.0/24
+        appliance_ip: ['10.10.12.10', '10.10.12.9']
+        external_ip: false
+      - name: vpc-dmz2
+        cidr: 10.10.13.0/24
+        appliance_ip: ['10.10.13.10', '10.10.13.9']
+        external_ip: false
+    mgmt_network: vpc-mgmt
+    inside_network: vpc-inside
+    dmz1_network: vpc-dmz1
+    dmz2_network: vpc-dmz2
+    custom_route_tag: cisco-asav
+    service_account: $(ref.service_accounts.email)
+    service_port: 80
+    vm_zones:
+      - asia-south1-a
+      - asia-south1-b
+    num_instances: 2
+    cisco_product_version: cisco-asav-9-16-1-28
+    vm_machine_type: e2-standard-4
+    vm_instance_labels:
+      provider: google
+      component: asa
+      usecase: shared
+    vm_instance_tags:
+      - appliance
+      - http-server
+    admin_ssh_pub_key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDCII2+Zvw/Var0aEo7B5FMGSmLSByanSeoNyp15ztOl7hsvL7c52kPnF+O288cBTDSJCTHJ3gGp18h0daXlhV8ab6gsQFP+HZtuH60+93Pt+IFMzRq4fT5pY2wYLXQ1Cahkj6rZlrjHGRwDr0mi42TR5i9QiOvWtNAUH0L7RNywvntyWjU2l+bJ/SKJ1rGK1GsNUvTJmk9+vE/JXPfrBqHe3yTrR4vGUa8QRx+x3hiZ32WPvCBKIdKMSdO/hYIs08m/npV1MIQJJZq9ZcCFkFxFGyJ1q4mdoXCSby7SHuqqxzrEEIYSQWixOcDdsNR57RufgjWdM9KwcVODTYaiDbf admin@starship.matrix.com'
+    day_0_config: shared-mgmt-config.txt
+    allow_global_access: false
+    named_ports:
+      - name: console
+        port: 22
+      - name: https
+        port: 443
+    use_internal_lb: true
+
+outputs:
+  - name: vm_urls
+    value: $(ref.cisco_asa.vm_urls)
+  - name: vm_external_ips
+    value: $(ref.cisco_asa.vm_external_ips)
+  - name: external_lb_ip
+    value: $(ref.cisco_asa.external_lb_ip)
+  - name: internal_lb_ip
+    value: $(ref.cisco_asa.internal_lb_ip)

@@ -1,0 +1,53 @@
+info:
+  title: Load Balancer
+  author: IGNW
+  description: Provision load balancing resources
+  version: 1.0
+
+imports:
+- path: load_balancer.py
+
+required:
+- region
+- num_instances
+- vm_zones
+- named_ports
+- inside_network
+
+properties:
+  region:
+    type: string
+    description: Region for resources to be provisioned
+  num_instances:
+    type: integer
+    description: Number of instance groups to be provisioned
+  vm_zones:
+    type: array
+    description: GCP zones in which resources will be provisioned
+    items:
+        type: string
+  named_ports:
+    type: array
+    description: List of named ports. See https://cloud.google.com/load-balancing/docs/backend-service#named_ports
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        port:
+          type: number
+  service_port:
+    type: number
+    description: Service port
+    default: 80
+  allow_global_access:
+    type: boolean
+    description: Internal LB allow global access or not
+    default: false
+  inside_network:
+    type: string
+    description: Inside network name
+  use_internal_lb:
+    type: boolean
+    description: use internal load balancer
+    default: false
