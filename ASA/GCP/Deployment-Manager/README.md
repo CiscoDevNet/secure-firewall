@@ -17,6 +17,7 @@ This module is meant for use with Deployment Manager templates using Python and 
 
 [Shared management use case](examples/cisco_asa_single_instance_shared.yaml)
 ![Shared management](images/shared.png)
+
 [Out of bound use case](examples/cisco_asa_single_instance_oob.yaml)
 ![Out of bound](images/oob.png)
 
