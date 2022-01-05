@@ -14,6 +14,7 @@ Each specific usecase contains a README file with installation instructions.
   * _CloudFormation templates:_
      * [Multiple ASA instances in multiple AZ](https://github.com/CiscoDevNet/secure-firewall/tree/main/ASA/AWS/CloudFormation/ASA_Multiple_Instance_MultiAz)
      * [Multiple ASA instances in a single AZ](https://github.com/CiscoDevNet/secure-firewall/tree/main/ASA/AWS/CloudFormation/ASA_Multiple_Instance_SingleAZ)
+     * [Single ASA Instance in a single AZ](https://github.com/CiscoDevNet/secure-firewall/tree/main/ASA/AWS/CloudFormation/ASA_Single_Instance)
      * [_ASAv Autoscale_](https://github.com/CiscoDevNet/cisco-asav/tree/master/autoscale/aws)
   * _Terraform templates:_
      * [Multiple ASA instances in multiple AZ](https://github.com/CiscoDevNet/secure-firewall/tree/main/ASA/AWS/Terraform/ASA_A_A_Multiple_AZ)
