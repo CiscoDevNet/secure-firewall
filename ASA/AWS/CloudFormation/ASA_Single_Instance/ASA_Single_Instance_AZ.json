@@ -1,0 +1,2193 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Deploy ASA in a VPC infrastructure.",
+    "Metadata": {
+        "AWS::CloudFormation::Interface": {
+            "ParameterGroups": [
+                {
+                    "Label": {
+                        "default": "VPC Configuration"
+                    },
+                    "Parameters": [
+                        "AvailabilityZone",
+                        "VpcId",
+                        "VpcCidr",
+                        "IgwId",
+                        "MgmtSubnetId",
+                        "MgmtSubnetCidr",
+                        "InsideSubnetId",
+                        "InsideSubnetCidr",
+                        "OutsideSubnetId",
+                        "OutsideSubnetCidr",
+                        "KeyName"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "DMZ Interface Settings (only supported for 4Xlarge instances)"
+                    },
+                    "Parameters": [
+                        "AddDMZInterface",
+                        "DmzSubnetId",
+                        "DmzSubnetCidr",
+                        "DmzIp"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Cisco ASA Configuration"
+                    },
+                    "Parameters": [
+                        "ASAVersion",
+                        "ASALicType",
+                        "ASAInstanceType",
+                        "ASAHostname",
+                        "MgmtIp",
+                        "InsideIp",
+                        "OutsideIp",
+                        "MgmtExternalAccessCidr"
+                    ]
+                }
+            ],
+            "ParameterLabels": {
+                "AvailabilityZone": {
+                    "default": "Availability zone"
+                },
+                "VpcId": {
+                    "default": "Existing VPC ID"
+                },
+                "VpcCidr": {
+                    "default": "VPC CIDR"
+                },
+                "IgwId": {
+                    "default": "Existing Internet Gateway ID"
+                },
+                "ASA Version": {
+                    "default": "ASA Version"
+                },
+                "ASA LicType": {
+                    "default": "ASA License Type"
+                },
+                "ASA InstanceType": {
+                    "default": "ASA Instance type"
+                },
+                "ASA Hostname": {
+                    "default": "Hostname of the ASA"
+                },
+                "MgmtSubnetId": {
+                    "default": "Existing Management subnet ID"
+                },
+                "MgmtSubnetCidr": {
+                    "default": "Management subnet CIDR"
+                },
+                "MgmtIp": {
+                    "default": "Management interface IP address"
+                },
+                "InsideSubnetId": {
+                    "default": "Existing Inside subnet ID"
+                },
+                "InsideSubnetCidr": {
+                    "default": "Inside subnet CIDR"
+                },
+                "InsideIp": {
+                    "default": "Inside interface IP address"
+                },
+                "OutsideSubnetId": {
+                    "default": "Existing Outside subnet ID"
+                },
+                "OutsideSubnetCidr": {
+                    "default": "Outside subnet CIDR"
+                },
+                "OutsideIp": {
+                    "default": "Outside interface IP address"
+                },
+                "DmzSubnetId": {
+                    "default": "Existing DMZ subnet ID"
+                },
+                "DmzSubnetCidr": {
+                    "default": "DMZ subnet CIDR"
+                },
+                "DmzIp": {
+                    "default": "DMZ interface IP address"
+                },
+                "MgmtExternalAccessCidr": {
+                    "default": "External management access CIDR"
+                }
+            }
+        }
+    },
+    "Parameters": {
+        "AvailabilityZone": {
+            "Description": "The availability zone in which to deploy the stack. If using existing VPC should be the same Outside VPC Subnet deployed to.",
+            "Type": "AWS::EC2::AvailabilityZone::Name",
+            "MinLength": "1"
+        },
+        "VpcId": {
+            "Description": "Optional - VPC Id of existing VPC. Leave blank to have a new VPC created",
+            "Type": "String",
+            "Default": "",
+            "AllowedPattern": "^(?:vpc-[0-9a-f]{8}|vpc-[0-9a-f]{17}|)$"
+        },
+        "VpcCidr": {
+            "Description": "The CIDR block for a new VPC",
+            "Type": "String",
+            "AllowedPattern": "^((25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)(\\.|\\/)){4}([0-9]|[1-2][0-9]|3[0-2])$",
+            "Default": "10.0.0.0/16"
+        },
+        "IgwId": {
+            "Description": "Optional - Id of existing Internet Gateway Attached to VPC. Required if setting VpcId",
+            "Type": "String",
+            "Default": "",
+            "AllowedPattern": "^(?:igw-[0-9a-f]{8}|igw-[0-9a-f]{17}|)$"
+        },
+        "MgmtSubnetId": {
+            "Description": "Optional - existing Mgmt VPC Subnet Id. Leave blank to have a new Mgmt Subnet created",
+            "Type": "String",
+            "Default": "",
+            "AllowedPattern": "^(?:subnet-[0-9a-f]{8}|subnet-[0-9a-f]{17}|)$"
+        },
+        "MgmtSubnetCidr": {
+            "Description": "The management subnet of the security gateway",
+            "Type": "String",
+            "AllowedPattern": "^((25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)(\\.|\\/)){4}([0-9]|[1-2][0-9]|3[0-2])$",
+            "Default": "10.0.0.0/24"
+        },
+        "MgmtIp": {
+            "Description": "Optionally provide an IP for the management interface",
+            "Type": "String",
+            "Default": "0.0.0.0",
+            "AllowedPattern": "^((25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)$"
+        },
+        "InsideSubnetId": {
+            "Description": "Optional - existing Inside VPC Subnet Id. Leave blank to have a new Inside Subnet created",
+            "Type": "String",
+            "Default": "",
+            "AllowedPattern": "^(?:subnet-[0-9a-f]{8}|subnet-[0-9a-f]{17}|)$"
+        },
+        "InsideSubnetCidr": {
+            "Description": "The inside subnet of the security gateway ",
+            "Type": "String",
+            "AllowedPattern": "^((25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)(\\.|\\/)){4}([0-9]|[1-2][0-9]|3[0-2])$",
+            "Default": "10.0.1.0/24"
+        },
+        "InsideIp": {
+            "Description": "Optionally provide an IP for the inside interface",
+            "Type": "String",
+            "Default": "0.0.0.0",
+            "AllowedPattern": "^((25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)$"
+        },
+        "OutsideSubnetId": {
+            "Description": "Optional - existing Outside VPC Subnet Id. Required if setting VpcId",
+            "Type": "String",
+            "Default": "",
+            "AllowedPattern": "^(?:subnet-[0-9a-f]{8}|subnet-[0-9a-f]{17}|)$"
+        },
+        "OutsideSubnetCidr": {
+            "Description": "The outside subnet of the security gateway",
+            "Type": "String",
+            "AllowedPattern": "^((25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)(\\.|\\/)){4}([0-9]|[1-2][0-9]|3[0-2])$",
+            "Default": "10.0.2.0/24"
+        },
+        "OutsideIp": {
+            "Description": "Optionally provide an IP for the outside interface",
+            "Type": "String",
+            "Default": "0.0.0.0",
+            "AllowedPattern": "^((25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)$"
+        },
+        "DmzSubnetId": {
+            "Description": "Optional - existing DMZ VPC Subnet Id. Required if setting VpcId",
+            "Type": "String",
+            "Default": "",
+            "AllowedPattern": "^(?:subnet-[0-9a-f]{8}|subnet-[0-9a-f]{17}|)$"
+        },
+        "DmzSubnetCidr": {
+            "Description": "The DMZ subnet of the security gateway",
+            "Type": "String",
+            "AllowedPattern": "^((25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)(\\.|\\/)){4}([0-9]|[1-2][0-9]|3[0-2])$",
+            "Default": "10.0.3.0/24"
+        },
+        "DmzIp": {
+            "Description": "Optionally provide an IP for the DMZ interface",
+            "Type": "String",
+            "Default": "0.0.0.0",
+            "AllowedPattern": "^((25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)$"
+        },
+        "AddDMZInterface": {
+            "Description": "Whether or not to add a DMZ interface to ASA",
+            "Type": "String",
+            "Default": "false",
+            "AllowedValues": [
+                "true",
+                "false"
+            ]
+        },
+        "KeyName": {
+            "Description": "The EC2 Key Pair to allow SSH access to ASA",
+            "Type": "AWS::EC2::KeyPair::KeyName"
+        },
+        "ASAVersion": {
+            "Description": "Cisco ASAv Version",
+            "Type": "String",
+            "Default": "asav992-59-6836725",
+            "AllowedValues": [
+                "asav9-10-1-22",
+                "asav9-12-3-12",
+                "asav9-12-3-2",
+                "asav9-12-4-18",
+                "asav9-12-4-30",
+                "asav9-12-4-4",
+                "asav9-13-1-12",
+                "asav9-13-1-155",
+                "asav9-14-1-10",
+                "asav9-14-1-30",
+                "asav9-14-2-13",
+                "asav9-14-3-9",
+                "asav9-15-1",
+                "asav9-15-1-1",
+                "asav9-15-1-15",
+                "asav9-15-1-17",
+                "asav9-16-1",
+                "asav9-16-1-28",
+                "asav9-16-2-11",
+                "asav9-17-1",
+                "asav992-59-6836725"
+            ]
+        },
+        "ASALicType": {
+            "Description": "Cisco ASAv License Type",
+            "Type": "String",
+            "Default": "BYOL",
+            "AllowedValues": [
+                "BYOL",
+                "HOURLY"
+            ]
+        },
+        "ASAInstanceType": {
+            "Description": "Cisco ASAv EC2 instance type",
+            "Type": "String",
+            "Default": "c5.xlarge",
+            "AllowedValues": [
+                "c5.large",
+                "c5.xlarge",
+                "c5.2xlarge",
+                "c5.4xlarge"
+            ]
+        },
+        "ASAHostname": {
+            "Description": "Hostname of the ASA",
+            "Type": "String",
+            "Default": "cisco ASA"
+        },
+        "MgmtExternalAccessCidr": {
+            "Description": "CAUTION: by default, the management port is accessed from any public IP addresses, Please restrict it to access it only from the specific IP address",
+            "Type": "String",
+            "AllowedPattern": "^((25[0-5]|2[0-4][0-9]|[1]?[0-9][0-9]?)(\\.|\\/)){4}([0-9]|[1-2][0-9]|3[0-2])$",
+            "Default": "0.0.0.0/0"
+        }
+    },
+    "Conditions": {
+        "CreateVpc": {
+            "Fn::Equals": [
+                {
+                    "Ref": "VpcId"
+                },
+                ""
+            ]
+        },
+        "UseExistingIgw": {
+            "Fn::Not": [
+                {
+                    "Fn::Equals": [
+                        {
+                            "Ref": "IgwId"
+                        },
+                        ""
+                    ]
+                }
+            ]
+        },
+        "CreateSubnet": {
+            "Fn::And": [
+                {
+                    "Fn::Equals": [
+                        {
+                            "Ref": "MgmtSubnetId"
+                        },
+                        ""
+                    ]
+                },
+                {
+                    "Fn::Equals": [
+                        {
+                            "Ref": "InsideSubnetId"
+                        },
+                        ""
+                    ]
+                },
+                {
+                    "Fn::Equals": [
+                        {
+                            "Ref": "OutsideSubnetId"
+                        },
+                        ""
+                    ]
+                },
+                {
+                    "Fn::Equals": [
+                        {
+                            "Ref": "DmzSubnetId"
+                        },
+                        ""
+                    ]
+                }
+            ]
+        },
+        "CreateMgmtSubnet": {
+            "Fn::Equals": [
+                {
+                    "Ref": "MgmtSubnetId"
+                },
+                ""
+            ]
+        },
+        "CreateInsideSubnet": {
+            "Fn::Equals": [
+                {
+                    "Ref": "InsideSubnetId"
+                },
+                ""
+            ]
+        },
+        "CreateOutsideSubnet": {
+            "Fn::Equals": [
+                {
+                    "Ref": "OutsideSubnetId"
+                },
+                ""
+            ]
+        },
+        "CreateDmzSubnet": {
+            "Fn::And": [
+                {
+                    "Fn::Equals": [
+                        {
+                            "Ref": "DmzSubnetId"
+                        },
+                        ""
+                    ]
+                },
+                {
+                    "Fn::Equals": [
+                        {
+                            "Ref": "AddDMZInterface"
+                        },
+                        "true"
+                    ]
+                }
+            ]
+        },
+        "SupportsDmz": {
+            "Fn::Equals": [
+                {
+                    "Ref": "AddDMZInterface"
+                },
+                "true"
+            ]
+        },
+        "NoDmz": {
+            "Fn::Equals": [
+                {
+                    "Ref": "AddDMZInterface"
+                },
+                "false"
+            ]
+        },
+        "IsGovCloud1": {
+            "Fn::Equals": [
+                {
+                    "Ref": "AWS::Region"
+                },
+                "us-gov-east-1"
+            ]
+        },
+        "IsGovCloud2": {
+            "Fn::Equals": [
+                {
+                    "Ref": "AWS::Region"
+                },
+                "us-gov-west-1"
+            ]
+        },
+        "UseStaticMgmtIp": {
+            "Fn::Not": [
+                {
+                    "Fn::Equals": [
+                        "0.0.0.0",
+                        {
+                            "Ref": "MgmtIp"
+                        }
+                    ]
+                }
+            ]
+        },
+        "UseStaticInsideIp": {
+            "Fn::Not": [
+                {
+                    "Fn::Equals": [
+                        "0.0.0.0",
+                        {
+                            "Ref": "InsideIp"
+                        }
+                    ]
+                }
+            ]
+        },
+        "UseStaticOutsideIp": {
+            "Fn::Not": [
+                {
+                    "Fn::Equals": [
+                        "0.0.0.0",
+                        {
+                            "Ref": "OutsideIp"
+                        }
+                    ]
+                }
+            ]
+        },
+        "UseStaticDmzIp": {
+            "Fn::Not": [
+                {
+                    "Fn::Equals": [
+                        "0.0.0.0",
+                        {
+                            "Ref": "DmzIp"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "Mappings": {
+        "KeynameMap": {
+            "asav9-10-1-22": {
+                "BYOL": "BYOLv910122"
+            },
+            "asav9-12-3-12": {
+                "BYOL": "BYOLv912312",
+                "HOURLY": "HOURLYv912312"
+            },
+            "asav9-12-3-2": {
+                "BYOL": "BYOLv91232"
+            },
+            "asav9-12-4-18": {
+                "BYOL": "BYOLv912418",
+                "HOURLY": "HOURLYv912418"
+            },
+            "asav9-12-4-30": {
+                "BYOL": "BYOLv912430",
+                "HOURLY": "HOURLYv912430"
+            },
+            "asav9-12-4-4": {
+                "BYOL": "BYOLv91244",
+                "HOURLY": "HOURLYv91244"
+            },
+            "asav9-13-1-12": {
+                "BYOL": "BYOLv913112",
+                "HOURLY": "HOURLYv913112"
+            },
+            "asav9-13-1-155": {
+                "BYOL": "BYOLv9131155"
+            },
+            "asav9-14-1-10": {
+                "BYOL": "BYOLv914110",
+                "HOURLY": "HOURLYv914110"
+            },
+            "asav9-14-1-30": {
+                "BYOL": "BYOLv914130",
+                "HOURLY": "HOURLYv914130"
+            },
+            "asav9-14-2-13": {
+                "BYOL": "BYOLv914213",
+                "HOURLY": "HOURLYv914213"
+            },
+            "asav9-14-3-9": {
+                "BYOL": "BYOLv91439",
+                "HOURLY": "HOURLYv91439"
+            },
+            "asav9-15-1": {
+                "BYOL": "BYOLv9151",
+                "HOURLY": "HOURLYv9151"
+            },
+            "asav9-15-1-1": {
+                "BYOL": "BYOLv91511",
+                "HOURLY": "HOURLYv91511"
+            },
+            "asav9-15-1-15": {
+                "BYOL": "BYOLv915115",
+                "HOURLY": "HOURLYv915115"
+            },
+            "asav9-15-1-17": {
+                "BYOL": "BYOLv915117",
+                "HOURLY": "HOURLYv915117"
+            },
+            "asav9-16-1": {
+                "BYOL": "BYOLv9161",
+                "HOURLY": "HOURLYv9161"
+            },
+            "asav9-16-1-28": {
+                "BYOL": "BYOLv916128"
+            },
+            "asav9-16-2-11": {
+                "BYOL": "BYOLv916211",
+                "HOURLY": "HOURLYv916211"
+            },
+            "asav9-17-1": {
+                "BYOL": "BYOLv9171",
+                "HOURLY": "HOURLYv9171"
+            },
+            "asav992-59-6836725": {
+                "BYOL": "BYOLv992596836725"
+            }
+        },
+        "AWSAMIRegionMap": {
+            "AMI": {
+                "BYOLv910122": "asav9-10-1-22-6836725a-4399-455a-bf58-01255e5213b8-ami-0f696569c1d202c50.4",
+                "BYOLv912312": "asav9-12-3-12-6836725a-4399-455a-bf58-01255e5213b8-ami-0097c817b221c259e.4",
+                "BYOLv91232": "asav9-12-3-2-6836725a-4399-455a-bf58-01255e5213b8-ami-014a34fc7737f04b8.4",
+                "BYOLv912418": "asav9-12-4-18-6836725a-4399-455a-bf58-01255e5213b8",
+                "BYOLv912430": "asav9-12-4-30-6836725a-4399-455a-bf58-01255e5213b8",
+                "BYOLv91244": "asav9-12-4-4-6836725a-4399-455a-bf58-01255e5213b8-ami-0e1cfa0437ca3c6c8.4",
+                "BYOLv913112": "asav9-13-1-12-ENA-6836725a-4399-455a-bf58-01255e5213b8-ami-0f447c85bc4580e5f.4",
+                "BYOLv9131155": "asav9-13-1-155-ENA-6836725a-4399-455a-bf58-01255e5213b8-ami-094ca730e32b1a8d1.4",
+                "BYOLv914110": "asav9-14-1-10-ENA-6836725a-4399-455a-bf58-01255e5213b8-ami-0c0a65e104f6b08a8.4",
+                "BYOLv914130": "asav9-14-1-30-ENA-6836725a-4399-455a-bf58-01255e5213b8",
+                "BYOLv914213": "asav9-14-2-13-ENA-6836725a-4399-455a-bf58-01255e5213b8",
+                "BYOLv91439": "asav9-14-3-9-ENA-6836725a-4399-455a-bf58-01255e5213b8",
+                "BYOLv9151": "asav9-15-1-ENA-6836725a-4399-455a-bf58-01255e5213b8-ami-0a0ad6c59a61ca58b.4",
+                "BYOLv91511": "asav9-15-1-1-ENA-6836725a-4399-455a-bf58-01255e5213b8",
+                "BYOLv915115": "asav9-15-1-15-ENA-6836725a-4399-455a-bf58-01255e5213b8",
+                "BYOLv915117": "asav9-15-1-17-ENA-6836725a-4399-455a-bf58-01255e5213b8",
+                "BYOLv9161": "asav9-16-1-ENA-6836725a-4399-455a-bf58-01255e5213b8",
+                "BYOLv916128": "asav9-16-1-28-ENA-6836725a-4399-455a-bf58-01255e5213b8",
+                "BYOLv916211": "asav9-16-2-11-ENA-6836725a-4399-455a-bf58-01255e5213b8",
+                "BYOLv9171": "asav9-17-1-ENA-6836725a-4399-455a-bf58-01255e5213b8",
+                "BYOLv992596836725": "asav992-59-6836725a-4399-455a-bf58-01255e5213b8-ami-0ed9b602e3552937c.4",
+                "HOURLYv912312": "asav9-12-3-12-87868dac-850c-4c36-ba33-ff3d39a724ac-ami-0097c817b221c259e.4",
+                "HOURLYv912418": "asav9-12-4-18-87868dac-850c-4c36-ba33-ff3d39a724ac",
+                "HOURLYv912430": "asav9-12-4-30-87868dac-850c-4c36-ba33-ff3d39a724ac",
+                "HOURLYv91244": "asav9-12-4-4-87868dac-850c-4c36-ba33-ff3d39a724ac-ami-0e1cfa0437ca3c6c8.4",
+                "HOURLYv913112": "asav9-13-1-12-ENA-87868dac-850c-4c36-ba33-ff3d39a724ac-ami-0f447c85bc4580e5f.4",
+                "HOURLYv914110": "asav9-14-1-10-ENA-87868dac-850c-4c36-ba33-ff3d39a724ac-ami-0c0a65e104f6b08a8.4",
+                "HOURLYv914130": "asav9-14-1-30-ENA-87868dac-850c-4c36-ba33-ff3d39a724ac",
+                "HOURLYv914213": "asav9-14-2-13-ENA-87868dac-850c-4c36-ba33-ff3d39a724ac",
+                "HOURLYv91439": "asav9-14-3-9-ENA-87868dac-850c-4c36-ba33-ff3d39a724ac",
+                "HOURLYv9151": "asav9-15-1-ENA-87868dac-850c-4c36-ba33-ff3d39a724ac-ami-0a0ad6c59a61ca58b.4",
+                "HOURLYv91511": "asav9-15-1-1-ENA-87868dac-850c-4c36-ba33-ff3d39a724ac",
+                "HOURLYv915115": "asav9-15-1-15-ENA-87868dac-850c-4c36-ba33-ff3d39a724ac",
+                "HOURLYv915117": "asav9-15-1-17-ENA-87868dac-850c-4c36-ba33-ff3d39a724ac",
+                "HOURLYv9161": "asav9-16-1-ENA-87868dac-850c-4c36-ba33-ff3d39a724ac",
+                "HOURLYv916211": "asav9-16-2-11-ENA-87868dac-850c-4c36-ba33-ff3d39a724ac",
+                "HOURLYv9171": "asav9-17-1-ENA-87868dac-850c-4c36-ba33-ff3d39a724ac"
+            },
+            "eu-north-1": {
+                "BYOLv910122": "ami-e7aa2199",
+                "BYOLv912312": "ami-0ef5a93c14c243ff3",
+                "BYOLv91232": "ami-0ad149b87de4c1b42",
+                "BYOLv912418": "ami-002fcd5de0e63836d",
+                "BYOLv912430": "ami-0a03d96751ca8421a",
+                "BYOLv91244": "ami-030fa1e5aa26738ed",
+                "BYOLv913112": "ami-0f094a9ccf4e61d7e",
+                "BYOLv9131155": "ami-06f071d6b649d18c5",
+                "BYOLv914110": "ami-04454d32dad2773e6",
+                "BYOLv914130": "ami-0056cf4922b617276",
+                "BYOLv914213": "ami-07ee05b2c7b695f82",
+                "BYOLv91439": "ami-066c44ac0afde72db",
+                "BYOLv9151": "ami-01d40eeeae34d72d7",
+                "BYOLv91511": "ami-025d1f50d56d91f9c",
+                "BYOLv915115": "ami-07cd17d91f8182251",
+                "BYOLv915117": "ami-0741696d778dd39f1",
+                "BYOLv9161": "ami-0a1efdcbc7ca5fc15",
+                "BYOLv916128": "ami-07e4b84845da7b914",
+                "BYOLv916211": "ami-0b9a0629a27aa2c6f",
+                "BYOLv9171": "ami-029bd048299b70723",
+                "BYOLv992596836725": "ami-0b249dc1feebbcb2a",
+                "HOURLYv912312": "ami-051fb778135f789ec",
+                "HOURLYv912418": "ami-0f78cb6ccab97dca9",
+                "HOURLYv912430": "ami-0ea8ffa3080d84a5a",
+                "HOURLYv91244": "ami-0fda5a817b00f5793",
+                "HOURLYv913112": "ami-006848c1e4b7f801b",
+                "HOURLYv914110": "ami-050cfce9a06cca9df",
+                "HOURLYv914130": "ami-03ee19661c03f511a",
+                "HOURLYv914213": "ami-0107e199300a93182",
+                "HOURLYv91439": "ami-0c0f6196764103c69",
+                "HOURLYv9151": "ami-00302a8315f411324",
+                "HOURLYv91511": "ami-005e678f521ec99d0",
+                "HOURLYv915115": "ami-0c3705586e3f416e1",
+                "HOURLYv915117": "ami-0ac5baadfa333a662",
+                "HOURLYv9161": "ami-0865c46b1adb5c120",
+                "HOURLYv916211": "ami-057a07f31e1fcd06e",
+                "HOURLYv9171": "ami-0da6db957000bdc84"
+            },
+            "ap-south-1": {
+                "BYOLv910122": "ami-0e35b67ebac50fcbb",
+                "BYOLv912312": "ami-0d0bfdf2275a43315",
+                "BYOLv91232": "ami-0a022e1c173422f56",
+                "BYOLv912418": "ami-0eba30dd82d62244f",
+                "BYOLv912430": "ami-08845cfe58cf2506b",
+                "BYOLv91244": "ami-0413de89a13e48f85",
+                "BYOLv913112": "ami-0ad2bd1d9a2e7f502",
+                "BYOLv9131155": "ami-0979fa8a1b296fe1a",
+                "BYOLv914110": "ami-078f7ba36f22d6d75",
+                "BYOLv914130": "ami-0a0d9703d5bf9222c",
+                "BYOLv914213": "ami-05a7356029d2ac4ff",
+                "BYOLv91439": "ami-0de11c917d63af0b9",
+                "BYOLv9151": "ami-02b849d38216612a6",
+                "BYOLv91511": "ami-0e324465fc11ae3a5",
+                "BYOLv915115": "ami-0681983e582163b8f",
+                "BYOLv915117": "ami-05c802b3d6e8be0b5",
+                "BYOLv9161": "ami-03759cbf7266e5546",
+                "BYOLv916128": "ami-094941ec151c58e7d",
+                "BYOLv916211": "ami-048d9ec62c9b223d4",
+                "BYOLv9171": "ami-081a415556b1c6d01",
+                "BYOLv992596836725": "ami-0836a3dcbbce35de8",
+                "HOURLYv912312": "ami-036dfb192b240af3e",
+                "HOURLYv912418": "ami-0499e0a6dcb959272",
+                "HOURLYv912430": "ami-0585c79f40f8df6ce",
+                "HOURLYv91244": "ami-06c0a5e5cc3e16e04",
+                "HOURLYv913112": "ami-0385b8b2f7ff1aff4",
+                "HOURLYv914110": "ami-0a4b9390b6aa43511",
+                "HOURLYv914130": "ami-096dc8375d6880c00",
+                "HOURLYv914213": "ami-069e4c46f5c7eaae9",
+                "HOURLYv91439": "ami-0cf1c705d7e6173b3",
+                "HOURLYv9151": "ami-0df171570337ea79a",
+                "HOURLYv91511": "ami-024dc7bfa98b41ec6",
+                "HOURLYv915115": "ami-01323dc66d3b5be35",
+                "HOURLYv915117": "ami-0b36f971320b3c8c4",
+                "HOURLYv9161": "ami-0827ab3464bc6f736",
+                "HOURLYv916211": "ami-0e0c2e05e47f32485",
+                "HOURLYv9171": "ami-06dcf330e07cadbc1"
+            },
+            "eu-west-3": {
+                "BYOLv910122": "ami-0336143e10eb03b5d",
+                "BYOLv912312": "ami-01b819ac67839231b",
+                "BYOLv91232": "ami-09d0bfbfa18d0f8f3",
+                "BYOLv912418": "ami-0024c31a3a5db810d",
+                "BYOLv912430": "ami-028901061f37045b6",
+                "BYOLv91244": "ami-04839c38650fb5eda",
+                "BYOLv913112": "ami-0c15a97b68574a0e9",
+                "BYOLv9131155": "ami-0fb4b3fa793e95179",
+                "BYOLv914110": "ami-04c286adff5c7d11d",
+                "BYOLv914130": "ami-0a00040766c061fce",
+                "BYOLv914213": "ami-04bb790f88ad89c3d",
+                "BYOLv91439": "ami-049d138454f3fc8c2",
+                "BYOLv9151": "ami-0c431f3ddfca8afb8",
+                "BYOLv91511": "ami-0f6922aa977439e04",
+                "BYOLv915115": "ami-0c64f6e27689603da",
+                "BYOLv915117": "ami-022cfc4045b20dee6",
+                "BYOLv9161": "ami-0619a6cfd8b288b88",
+                "BYOLv916128": "ami-047da6fc712b513e9",
+                "BYOLv916211": "ami-0b9458c3476dcd3fa",
+                "BYOLv9171": "ami-0c322c74504c0de46",
+                "BYOLv992596836725": "ami-07bd9b9371c274125",
+                "HOURLYv912312": "ami-00ee3d0b03ad04574",
+                "HOURLYv912418": "ami-0dfe0d743cfd6e68c",
+                "HOURLYv912430": "ami-0143ae5c0951d3ab8",
+                "HOURLYv91244": "ami-0acbd4adea4c3ab98",
+                "HOURLYv913112": "ami-03ee1a7e77fed8fbf",
+                "HOURLYv914110": "ami-0fef61e745314a4ec",
+                "HOURLYv914130": "ami-02110433945320497",
+                "HOURLYv914213": "ami-0bfa830237efcbabd",
+                "HOURLYv91439": "ami-0b605c3deb255e6cc",
+                "HOURLYv9151": "ami-099c0d5c11113dfd1",
+                "HOURLYv91511": "ami-06c7b0231eb402d16",
+                "HOURLYv915115": "ami-052c8f461c4603916",
+                "HOURLYv915117": "ami-06543da7d2e7a8276",
+                "HOURLYv9161": "ami-01d83b3ea49091447",
+                "HOURLYv916211": "ami-06cb95a880aa45f3b",
+                "HOURLYv9171": "ami-0a18b8d14e0097349"
+            },
+            "eu-west-2": {
+                "BYOLv910122": "ami-0d0b9daea3bda5f7a",
+                "BYOLv912312": "ami-06d0e18bca461e902",
+                "BYOLv91232": "ami-0bf26eec7dc8d88f2",
+                "BYOLv912418": "ami-0a7ae9c9b23d276e8",
+                "BYOLv912430": "ami-0c96ca414bace2e40",
+                "BYOLv91244": "ami-0e1ea0728bd088c67",
+                "BYOLv913112": "ami-0ca319767057f5e3a",
+                "BYOLv9131155": "ami-0becdfb8df5ffc8e3",
+                "BYOLv914110": "ami-0728869fceeac100c",
+                "BYOLv914130": "ami-083fc37511ddeaad9",
+                "BYOLv914213": "ami-0924ef090bf56e79d",
+                "BYOLv91439": "ami-0427b6f15fdd6c1a3",
+                "BYOLv9151": "ami-0d0b972fb02effc6a",
+                "BYOLv91511": "ami-09a829e2321cc8e6a",
+                "BYOLv915115": "ami-065cf4542f1b31191",
+                "BYOLv915117": "ami-0f0505bfd68777ffa",
+                "BYOLv9161": "ami-069057276acfaaa29",
+                "BYOLv916128": "ami-02e0eb6384f087aa8",
+                "BYOLv916211": "ami-0d4622c1210057806",
+                "BYOLv9171": "ami-0f2d4d8451e86905a",
+                "BYOLv992596836725": "ami-00c25004bc506f5fa",
+                "HOURLYv912312": "ami-07ccc0cb505ef58ab",
+                "HOURLYv912418": "ami-0d8168ed1ac9f47e5",
+                "HOURLYv912430": "ami-0c31b36c688cc8cad",
+                "HOURLYv91244": "ami-0bab5bcd452d8a61f",
+                "HOURLYv913112": "ami-00cd73d01fc2df7a0",
+                "HOURLYv914110": "ami-0c821815b6eb91921",
+                "HOURLYv914130": "ami-0c3f0e7139e49d7c8",
+                "HOURLYv914213": "ami-02eeeb77152fdd71c",
+                "HOURLYv91439": "ami-00b1547fdd9261190",
+                "HOURLYv9151": "ami-022c9a4c0c91b488a",
+                "HOURLYv91511": "ami-0bec420a926af5be6",
+                "HOURLYv915115": "ami-09168353975f32cbe",
+                "HOURLYv915117": "ami-048c00d3226275a05",
+                "HOURLYv9161": "ami-06e0c7520f987197a",
+                "HOURLYv916211": "ami-08483f8e4ade5535e",
+                "HOURLYv9171": "ami-0b4d4bc2d0135ea7c"
+            },
+            "eu-south-1": {
+                "BYOLv912312": "ami-0b0f5e146cb9d1336",
+                "BYOLv912418": "ami-030c588c5f6239138",
+                "BYOLv912430": "ami-0e534b1235f909604",
+                "BYOLv91244": "ami-059fb373d0d7e3a87",
+                "BYOLv913112": "ami-0e0126153f2c34e48",
+                "BYOLv9131155": "ami-0c3ce9767e84a4b7f",
+                "BYOLv914110": "ami-070ac7c71eef4caf5",
+                "BYOLv914130": "ami-079da5eac20aa3a40",
+                "BYOLv914213": "ami-0ccf8a1a2e11e0adf",
+                "BYOLv91439": "ami-0b3702291a8358c93",
+                "BYOLv9151": "ami-09214391033a10b46",
+                "BYOLv91511": "ami-011f8eb99811e4109",
+                "BYOLv915115": "ami-0ee9578d2c62f9fc5",
+                "BYOLv915117": "ami-0a8dbc3e248526d17",
+                "BYOLv9161": "ami-0651df381bb8a4459",
+                "BYOLv916128": "ami-0a2463e9397e87b77",
+                "BYOLv916211": "ami-066a445451e730fc7",
+                "BYOLv9171": "ami-0cad662c0d3e252d3",
+                "HOURLYv912312": "ami-0a5238f0f9dd05bcd",
+                "HOURLYv912418": "ami-03d5f7d4aeb20916a",
+                "HOURLYv912430": "ami-09480fbd24ca01fb7",
+                "HOURLYv91244": "ami-0e6c93b902b332ca9",
+                "HOURLYv913112": "ami-0162f17fce28b89ad",
+                "HOURLYv914110": "ami-01e982a9cc2a62fd3",
+                "HOURLYv914130": "ami-0733bd9b72805e0cb",
+                "HOURLYv914213": "ami-072168c60ed93ff6f",
+                "HOURLYv91439": "ami-09ee0f269b44f7108",
+                "HOURLYv9151": "ami-0a1f409685316fdd6",
+                "HOURLYv91511": "ami-048690ef8d0df2360",
+                "HOURLYv915115": "ami-0276c060c68f50f42",
+                "HOURLYv915117": "ami-072699c2c205b550c",
+                "HOURLYv9161": "ami-00458e9472eb54bf0",
+                "HOURLYv916211": "ami-00e4369248202d7ad",
+                "HOURLYv9171": "ami-017a4431d0dab0fca"
+            },
+            "eu-west-1": {
+                "BYOLv910122": "ami-0e05385a6a07f4dd4",
+                "BYOLv912312": "ami-05d7a364fd7451d89",
+                "BYOLv91232": "ami-01c27190931de904f",
+                "BYOLv912418": "ami-075c561d691844720",
+                "BYOLv912430": "ami-0c5c5f20c1511b2f0",
+                "BYOLv91244": "ami-0cf4cec55c8bf38b3",
+                "BYOLv913112": "ami-09f57345ee4732a0f",
+                "BYOLv9131155": "ami-030b6d4c156b7c570",
+                "BYOLv914110": "ami-01ede3ddc53b9a8f9",
+                "BYOLv914130": "ami-02c20404ac0cd8710",
+                "BYOLv914213": "ami-0221958feaef9ec3b",
+                "BYOLv91439": "ami-07db877b191156d8f",
+                "BYOLv9151": "ami-0899a3262ab7b4b83",
+                "BYOLv91511": "ami-0bcbf4a58143c0ecc",
+                "BYOLv915115": "ami-0f12afe281880be0f",
+                "BYOLv915117": "ami-0e8d48379487753d5",
+                "BYOLv9161": "ami-0eacece8aa6891e88",
+                "BYOLv916128": "ami-0d9ef36ff765dde47",
+                "BYOLv916211": "ami-05c98b5038b82584e",
+                "BYOLv9171": "ami-0dcb38f97ec692846",
+                "BYOLv992596836725": "ami-016fb650b4894065c",
+                "HOURLYv912312": "ami-09d1ca60cd009ec1b",
+                "HOURLYv912418": "ami-02c0b8fe7306f94b5",
+                "HOURLYv912430": "ami-02fb917e7914ff4a3",
+                "HOURLYv91244": "ami-084daa9db4d880c88",
+                "HOURLYv913112": "ami-0311337b6cb2d6ea5",
+                "HOURLYv914110": "ami-0b3b2e34a7c2840a8",
+                "HOURLYv914130": "ami-0e0e3f4e02ec001da",
+                "HOURLYv914213": "ami-068c3c357a4ac5c71",
+                "HOURLYv91439": "ami-00f6247f831bcf4af",
+                "HOURLYv9151": "ami-0f354c759f21923d5",
+                "HOURLYv91511": "ami-09cc7f08a29818836",
+                "HOURLYv915115": "ami-0cb15b97dfea79e8e",
+                "HOURLYv915117": "ami-02c248aebcb34a6b6",
+                "HOURLYv9161": "ami-05c0fa7ccdd39ec01",
+                "HOURLYv916211": "ami-078a10dc68d973f03",
+                "HOURLYv9171": "ami-04ffcf896e5e3443b"
+            },
+            "ap-northeast-3": {
+                "BYOLv912312": "ami-08f603b312994f500",
+                "BYOLv912418": "ami-0b808e67e04523f7c",
+                "BYOLv912430": "ami-037c2a9b4b8aeb1a8",
+                "BYOLv91244": "ami-0a4859415319c92d9",
+                "BYOLv913112": "ami-09c25fc56369e765d",
+                "BYOLv9131155": "ami-01259d32cdd7734b3",
+                "BYOLv914110": "ami-0a2e6709fd79142d9",
+                "BYOLv914130": "ami-0c13a3619bd88152b",
+                "BYOLv914213": "ami-0889320bdb744757c",
+                "BYOLv91439": "ami-057e92858de7f2afe",
+                "BYOLv9151": "ami-0610fb960860ba9cf",
+                "BYOLv91511": "ami-0a98daab31955b445",
+                "BYOLv915115": "ami-0a6a96bd3ebcc6965",
+                "BYOLv915117": "ami-0413492fecb6c6400",
+                "BYOLv9161": "ami-0e6c6c484b267deb4",
+                "BYOLv916128": "ami-0048946c018b13034",
+                "BYOLv916211": "ami-09a7ecd5c9b7f7aa2",
+                "BYOLv9171": "ami-022b3074b79191fd4",
+                "HOURLYv912418": "ami-0357710ac0b0e82b0",
+                "HOURLYv912430": "ami-084d9b8a4690a16c5",
+                "HOURLYv91244": "ami-0792ebb3cd9c8a934",
+                "HOURLYv9171": "ami-0b2f560ff866ec18a"
+            },
+            "ap-northeast-2": {
+                "BYOLv910122": "ami-05555faf615f8176e",
+                "BYOLv912312": "ami-08433a997aebf1be4",
+                "BYOLv91232": "ami-0456b55dcf3b08cd2",
+                "BYOLv912418": "ami-0610dfce929875de7",
+                "BYOLv912430": "ami-0402753143460e4c9",
+                "BYOLv91244": "ami-0874dc92f073f4e96",
+                "BYOLv913112": "ami-0a0603fc6f7c96c12",
+                "BYOLv9131155": "ami-0cfda69ae229b5775",
+                "BYOLv914110": "ami-089824a374eee73dd",
+                "BYOLv914130": "ami-0c66b4944135ee603",
+                "BYOLv914213": "ami-0cd100ee82b6867e2",
+                "BYOLv91439": "ami-01bd7e7bb468b51be",
+                "BYOLv9151": "ami-0e017bcba2ea63e65",
+                "BYOLv91511": "ami-095f7b586c9f25672",
+                "BYOLv915115": "ami-0db147823cc938932",
+                "BYOLv915117": "ami-0ba1ef4e77e23c05f",
+                "BYOLv9161": "ami-06271ae1a51b406d8",
+                "BYOLv916128": "ami-06c084948ae6b70ae",
+                "BYOLv916211": "ami-07439481509987e72",
+                "BYOLv9171": "ami-0bb8b0a4f48ba64c9",
+                "BYOLv992596836725": "ami-0d9baf3f1ff49fc1b",
+                "HOURLYv912312": "ami-01a69a80515ad3640",
+                "HOURLYv912418": "ami-0c210ce27a2c296fa",
+                "HOURLYv912430": "ami-003db096611ba932f",
+                "HOURLYv91244": "ami-031c7ec6f7e84f0a1",
+                "HOURLYv913112": "ami-083a0433702f8ad0b",
+                "HOURLYv914110": "ami-0647aa408057a5793",
+                "HOURLYv914130": "ami-03d71782219172ddb",
+                "HOURLYv914213": "ami-096ea7a8e337ce416",
+                "HOURLYv91439": "ami-069394b84c11bc0d6",
+                "HOURLYv9151": "ami-0b3922be6f2a2be13",
+                "HOURLYv91511": "ami-08d0dad22fc46b6d9",
+                "HOURLYv915115": "ami-0973dd9c0a715fee7",
+                "HOURLYv915117": "ami-0bf9c97a0150797dc",
+                "HOURLYv9161": "ami-07c7b3b1cfd398171",
+                "HOURLYv916211": "ami-0d4eb6fff51d7e7f7",
+                "HOURLYv9171": "ami-08c631614a5b04385"
+            },
+            "ap-northeast-1": {
+                "BYOLv910122": "ami-0689c6b46884daf5e",
+                "BYOLv912312": "ami-05758c91e61607f08",
+                "BYOLv91232": "ami-0db6ae8b67b53cc79",
+                "BYOLv912418": "ami-03ef16a82ec5ca202",
+                "BYOLv912430": "ami-0cfda587e4011579b",
+                "BYOLv91244": "ami-003c3c3c14b843ba6",
+                "BYOLv913112": "ami-0aedfc6591945c7e5",
+                "BYOLv9131155": "ami-0c4b267d9373c8acc",
+                "BYOLv914110": "ami-0e00412dfd85bbf00",
+                "BYOLv914130": "ami-0453bd94e6158e4d8",
+                "BYOLv914213": "ami-03bf48771acb49b58",
+                "BYOLv91439": "ami-0833f9d188b916a73",
+                "BYOLv9151": "ami-0aa97e3dd2a4b2195",
+                "BYOLv91511": "ami-067b27c771c9f41f5",
+                "BYOLv915115": "ami-0929edd94d2c09983",
+                "BYOLv915117": "ami-0d4e12bc59f004b0f",
+                "BYOLv9161": "ami-0673d3ac7cffa50ee",
+                "BYOLv916128": "ami-0f4f1b77251e40bc5",
+                "BYOLv916211": "ami-07e85fb8986155159",
+                "BYOLv9171": "ami-0292946c1fa3214f3",
+                "BYOLv992596836725": "ami-02f75852ab070406a",
+                "HOURLYv912312": "ami-04280854f25cea6e2",
+                "HOURLYv912418": "ami-0f276c8af15eb5c22",
+                "HOURLYv912430": "ami-0190e9f46833618db",
+                "HOURLYv91244": "ami-047fbe1c2ad561dca",
+                "HOURLYv913112": "ami-0de4277c4cd67e9ab",
+                "HOURLYv914110": "ami-09af84cadaf353181",
+                "HOURLYv914130": "ami-07d52c4d2331ec0a9",
+                "HOURLYv914213": "ami-0a80384717f108079",
+                "HOURLYv91439": "ami-000d0d0f47a2355f5",
+                "HOURLYv9151": "ami-003b3c59d6570ca27",
+                "HOURLYv91511": "ami-09bdeeb4666c0bb9d",
+                "HOURLYv915115": "ami-075783f4d9ecbb98a",
+                "HOURLYv915117": "ami-028b2ef479d30d828",
+                "HOURLYv9161": "ami-0507a21c0907f2fa3",
+                "HOURLYv916211": "ami-050e874a9cfd61e7e",
+                "HOURLYv9171": "ami-0c7ffd7f036ecbd4c"
+            },
+            "sa-east-1": {
+                "BYOLv910122": "ami-092de4ada8677b452",
+                "BYOLv912312": "ami-0711b405275a7d393",
+                "BYOLv91232": "ami-0cb150c42d88562fa",
+                "BYOLv912418": "ami-0a64276f3dca4e1a8",
+                "BYOLv912430": "ami-0e20cfe56cdd62a64",
+                "BYOLv91244": "ami-0ee52ce67c0a11692",
+                "BYOLv913112": "ami-079b69c4095cf67c7",
+                "BYOLv9131155": "ami-0d619a5ca934c5dbe",
+                "BYOLv914110": "ami-0c4ec7f6c9802b81b",
+                "BYOLv914130": "ami-06184811626593622",
+                "BYOLv914213": "ami-01444b3048ac303b7",
+                "BYOLv91439": "ami-069942181e53f4646",
+                "BYOLv9151": "ami-0f6e732445acd907b",
+                "BYOLv91511": "ami-098ccb56ed62b0643",
+                "BYOLv915115": "ami-03b7e8a34efdda2fb",
+                "BYOLv915117": "ami-0b2f2e16c6b0262ab",
+                "BYOLv9161": "ami-04f40392d0d5bcbd6",
+                "BYOLv916128": "ami-066bb3625c96b86ea",
+                "BYOLv916211": "ami-0dbbddd329287ba86",
+                "BYOLv9171": "ami-00007f37e1b8f76d7",
+                "BYOLv992596836725": "ami-05f13f7f3c46d8a19",
+                "HOURLYv912312": "ami-047a456f7da9f621a",
+                "HOURLYv912418": "ami-0dd52218788325b54",
+                "HOURLYv912430": "ami-0ad68efc7164b66a7",
+                "HOURLYv91244": "ami-06834a58189bec278",
+                "HOURLYv913112": "ami-055b1c9217885818f",
+                "HOURLYv914110": "ami-07c6aa4edce6795d3",
+                "HOURLYv914130": "ami-01be2e508957b2489",
+                "HOURLYv914213": "ami-0feeac003cabcf575",
+                "HOURLYv91439": "ami-09d9400b721b58c4d",
+                "HOURLYv9151": "ami-00c931d6e00b4f968",
+                "HOURLYv91511": "ami-08e47d7858321f80c",
+                "HOURLYv915115": "ami-0c288796af1a703d6",
+                "HOURLYv915117": "ami-03a2eb4717c2d6df8",
+                "HOURLYv9161": "ami-0dd57933055452857",
+                "HOURLYv916211": "ami-04b60e2cc17775027",
+                "HOURLYv9171": "ami-0dc3ec1d5edc46548"
+            },
+            "ca-central-1": {
+                "BYOLv910122": "ami-0f27849e1acfa8f84",
+                "BYOLv912312": "ami-024c82252b2bcf06c",
+                "BYOLv91232": "ami-01ba7b13bfcd5ca5a",
+                "BYOLv912418": "ami-065bf434938cc4495",
+                "BYOLv912430": "ami-0a71ff081e73d3868",
+                "BYOLv91244": "ami-0391c28e7024d8c61",
+                "BYOLv913112": "ami-0771a88f8d9d91031",
+                "BYOLv9131155": "ami-0e25c520ca90d406e",
+                "BYOLv914110": "ami-0ba6c7c7ace737a7e",
+                "BYOLv914130": "ami-04b702149a15f16ab",
+                "BYOLv914213": "ami-0b4265fcc1d8d39b1",
+                "BYOLv91439": "ami-005f3f03ab10c17f5",
+                "BYOLv9151": "ami-0efb96b5534c89324",
+                "BYOLv91511": "ami-029186752f847dc03",
+                "BYOLv915115": "ami-0321881110732cc2a",
+                "BYOLv915117": "ami-0eb7353a13bd9e1cd",
+                "BYOLv9161": "ami-0e388a54e1a97b85a",
+                "BYOLv916128": "ami-0bbbfdf88d01590a0",
+                "BYOLv916211": "ami-04221f42ea8125bef",
+                "BYOLv9171": "ami-08cdc900ae17e4d45",
+                "BYOLv992596836725": "ami-03a228d91e93a5894",
+                "HOURLYv912312": "ami-0db8b4cc7db85cea3",
+                "HOURLYv912418": "ami-006d0f6d9514e44d0",
+                "HOURLYv912430": "ami-0ee0953055d9f625d",
+                "HOURLYv91244": "ami-08eda66fc25caa4e2",
+                "HOURLYv913112": "ami-0066037ac27e28a86",
+                "HOURLYv914110": "ami-0d0332c1c104f2001",
+                "HOURLYv914130": "ami-03a299fda8b2c0511",
+                "HOURLYv914213": "ami-01e9cd6e688a29bd5",
+                "HOURLYv91439": "ami-04fcce6cfc6af7a56",
+                "HOURLYv9151": "ami-0e473cb4785e93608",
+                "HOURLYv91511": "ami-07f9b49973a350949",
+                "HOURLYv915115": "ami-080c3dd90389072f8",
+                "HOURLYv915117": "ami-0715376023121b4e8",
+                "HOURLYv9161": "ami-0055971dc3c3da7a3",
+                "HOURLYv916211": "ami-09012326e410ed779",
+                "HOURLYv9171": "ami-012e80b888ae381c3"
+            },
+            "ap-southeast-1": {
+                "BYOLv910122": "ami-00f03128d57e27ee2",
+                "BYOLv912312": "ami-0b953b0af70eda763",
+                "BYOLv91232": "ami-0b106e79943cb0fc2",
+                "BYOLv912418": "ami-0f91fdc51974b1faf",
+                "BYOLv912430": "ami-0d9cadc79b6942530",
+                "BYOLv91244": "ami-0d369ca72a99d996e",
+                "BYOLv913112": "ami-09e7f4459946efb19",
+                "BYOLv9131155": "ami-0242e154f89df4b3c",
+                "BYOLv914110": "ami-0a6d724b1ab24eb7a",
+                "BYOLv914130": "ami-023dcc54a0b1d486f",
+                "BYOLv914213": "ami-0fd70a7d48cf8acef",
+                "BYOLv91439": "ami-071232c7c5b018bf7",
+                "BYOLv9151": "ami-0cfd34b0492afd5b3",
+                "BYOLv91511": "ami-0e95d0e3304ed9a76",
+                "BYOLv915115": "ami-0888fc0e39de9aa06",
+                "BYOLv915117": "ami-0345d48f8395b502f",
+                "BYOLv9161": "ami-0dc440d733454e7f9",
+                "BYOLv916128": "ami-0e3ffc175a7f0ea23",
+                "BYOLv916211": "ami-0921a37fbbd85b512",
+                "BYOLv9171": "ami-0935fb9f373b65eec",
+                "BYOLv992596836725": "ami-0a994d46de15322e2",
+                "HOURLYv912312": "ami-07fd92f1f303956ea",
+                "HOURLYv912418": "ami-04c229e97d875f6cb",
+                "HOURLYv912430": "ami-0118ebf2297130287",
+                "HOURLYv91244": "ami-0f9198fcdfad470e8",
+                "HOURLYv913112": "ami-02fa95d6fad33f236",
+                "HOURLYv914110": "ami-027e2603b61db7f06",
+                "HOURLYv914130": "ami-0bd67b4d87d1e0896",
+                "HOURLYv914213": "ami-0360d52cc96422e1f",
+                "HOURLYv91439": "ami-0b67a34c11b282add",
+                "HOURLYv9151": "ami-0596bb606fc40842a",
+                "HOURLYv91511": "ami-0e397151d9d5c4e82",
+                "HOURLYv915115": "ami-0fda50ccfabd0ec49",
+                "HOURLYv915117": "ami-04b4d3b0136efc358",
+                "HOURLYv9161": "ami-0a180325bb0907a3b",
+                "HOURLYv916211": "ami-05baa11d88738657b",
+                "HOURLYv9171": "ami-0946ecd6805c100e1"
+            },
+            "ap-southeast-2": {
+                "BYOLv910122": "ami-008a57a02cae3191a",
+                "BYOLv912312": "ami-0e2774849c28130bc",
+                "BYOLv91232": "ami-05ae45bb2280a515a",
+                "BYOLv912418": "ami-056c9c614e548414f",
+                "BYOLv912430": "ami-03902849f9207c1f3",
+                "BYOLv91244": "ami-0d76481211d3c185c",
+                "BYOLv913112": "ami-02f3de5d40686d268",
+                "BYOLv9131155": "ami-086470e5971599bf9",
+                "BYOLv914110": "ami-07ab92e8e65453b61",
+                "BYOLv914130": "ami-0baaef04b6964b8e1",
+                "BYOLv914213": "ami-006f57961867c8537",
+                "BYOLv91439": "ami-02b34f0b46066187d",
+                "BYOLv9151": "ami-0496dcf69bed977b1",
+                "BYOLv91511": "ami-0f9ea2ff2b1c30700",
+                "BYOLv915115": "ami-03c9a7e86ea190dff",
+                "BYOLv915117": "ami-057c9091328b79c91",
+                "BYOLv9161": "ami-0b45ebcfa1da62218",
+                "BYOLv916128": "ami-09eced9ff3c0c0b8a",
+                "BYOLv916211": "ami-00f638827e2bedf8a",
+                "BYOLv9171": "ami-0c6fa1eec3f2e98a0",
+                "BYOLv992596836725": "ami-022a8c2040e48c427",
+                "HOURLYv912312": "ami-065837c48a6a75692",
+                "HOURLYv912418": "ami-049ee094916c87640",
+                "HOURLYv912430": "ami-08af990184df5b58b",
+                "HOURLYv91244": "ami-00b6743986176a75e",
+                "HOURLYv913112": "ami-053669f20e7e25410",
+                "HOURLYv914110": "ami-0878893fe9e3ed9a5",
+                "HOURLYv914130": "ami-073567880c094544a",
+                "HOURLYv914213": "ami-0a13f16e127c55659",
+                "HOURLYv91439": "ami-043681d2af0645b2c",
+                "HOURLYv9151": "ami-0fa377409f075af2b",
+                "HOURLYv91511": "ami-07781517dd89226fb",
+                "HOURLYv915115": "ami-03a12788f3ddc2dcb",
+                "HOURLYv915117": "ami-05ad91dbe3e151887",
+                "HOURLYv9161": "ami-0b4444547e63cb869",
+                "HOURLYv916211": "ami-0618cee17cbdab0ae",
+                "HOURLYv9171": "ami-05f008390fc9a55ec"
+            },
+            "eu-central-1": {
+                "BYOLv910122": "ami-02487f20f7b2d9f53",
+                "BYOLv912312": "ami-07ec0a5faf1b652df",
+                "BYOLv91232": "ami-0dea9fe5e9f588953",
+                "BYOLv912418": "ami-0ca51511e7fdf6196",
+                "BYOLv912430": "ami-0450e33e7ba04281e",
+                "BYOLv91244": "ami-0388c30e3d0b49a30",
+                "BYOLv913112": "ami-08e72fb21964900c5",
+                "BYOLv9131155": "ami-0722daff2c5d9b69e",
+                "BYOLv914110": "ami-03ce85f33ec8799bc",
+                "BYOLv914130": "ami-05dc3ef380e74db48",
+                "BYOLv914213": "ami-03b7ba46a60b6747d",
+                "BYOLv91439": "ami-0d74a4a7badf8d9ba",
+                "BYOLv9151": "ami-04f21be56bf8293e0",
+                "BYOLv91511": "ami-0b9a77c9923ffecd8",
+                "BYOLv915115": "ami-0da748e41aa079882",
+                "BYOLv915117": "ami-0f2ec7e49f38f57ca",
+                "BYOLv9161": "ami-0d883338a34d6129f",
+                "BYOLv916128": "ami-0e72a6e6c310a9dac",
+                "BYOLv916211": "ami-0ee4f3cb484f3f417",
+                "BYOLv9171": "ami-0e35a84a866500703",
+                "BYOLv992596836725": "ami-05bb9edcb10da3d87",
+                "HOURLYv912312": "ami-0fd19236a339f6f37",
+                "HOURLYv912418": "ami-092a42ecfb57a8cc2",
+                "HOURLYv912430": "ami-0ed5de86d7104e791",
+                "HOURLYv91244": "ami-010d02ebf92ac195d",
+                "HOURLYv913112": "ami-067203bc0b8ac5829",
+                "HOURLYv914110": "ami-0f1bb34047190bf96",
+                "HOURLYv914130": "ami-0fb5a96fc3b2e1092",
+                "HOURLYv914213": "ami-09a36ae283f3b07c5",
+                "HOURLYv91439": "ami-0b5df1edd4d678f78",
+                "HOURLYv9151": "ami-04f3f3f892503b888",
+                "HOURLYv91511": "ami-000b858ff24a0d33f",
+                "HOURLYv915115": "ami-097c695d20b393217",
+                "HOURLYv915117": "ami-0c7baa304614ee7f1",
+                "HOURLYv9161": "ami-0a985f975720877a0",
+                "HOURLYv916211": "ami-03089a07e130563c2",
+                "HOURLYv9171": "ami-0cff5e14056552a4b"
+            },
+            "us-east-1": {
+                "BYOLv910122": "ami-02466cb6fd42d1ea0",
+                "BYOLv912312": "ami-0bf739c6352ec62ce",
+                "BYOLv91232": "ami-00aae3abb3d5cc337",
+                "BYOLv912418": "ami-08f6d1610af56142a",
+                "BYOLv912430": "ami-0fc803db6e09c7f92",
+                "BYOLv91244": "ami-07569c71e8c2617fd",
+                "BYOLv913112": "ami-015f610239dcaf7b1",
+                "BYOLv9131155": "ami-006b68b9e1c374586",
+                "BYOLv914110": "ami-0baf97ff07e48f3ac",
+                "BYOLv914130": "ami-0a08b65e4b6cb35ca",
+                "BYOLv914213": "ami-089051d853b506557",
+                "BYOLv91439": "ami-0b094d3ec83dfab54",
+                "BYOLv9151": "ami-0727dc313e0252a25",
+                "BYOLv91511": "ami-0b4c2e006f719ba20",
+                "BYOLv915115": "ami-01706082d51d9d597",
+                "BYOLv915117": "ami-0ba750178f6405ece",
+                "BYOLv9161": "ami-0066ce84943c7e1f8",
+                "BYOLv916128": "ami-0f54ab270ebd0dbd2",
+                "BYOLv916211": "ami-00b330f363c8c65f5",
+                "BYOLv9171": "ami-01426821ff0f3a449",
+                "BYOLv992596836725": "ami-0425dac829e58cf42",
+                "HOURLYv912312": "ami-05e9073f7db9a72a7",
+                "HOURLYv912418": "ami-00bb7fcd427e5503c",
+                "HOURLYv912430": "ami-0c9d0d9fcb62b4f7b",
+                "HOURLYv91244": "ami-0e6b0800c52df7de8",
+                "HOURLYv913112": "ami-0768db91a6bf7453b",
+                "HOURLYv914110": "ami-0ad85ff80bee59491",
+                "HOURLYv914130": "ami-093313513e905cf82",
+                "HOURLYv914213": "ami-062b48e4e81f54bf4",
+                "HOURLYv91439": "ami-05ed893ef38a267ef",
+                "HOURLYv9151": "ami-0177394362f92c278",
+                "HOURLYv91511": "ami-0408c1a8f87e2e0d4",
+                "HOURLYv915115": "ami-00824f3d2a8d9cb6d",
+                "HOURLYv915117": "ami-054bfd0fcef162a81",
+                "HOURLYv9161": "ami-0d7e0b668bbf19ed7",
+                "HOURLYv916211": "ami-0faf4afb463d12b1b",
+                "HOURLYv9171": "ami-0edeb8fb244c4d161"
+            },
+            "us-east-2": {
+                "BYOLv910122": "ami-08755db3ff973c038",
+                "BYOLv912312": "ami-0940b1b160eea1996",
+                "BYOLv91232": "ami-0f3cca6491d987102",
+                "BYOLv912418": "ami-07bae04d7b031b5d3",
+                "BYOLv912430": "ami-00f048ec46b2f274b",
+                "BYOLv91244": "ami-0d624402ed77f67b3",
+                "BYOLv913112": "ami-08cd21862ff85c43a",
+                "BYOLv9131155": "ami-0fe62e1a9161ec45e",
+                "BYOLv914110": "ami-0cc6d931eeb481121",
+                "BYOLv914130": "ami-02e771d160fc62521",
+                "BYOLv914213": "ami-051ce4b43addd6870",
+                "BYOLv91439": "ami-0872b86158436f118",
+                "BYOLv9151": "ami-0ab574be51c5452bf",
+                "BYOLv91511": "ami-03dda840f4c3d816e",
+                "BYOLv915115": "ami-0ec1d6645c24e0c6e",
+                "BYOLv915117": "ami-0599de234308e1525",
+                "BYOLv9161": "ami-0fa8c75ee312c24fc",
+                "BYOLv916128": "ami-03f81cf1668e2a67e",
+                "BYOLv916211": "ami-000de403f3b6771ea",
+                "BYOLv9171": "ami-02881c12c63d013d3",
+                "BYOLv992596836725": "ami-0dcd2318c4251c03f",
+                "HOURLYv912312": "ami-0e606d3bf8c900dee",
+                "HOURLYv912418": "ami-0fb6ba488d3ba9d92",
+                "HOURLYv912430": "ami-029b0790bdfe0b8dd",
+                "HOURLYv91244": "ami-0b5dcccfe7f2beeaf",
+                "HOURLYv913112": "ami-0026b150c76e2a45b",
+                "HOURLYv914110": "ami-0771d2f42f2f22027",
+                "HOURLYv914130": "ami-0bbd126897b35f222",
+                "HOURLYv914213": "ami-05d658a732e824b72",
+                "HOURLYv91439": "ami-0d75f1e589cc6d0c5",
+                "HOURLYv9151": "ami-0810415175bd8b2df",
+                "HOURLYv91511": "ami-06554acf8888fbe0d",
+                "HOURLYv915115": "ami-08a4626da42646321",
+                "HOURLYv915117": "ami-0b84d9ca552c7cd6b",
+                "HOURLYv9161": "ami-0d3b7ec0b832ac2c2",
+                "HOURLYv916211": "ami-0f2d4693be138c3e5",
+                "HOURLYv9171": "ami-0d1dc6fc44242be76"
+            },
+            "us-west-1": {
+                "BYOLv910122": "ami-0a2a2ebe6a3561724",
+                "BYOLv912312": "ami-0d4816f5d594f6177",
+                "BYOLv91232": "ami-050e1860e235a029d",
+                "BYOLv912418": "ami-0e415be14fa94c42a",
+                "BYOLv912430": "ami-0c915bafd5eb9949c",
+                "BYOLv91244": "ami-0302a8a632076cb1e",
+                "BYOLv913112": "ami-08fe535dc22c0e87d",
+                "BYOLv9131155": "ami-09a7d82553369c0da",
+                "BYOLv914110": "ami-08c86352b233c5f6e",
+                "BYOLv914130": "ami-09d07f0eabeb58407",
+                "BYOLv914213": "ami-08cc4911138fc09b1",
+                "BYOLv91439": "ami-0ebee259519359aa5",
+                "BYOLv9151": "ami-062b350bf8553ee68",
+                "BYOLv91511": "ami-01cab33393210e391",
+                "BYOLv915115": "ami-0272ee05a0cd2b9b9",
+                "BYOLv915117": "ami-084d013878ed77999",
+                "BYOLv9161": "ami-06582450bb1e2db5e",
+                "BYOLv916128": "ami-0545a3e3658f48bb2",
+                "BYOLv916211": "ami-017315aeb3588785b",
+                "BYOLv9171": "ami-009f2fcce82c121d6",
+                "BYOLv992596836725": "ami-0ece60cc3a81dcf38",
+                "HOURLYv912312": "ami-0504be1393fe44341",
+                "HOURLYv912418": "ami-0864a49af128dc1ac",
+                "HOURLYv912430": "ami-05536ba4ee17343ca",
+                "HOURLYv91244": "ami-0935f7942d584db07",
+                "HOURLYv913112": "ami-0e5302150b7ccc1dc",
+                "HOURLYv914110": "ami-0fa2a44481463b897",
+                "HOURLYv914130": "ami-082c61246635221e0",
+                "HOURLYv914213": "ami-048ddb2394efad990",
+                "HOURLYv91439": "ami-09ae1d2dcdf85577e",
+                "HOURLYv9151": "ami-075b12a1c5e5ad978",
+                "HOURLYv91511": "ami-0312fb96da1e1fe74",
+                "HOURLYv915115": "ami-0876e1edec04022be",
+                "HOURLYv915117": "ami-007bbdd246250a780",
+                "HOURLYv9161": "ami-0c0fb92a11064cbe0",
+                "HOURLYv916211": "ami-0f6fb3d4aa4c55b74",
+                "HOURLYv9171": "ami-040d5420634cf95d9"
+            },
+            "us-west-2": {
+                "BYOLv910122": "ami-0ec580de528c1fee0",
+                "BYOLv912312": "ami-0a6f32fa851fe5369",
+                "BYOLv91232": "ami-0b9743c55ec6880b5",
+                "BYOLv912418": "ami-017babfd05aae824a",
+                "BYOLv912430": "ami-0afced1102b9c80a3",
+                "BYOLv91244": "ami-003e70634f6178085",
+                "BYOLv913112": "ami-0899e1fae028d8c30",
+                "BYOLv9131155": "ami-0a7cb26cb04f823d3",
+                "BYOLv914110": "ami-03ad81377648fcb21",
+                "BYOLv914130": "ami-0ed669252d4192631",
+                "BYOLv914213": "ami-0a258d0b420c3fd73",
+                "BYOLv91439": "ami-05de644d704e6769a",
+                "BYOLv9151": "ami-01a0073104284e9b0",
+                "BYOLv91511": "ami-0dc3305d34a0dc4b8",
+                "BYOLv915115": "ami-0315b6735b6e16b7c",
+                "BYOLv915117": "ami-0f5507cfe996b28af",
+                "BYOLv9161": "ami-0538a8ec18ec4e764",
+                "BYOLv916128": "ami-0255749ac775067d2",
+                "BYOLv916211": "ami-0bdd50894e129290b",
+                "BYOLv9171": "ami-0c573611f221e8ea3",
+                "BYOLv992596836725": "ami-0a4b0af2dfbe4f49a",
+                "HOURLYv912312": "ami-0b08e3c8f95265b5e",
+                "HOURLYv912418": "ami-09559f00663f6db53",
+                "HOURLYv912430": "ami-0b38d6e699ad56652",
+                "HOURLYv91244": "ami-0d87f5f80c5c202ba",
+                "HOURLYv913112": "ami-0edbd259e77529ed0",
+                "HOURLYv914110": "ami-06fc2748d4908088b",
+                "HOURLYv914130": "ami-06f61b4393a0981fa",
+                "HOURLYv914213": "ami-0b05068300ee40233",
+                "HOURLYv91439": "ami-0bb6f2a2d54a24245",
+                "HOURLYv9151": "ami-06cd106485b785d46",
+                "HOURLYv91511": "ami-00a1cfa66bfdcfe76",
+                "HOURLYv915115": "ami-00af474590a67329f",
+                "HOURLYv915117": "ami-08cb5f09bee66ad48",
+                "HOURLYv9161": "ami-0e79d1235c4d45bc8",
+                "HOURLYv916211": "ami-05fe7bb39826e77c1",
+                "HOURLYv9171": "ami-0ebb579d830737e45"
+            }
+        }
+    },
+    "Resources": {
+        "vpc": {
+            "Condition": "CreateVpc",
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "VpcCidr"
+                },
+                "InstanceTenancy": "default",
+                "EnableDnsSupport": "true",
+                "EnableDnsHostnames": "true",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    },
+                                    "-vpc"
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "subnetMgmt": {
+            "Condition": "CreateMgmtSubnet",
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "MgmtSubnetCidr"
+                },
+                "AvailabilityZone": {
+                    "Ref": "AvailabilityZone"
+                },
+                "VpcId": {
+                    "Fn::If": [
+                        "CreateVpc",
+                        {
+                            "Ref": "vpc"
+                        },
+                        {
+                            "Ref": "VpcId"
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    },
+                                    "-subnet-mgmt"
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "subnetOutside": {
+            "Condition": "CreateOutsideSubnet",
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "OutsideSubnetCidr"
+                },
+                "AvailabilityZone": {
+                    "Ref": "AvailabilityZone"
+                },
+                "VpcId": {
+                    "Fn::If": [
+                        "CreateVpc",
+                        {
+                            "Ref": "vpc"
+                        },
+                        {
+                            "Ref": "VpcId"
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    },
+                                    "-subnet-outside"
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "subnetInside": {
+            "Condition": "CreateInsideSubnet",
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "InsideSubnetCidr"
+                },
+                "AvailabilityZone": {
+                    "Ref": "AvailabilityZone"
+                },
+                "VpcId": {
+                    "Fn::If": [
+                        "CreateVpc",
+                        {
+                            "Ref": "vpc"
+                        },
+                        {
+                            "Ref": "VpcId"
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    },
+                                    "-subnet-inside"
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "subnetDmz": {
+            "Condition": "SupportsDmz",
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "DmzSubnetCidr"
+                },
+                "AvailabilityZone": {
+                    "Ref": "AvailabilityZone"
+                },
+                "VpcId": {
+                    "Fn::If": [
+                        "CreateVpc",
+                        {
+                            "Ref": "vpc"
+                        },
+                        {
+                            "Ref": "VpcId"
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    },
+                                    "-subnet-dmz"
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "igw": {
+            "Condition": "CreateVpc",
+            "Type": "AWS::EC2::InternetGateway",
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    },
+                                    "-igw"
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "gw1": {
+            "Condition": "CreateVpc",
+            "Type": "AWS::EC2::VPCGatewayAttachment",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "vpc"
+                },
+                "InternetGatewayId": {
+                    "Ref": "igw"
+                }
+            }
+        },
+        "dopt": {
+            "Condition": "CreateVpc",
+            "Type": "AWS::EC2::DHCPOptions",
+            "Properties": {
+                "DomainName": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            {
+                                "Ref": "AWS::Region"
+                            },
+                            ".compute.internal"
+                        ]
+                    ]
+                },
+                "DomainNameServers": [
+                    "AmazonProvidedDNS"
+                ]
+            }
+        },
+        "rtb": {
+            "Condition": "CreateSubnet",
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {
+                    "Fn::If": [
+                        "CreateVpc",
+                        {
+                            "Ref": "vpc"
+                        },
+                        {
+                            "Ref": "VpcId"
+                        }
+                    ]
+                }
+            }
+        },
+        "subnetrouteInside": {
+            "Condition": "CreateInsideSubnet",
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "rtb"
+                },
+                "SubnetId": {
+                    "Fn::If": [
+                        "CreateInsideSubnet",
+                        {
+                            "Ref": "subnetInside"
+                        },
+                        {
+                            "Ref": "InsideSubnetId"
+                        }
+                    ]
+                }
+            }
+        },
+        "subnetrouteOutside": {
+            "Condition": "CreateOutsideSubnet",
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "rtb"
+                },
+                "SubnetId": {
+                    "Ref": "subnetOutside"
+                }
+            }
+        },
+        "subnetrouteDmz": {
+            "Condition": "CreateDmzSubnet",
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "rtb"
+                },
+                "SubnetId": {
+                    "Ref": "subnetDmz"
+                }
+            }
+        },
+        "subnetrouteMgmt": {
+            "Condition": "CreateMgmtSubnet",
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "rtb"
+                },
+                "SubnetId": {
+                    "Fn::If": [
+                        "CreateMgmtSubnet",
+                        {
+                            "Ref": "subnetMgmt"
+                        },
+                        {
+                            "Ref": "MgmtSubnetId"
+                        }
+                    ]
+                }
+            }
+        },
+        "route1": {
+            "Type": "AWS::EC2::Route",
+            "Properties": {
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "RouteTableId": {
+                    "Ref": "rtb"
+                },
+                "GatewayId": {
+                    "Fn::If": [
+                        "UseExistingIgw",
+                        {
+                            "Ref": "IgwId"
+                        },
+                        {
+                            "Ref": "igw"
+                        }
+                    ]
+                }
+            }
+        },
+        "dchpassoc1": {
+            "Condition": "CreateVpc",
+            "Type": "AWS::EC2::VPCDHCPOptionsAssociation",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "vpc"
+                },
+                "DhcpOptionsId": {
+                    "Ref": "dopt"
+                }
+            }
+        },
+        "SecurityGroupAll": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Allow all traffic on vpc1",
+                "VpcId": {
+                    "Fn::If": [
+                        "CreateVpc",
+                        {
+                            "Ref": "vpc"
+                        },
+                        {
+                            "Ref": "VpcId"
+                        }
+                    ]
+                },
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "-1",
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    },
+                                    "-allow-all-vpc1"
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "sgManagementInterface": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Allow only traffic from MgmtExternalAccessCidr IP Ranges",
+                "VpcId": {
+                    "Fn::If": [
+                        "CreateVpc",
+                        {
+                            "Ref": "vpc"
+                        },
+                        {
+                            "Ref": "VpcId"
+                        }
+                    ]
+                },
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "22",
+                        "ToPort": "22",
+                        "CidrIp": {
+                            "Ref": "MgmtExternalAccessCidr"
+                        }
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "443",
+                        "ToPort": "443",
+                        "CidrIp": {
+                            "Ref": "MgmtExternalAccessCidr"
+                        }
+                    },
+                    {
+                        "IpProtocol": "icmp",
+                        "FromPort": "-1",
+                        "ToPort": "-1",
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    },
+                                    "-allow-SSH-vpc1"
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "eipASAMgmt": {
+            "Type": "AWS::EC2::EIP",
+            "Properties": {
+                "Domain": {
+                    "Fn::If": [
+                        "CreateVpc",
+                        {
+                            "Ref": "vpc"
+                        },
+                        {
+                            "Ref": "VpcId"
+                        }
+                    ]
+                }
+            }
+        },
+        "eipaASAMgmt": {
+            "Type": "AWS::EC2::EIPAssociation",
+            "Properties": {
+                "AllocationId": {
+                    "Fn::GetAtt": [
+                        "eipASAMgmt",
+                        "AllocationId"
+                    ]
+                },
+                "NetworkInterfaceId": {
+                    "Ref": "eniASAMgmt"
+                }
+            }
+        },
+        "eniASAMgmt": {
+            "Type": "AWS::EC2::NetworkInterface",
+            "Properties": {
+                "SubnetId": {
+                    "Fn::If": [
+                        "CreateMgmtSubnet",
+                        {
+                            "Ref": "subnetMgmt"
+                        },
+                        {
+                            "Ref": "MgmtSubnetId"
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ASA-Mgmt-01"
+                    }
+                ],
+                "PrivateIpAddress": {
+                    "Fn::If": [
+                        "UseStaticMgmtIp",
+                        {
+                            "Ref": "MgmtIp"
+                        },
+                        {
+                            "Ref": "AWS::NoValue"
+                        }
+                    ]
+                },
+                "Description": "Interface for management traffic of ASA",
+                "GroupSet": [
+                    {
+                        "Ref": "sgManagementInterface"
+                    }
+                ],
+                "SourceDestCheck": "false"
+            }
+        },
+        "eniASAInside": {
+            "Type": "AWS::EC2::NetworkInterface",
+            "Properties": {
+                "SubnetId": {
+                    "Fn::If": [
+                        "CreateInsideSubnet",
+                        {
+                            "Ref": "subnetInside"
+                        },
+                        {
+                            "Ref": "InsideSubnetId"
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ASA-Inside-01"
+                    }
+                ],
+                "PrivateIpAddress": {
+                    "Fn::If": [
+                        "UseStaticInsideIp",
+                        {
+                            "Ref": "InsideIp"
+                        },
+                        {
+                            "Ref": "AWS::NoValue"
+                        }
+                    ]
+                },
+                "Description": "Inside Interface of ASA",
+                "GroupSet": [
+                    {
+                        "Ref": "SecurityGroupAll"
+                    }
+                ],
+                "SourceDestCheck": "false"
+            }
+        },
+        "eniASAOutside": {
+            "Type": "AWS::EC2::NetworkInterface",
+            "Properties": {
+                "SubnetId": {
+                    "Fn::If": [
+                        "CreateOutsideSubnet",
+                        {
+                            "Ref": "subnetOutside"
+                        },
+                        {
+                            "Ref": "OutsideSubnetId"
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ASA-Outside-01"
+                    }
+                ],
+                "PrivateIpAddress": {
+                    "Fn::If": [
+                        "UseStaticOutsideIp",
+                        {
+                            "Ref": "OutsideIp"
+                        },
+                        {
+                            "Ref": "AWS::NoValue"
+                        }
+                    ]
+                },
+                "Description": "Outside Interface of ASA",
+                "GroupSet": [
+                    {
+                        "Ref": "SecurityGroupAll"
+                    }
+                ],
+                "SourceDestCheck": "false"
+            }
+        },
+        "eniASADmz": {
+            "Condition": "SupportsDmz",
+            "Type": "AWS::EC2::NetworkInterface",
+            "Properties": {
+                "SubnetId": {
+                    "Ref": "subnetDmz"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ASA-DMZ-01"
+                    }
+                ],
+                "PrivateIpAddress": {
+                    "Fn::If": [
+                        "UseStaticDmzIp",
+                        {
+                            "Ref": "DmzIp"
+                        },
+                        {
+                            "Ref": "AWS::NoValue"
+                        }
+                    ]
+                },
+                "Description": "DMZ interface of ASA",
+                "GroupSet": [
+                    {
+                        "Ref": "SecurityGroupAll"
+                    }
+                ],
+                "SourceDestCheck": "false"
+            }
+        },
+        "CiscoASA": {
+            "Condition": "SupportsDmz",
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": {
+                    "Ref": "AvailabilityZone"
+                },
+                "DisableApiTermination": "false",
+                "InstanceInitiatedShutdownBehavior": "stop",
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "AWSAMIRegionMap",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        {
+                            "Fn::FindInMap": [
+                                "KeynameMap",
+                                {
+                                    "Ref": "ASAVersion"
+                                },
+                                {
+                                    "Ref": "ASALicType"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "InstanceType": {
+                    "Ref": "ASAInstanceType"
+                },
+                "KeyName": {
+                    "Ref": "KeyName"
+                },
+                "Monitoring": "false",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    },
+                                    "-ASAv"
+                                ]
+                            ]
+                        }
+                    }
+                ],
+                "BlockDeviceMappings": [
+                    {
+                        "DeviceName": "/dev/xvda",
+                        "Ebs": {
+                            "DeleteOnTermination": true
+                        }
+                    }
+                ],
+                "NetworkInterfaces": [
+                    {
+                        "Description": "Management interface",
+                        "DeviceIndex": 0,
+                        "NetworkInterfaceId": {
+                            "Ref": "eniASAMgmt"
+                        }
+                    },
+                    {
+                        "Description": "Inside network interface",
+                        "DeviceIndex": 1,
+                        "NetworkInterfaceId": {
+                            "Ref": "eniASAInside"
+                        }
+                    },
+                    {
+                        "Description": "Outside network interface",
+                        "DeviceIndex": 2,
+                        "NetworkInterfaceId": {
+                            "Ref": "eniASAOutside"
+                        }
+                    },
+                    {
+                        "Description": "DMZ network interface",
+                        "DeviceIndex": 3,
+                        "NetworkInterfaceId": {
+                            "Ref": "eniASADmz"
+                        }
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "interface management0/0\n",
+                                "management-only\n",
+                                "nameif management\n",
+                                "ip address dhcp setroute\n",
+                                "no shutdown\n",
+                                "interface tengig 0/0\n",
+                                "nameif outside\n",
+                                "ip address dhcp setroute\n",
+                                "no shutdown\n",
+                                "interface tengig 0/1\n",
+                                "nameif inside\n",
+                                "ip address dhcp\n",
+                                "no shutdown\n",
+                                "hostname ",
+                                {
+                                    "Ref": "ASAHostname"
+                                },
+                                "\ncrypto key generate rsa mod 1024\n",
+                                "dns domain-lookup outside\n",
+                                "dns name-server 208.67.220.220 208.67.222.222\n",
+                                "ssh timeout 60\n",
+                                "ssh 0.0.0.0 0.0.0.0 inside\n",
+                                "ssh 0.0.0.0 0.0.0.0 management\n",
+                                "ssh 0.0.0.0 0.0.0.0 outside\n",
+                                "http server enable\n",
+                                "http 0.0.0.0 0.0.0.0 inside\n",
+                                "http 0.0.0.0 0.0.0.0 management\n",
+                                "http 0.0.0.0 0.0.0.0 outside\n",
+                                "enable password Cisco@123\n",
+                                "username admin password Cisco@123 privilege 15\n",
+                                "aaa authentication ssh console LOCAL\n",
+                                "aaa authentication http console LOCAL\n"
+                            ]
+                        ]
+                    }
+                }
+            }
+        },
+        "CiscoASAnoDMZ": {
+            "Condition": "NoDmz",
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": {
+                    "Ref": "AvailabilityZone"
+                },
+                "DisableApiTermination": "false",
+                "InstanceInitiatedShutdownBehavior": "stop",
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "AWSAMIRegionMap",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        {
+                            "Fn::FindInMap": [
+                                "KeynameMap",
+                                {
+                                    "Ref": "ASAVersion"
+                                },
+                                {
+                                    "Ref": "ASALicType"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "InstanceType": {
+                    "Ref": "ASAInstanceType"
+                },
+                "KeyName": {
+                    "Ref": "KeyName"
+                },
+                "Monitoring": "false",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    },
+                                    "-ASAv"
+                                ]
+                            ]
+                        }
+                    }
+                ],
+                "BlockDeviceMappings": [
+                    {
+                        "DeviceName": "/dev/xvda",
+                        "Ebs": {
+                            "DeleteOnTermination": true
+                        }
+                    }
+                ],
+                "NetworkInterfaces": [
+                    {
+                        "Description": "Management interface",
+                        "DeviceIndex": 0,
+                        "NetworkInterfaceId": {
+                            "Ref": "eniASAMgmt"
+                        }
+                    },
+                    {
+                        "Description": "Inside network interface",
+                        "DeviceIndex": 1,
+                        "NetworkInterfaceId": {
+                            "Ref": "eniASAInside"
+                        }
+                    },
+                    {
+                        "Description": "Outside network interface",
+                        "DeviceIndex": 2,
+                        "NetworkInterfaceId": {
+                            "Ref": "eniASAOutside"
+                        }
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "interface management0/0\n",
+                                "management-only\n",
+                                "nameif management\n",
+                                "ip address dhcp setroute\n",
+                                "no shutdown\n",
+                                "interface tengig 0/0\n",
+                                "nameif outside\n",
+                                "ip address dhcp setroute\n",
+                                "no shutdown\n",
+                                "interface tengig 0/1\n",
+                                "nameif inside\n",
+                                "ip address dhcp\n",
+                                "no shutdown\n",
+                                "hostname ",
+                                {
+                                    "Ref": "ASAHostname"
+                                },
+                                "\ncrypto key generate rsa mod 1024\n",
+                                "dns domain-lookup outside\n",
+                                "dns name-server 208.67.220.220 208.67.222.222\n",
+                                "ssh timeout 60\n",
+                                "ssh 0.0.0.0 0.0.0.0 inside\n",
+                                "ssh 0.0.0.0 0.0.0.0 management\n",
+                                "ssh 0.0.0.0 0.0.0.0 outside\n",
+                                "http server enable\n",
+                                "http 0.0.0.0 0.0.0.0 inside\n",
+                                "http 0.0.0.0 0.0.0.0 management\n",
+                                "http 0.0.0.0 0.0.0.0 outside\n",
+                                "enable password Cisco@123\n",
+                                "username admin password Cisco@123 privilege 15\n",
+                                "aaa authentication ssh console LOCAL\n",
+                                "aaa authentication http console LOCAL\n"
+                            ]
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "Outputs": {
+        "ASAVersion": {
+            "Description": "Version of ASAv Instance created",
+            "Value": {
+                "Ref": "ASAVersion"
+            }
+        },
+        "ASALicType": {
+            "Description": "License Type of ASAv Instance created",
+            "Value": {
+                "Ref": "ASALicType"
+            }
+        },
+        "ASAInstanceType": {
+            "Description": "Type of ASAv Instance created",
+            "Value": {
+                "Ref": "ASAInstanceType"
+            }
+        },
+        "ASAAddress": {
+            "Description": "The external address of ASAv instance",
+            "Value": {
+                "Ref": "eipASAMgmt"
+            }
+        }
+    }
+}
