@@ -80,7 +80,7 @@ Please don't use the default compute engine service account which has the projec
 
 ```bash
 cd examples/single-instance
-cp oob.tfvars.example terraform.tfvars
+cp terraform.tfvars.example terraform.tfvars
 terraform init
 terraform plan
 terraform apply
