@@ -1,0 +1,49 @@
+# Shared management and outside Interface
+tenancy_ocid      = ""
+user_ocid         = ""
+private_key_path  = "~/.oci/oci_api_key.pem"
+fingerprint       = ""
+region            = "us-sanjose-1"
+compartment_id    = ""
+label_prefix      = "ASAv"
+day_0_config      = "shared-mgmt-config.txt"
+admin_ssh_pub_key = ""
+enable_password   = "C8Npp2E61Az@6z3L"
+# nic0 needs to be the management interface
+num_instances = 1
+# The Availability Domain Number for vm
+vm_ads_number = [1]
+networks = [
+  {
+    name        = "mgmt"
+    vcn_cidr    = "10.20.0.0/16"
+    subnet_cidr = "10.20.1.0/24"
+    private_ip  = ["10.20.1.10"]
+    external_ip = true
+  },
+  {
+    name        = "inside"
+    vcn_cidr    = "10.21.0.0/16"
+    subnet_cidr = "10.21.1.0/24"
+    private_ip  = ["10.21.1.10"]
+    external_ip = false
+  },
+  {
+    name        = "dmz1"
+    vcn_cidr    = "10.22.0.0/16"
+    subnet_cidr = "10.22.1.0/24"
+    private_ip  = ["10.22.1.10"]
+    external_ip = false
+  },
+  {
+    name        = "dmz2"
+    vcn_cidr    = "10.23.0.0/16"
+    subnet_cidr = "10.23.1.0/24"
+    private_ip  = ["10.23.1.10"]
+    external_ip = false
+  }
+]
+mgmt_network   = "mgmt"
+inside_network = "inside"
+dmz1_network   = "dmz1"
+dmz2_network   = "dmz2"
