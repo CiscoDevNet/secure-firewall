@@ -34,7 +34,7 @@ Examples of how to use these modules can be found in the [examples](examples/) f
 
 ## How to specify number of instances?
 
-Please check out [HA Shared management use case](examples/ha/terraform.tfvars.example).
+Please check out [Multi Instance use case](examples/ha/terraform.tfvars.example).
 
 As shown in the snippet below,
 - The `num_instances`, `vm_zones` and `networks[*].appliance_ip` need to be matched.
