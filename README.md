@@ -36,7 +36,14 @@ Each specific usecase contains a README file with installation instructions.
     * [Single ASA instance in single location](https://github.com/CiscoDevNet/secure-firewall/tree/main/ASA/GCP/Terraform/Deployment/examples/single-instance)
     * [Multiple ASA Instances in Single or Multiple AZ](https://github.com/CiscoDevNet/secure-firewall/tree/main/ASA/GCP/Terraform/Deployment/examples/multi-instances)
   * _Deployment Manager templates:_
-    * [ASA Deployments](https://github.com/CiscoDevNet/secure-firewall/tree/main/ASA/GCP/Deployment-Manager/examples)   
+    * [ASA Deployments](https://github.com/CiscoDevNet/secure-firewall/tree/main/ASA/GCP/Deployment-Manager/examples) 
+
+* **ASA on OCI:**
+  * _Terraform templates:_
+    * [Single ASA Instance](https://github.com/CiscoDevNet/secure-firewall/tree/main/ASA/OCI/Terraform/examples/single-instance)
+    * [Multiple ASA Instances](https://github.com/CiscoDevNet/secure-firewall/tree/main/ASA/OCI/Terraform/examples/ha)
+  * _Oracle Resource Manager:_
+    * [ASA Deployment](https://github.com/CiscoDevNet/secure-firewall/tree/main/ASA/OCI/Resource_Manager) 
 
 * **FTD on AWS:**
   * _CloudFormation templates:_
