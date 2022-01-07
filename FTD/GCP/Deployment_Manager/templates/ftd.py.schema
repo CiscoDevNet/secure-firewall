@@ -1,0 +1,114 @@
+info:
+  title: CISCO FTD Appliance
+  author: IGNW
+  description: Provision CISCO FTD appliances including HA configurations when using multiple zones
+  version: 1.0
+
+imports:
+- path: ftd.py
+
+required:
+- region
+- vm_zones
+- vm_machine_type
+- day_0_config
+- admin_ssh_pub_key
+- networks
+
+properties:
+  services:
+    type: array
+    description: List of services to be enabled
+  region:
+    type: string
+    description: Region for resources to be provisioned
+  num_instances:
+    type: integer
+    description: Number of instance groups to be provisioned
+    default: 1
+  vm_zones:
+    type: array
+    description: GCP zones in which resources will be provisioned
+    items:
+        type: string
+  cisco_product_version:
+    type: string
+    description: CISCO FTD image version to be used
+  vm_machine_type:
+    type: string
+    description: Machine type to be used
+  day_0_config:
+    type: string
+    description: The zero day configuration file name, under templates/scripts folder
+  vm_instance_labels:
+    type: object
+    description: Set of key:value pairs
+    default: {}
+  vm_instance_tags:
+    type: array
+    description: List of network tags to be used by the VMs
+    items:
+        type: string
+    default: []
+  admin_ssh_pub_key:
+    type: string
+    description: ssh public key for admin user
+  named_ports:
+    type: array
+    description: List of named ports. See https://cloud.google.com/load-balancing/docs/backend-service#named_ports
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        port:
+          type: number
+    default: []
+  networks:
+    type: array
+    description: |
+      List of networks with values to be used in the subnets creation
+      Example:
+      [
+        { 
+          name = string, 
+          cidr = string, 
+          appliance_ip = array(string), 
+          external_ip = bool 
+        }
+      ]
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the network
+        cidr:
+          type: string
+          description: |
+            The range of IP addresses belonging to this subnetwork secondary range. Provide this property
+            when you create the subnetwork. Ranges must be unique and non-overlapping with all primary
+            and secondary IP ranges within a network. Only IPv4 is supported.
+        appliance_ip:
+          type: array
+          description: List of appliances IPs
+          items:
+            type: string
+        external_ip:
+          type: boolean
+          description: If "true", an external ip is provisioned
+  mgmt_network:
+    type: string
+    description: Management network name
+  inside_network:
+    type: string
+    description: Inside network name
+  outside_network:
+    type: string
+    description: Outside network name
+  dmz_network:
+    type: string
+    description: DMZ network name
+  service_account:
+    type: string
+    description: The email address of the service account which will be assigned to the compute instances.

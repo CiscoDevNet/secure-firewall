@@ -1,0 +1,79 @@
+info:
+  title: Networking
+  author: IGNW
+  description: Provision networking resources
+  version: 1.0
+
+imports:
+- path: networking.py
+
+required:
+- region
+- networks
+- service_account
+
+properties:
+  region:
+    type: string
+    description: Region for resources to be provisioned
+  networks:
+    type: array
+    description: |
+      List of networks with values to be used in the subnets creation
+      Example:
+      [
+        { 
+          name = string, 
+          cidr = string, 
+          appliance_ip = array(string), 
+          external_ip = bool 
+        }
+      ]
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the network
+        cidr:
+          type: string
+          description: |
+            The range of IP addresses belonging to this subnetwork secondary range. Provide this property
+            when you create the subnetwork. Ranges must be unique and non-overlapping with all primary
+            and secondary IP ranges within a network. Only IPv4 is supported.
+        appliance_ip:
+          type: array
+          description: List of appliances IPs
+          items:
+            type: string
+        external_ip:
+          type: boolean
+          description: If "true", an external ip is provisioned
+  mgmt_network:
+    type: string
+    description: Management network name
+  inside_network:
+    type: string
+    description: Inside network name
+  outside_network:
+    type: string
+    description: Outside network name
+  dmz1_network:
+    type: string
+    description: DMZ1 network name
+  dmz2_network:
+    type: string
+    description: DMZ2 network name
+  service_account:
+    type: string
+    description: The email address of the service account which will be assigned to the compute instances.
+  service_port:
+    type: integer
+    description: service port
+  ha_enabled:
+    type: boolean
+    default: False
+    description: HA enabled
+  custom_route_tag:
+    type: string
+    description: Tag for custom route
