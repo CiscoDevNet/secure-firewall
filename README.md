@@ -63,7 +63,10 @@ Each specific usecase contains a README file with installation instructions.
      * [Single FTD instance](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/Azure/ARM%20Template/Standalone) 
      * [_FTDv Autoscale_](https://github.com/CiscoDevNet/cisco-ftdv/tree/master/autoscale/azure)
   * _Terraform templates:_
-     * [Template coming soon...](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/Azure/Terraform)
+     * [Single FTDv Instance](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/Azure/Terraform/SingleInstance)
+     * [Single FTDv Instance in Existing Resouce Group](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/Azure/Terraform/SingleInstance_ExistingRG)
+     * [Multiple FTDv Instances in Multiple Availablility Zones](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/Azure/Terraform/MultiInstance_MultiAZ)
+     * [Multiple FTDv Instances in Multiple Availability Zones using Existing Subnets](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/Azure/Terraform/MultiInstance_MultiAZ_ExistingSubnet)
 
 * **FTD on GCP:**
   * _Terraform templates:_
