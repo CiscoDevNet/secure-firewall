@@ -1,9 +1,0 @@
-#Sensor
-  {
-      "AdminPassword": "P@$$w0rd1234",
-      "Hostname":       "FTD-01",
-      "ManageLocally":  "No",
-      "FmcIp":          "${fmc_ip}",
-      "FmcRegKey":      "Cisco123",
-      "FmcNatId":       "${fmc_nat_id}",
-}
