@@ -64,28 +64,40 @@ Each specific usecase contains a README file with installation instructions.
      * [_FTDv Autoscale_](https://github.com/CiscoDevNet/cisco-ftdv/tree/master/autoscale/azure)
   * _Terraform templates:_
      * [Template coming soon...](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/Azure/Terraform)
+
+* **FTD on GCP:**
+  * _Terraform templates:_
+    * [Single FTD Instance](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/GCP/Terraform/examples/single-instance)
+
 * **FTD Ansible Modules**
   * [FTD Ansible Github](https://github.com/CiscoDevNet/FTDAnsible)
   * [FTD Ansible Documentation](https://developer.cisco.com/site/ftd-ansible/)
+
 * **FTD on Vmware:**
   * _Terraform Templates:_
     * [Single Instance FTD](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/Vmware/Terraform)
+
 * **FMC Terraform Provider:**
   * [FMC Terraform Provider Github](https://github.com/CiscoDevNet/terraform-provider-fmc)
   * [FMC Terraform Registry](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest)
+
 * **FMC on Azure:**
   * _Terraform templates:_
     * [Standalone FMC](https://github.com/CiscoDevNet/secure-firewall/tree/main/FMC/Azure/Terraform/standalone)
   * _ARM Templates:_
     * [Standalone FMC](https://github.com/CiscoDevNet/secure-firewall/tree/main/FMC/Azure/ARMTemplates/Standalone)
+
 * **FMC on AWS:**
   * _Terraform templates:_
     * [Standalone FMC](https://github.com/CiscoDevNet/secure-firewall/tree/main/FMC/AWS/Standalone)
+
 * **FMC on Vmware:**
   * _Terraform templates:_
     * [Standalone FMC](https://github.com/CiscoDevNet/secure-firewall/tree/main/FMC/Vmware/Terraform)
+ 
  * **Cloud Native:**
    * [SFCN GitHub Repository](https://github.com/CiscoDevNet/sfcn)
+ 
  * **CSDAC - Cisco Secure Dynamic Attributes Connector:**
    * [CSDAC Ansible](https://galaxy.ansible.com/cisco/csdac)
 
