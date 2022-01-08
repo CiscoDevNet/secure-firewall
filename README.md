@@ -74,6 +74,10 @@ Each specific usecase contains a README file with installation instructions.
   * _Deployment Manager Templates:_
     * [Single FTDv instance](https://github.com/CiscoDevNet/secure-firewall/blob/main/FTD/GCP/Deployment_Manager/examples/single-instance.yaml)
 
+* **FTD on OCI:**
+  * _Terraform templates:_
+    * [Single FTD Instance](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/OCI/Terraform/examples/single-instance)
+
 * **FTD Ansible Modules**
   * [FTD Ansible Github](https://github.com/CiscoDevNet/FTDAnsible)
   * [FTD Ansible Documentation](https://developer.cisco.com/site/ftd-ansible/)
