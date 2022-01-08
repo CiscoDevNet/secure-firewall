@@ -1,0 +1,60 @@
+imports:
+- path: ../templates/helpers/common.py
+  name: helpers/common.py
+- path: ../templates/cisco_fmc.py
+  name: cisco_fmc.py
+- path: ../templates/enable_services.py
+  name: enable_services.py
+- path: ../templates/service_accounts.py
+  name: service_accounts.py
+- path: ../templates/networking.py
+  name: networking.py
+- path: ../templates/firewall.py
+  name: firewall.py
+- path: ../templates/vm.py
+  name: vm.py
+
+resources:
+
+#############################################
+# Provision Single CISCO FMC Appliance
+#############################################
+
+- name: cisco_fmc
+  type: cisco_fmc.py
+  properties:
+    services:
+      - iam.googleapis.com
+      - compute.googleapis.com
+    account_id: cisco-fmc-sa
+    display_name: Cisco FMC Service Account
+    description: Deployment Manager managed service account
+    # existing network and subnet
+    network: vpc-1
+    subnet: "vpc-1-subnet-west1"
+    region: us-west1
+    # private IP
+    appliance_ips: ['10.10.10.10']
+    custom_route_tag: cisco-fmc
+    service_account: $(ref.service_accounts.email)
+    vm_zones:
+      - us-west1-a
+    num_instances: 1
+    hostname: "cisco-fmc"
+    cisco_product_version: cisco-fmcv-7-0-0-94
+    vm_machine_type: c2-standard-8
+    boot_disk_size: 250
+    vm_instance_labels:
+      firewall: "fmc"
+      environment:  "dev"
+    vm_instance_tags:
+      - cisco-fmc
+    day_0_config: "fmcv"
+    admin_ssh_pub_key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDCII2+Zvw/Var0aEo7B5FMGSmLSByanSeoNyp15ztOl7hsvL7c52kPnF+O288cBTDSJCTHJ3gGp18h0daXlhV8ab6gsQFP+HZtuH60+93Pt+IFMzRq4fT5pY2wYLXQ1Cahkj6rZlrjHGRwDr0mi42TR5i9QiOvWtNAUH0L7RNywvntyWjU2l+bJ/SKJ1rGK1GsNUvTJmk9+vE/JXPfrBqHe3yTrR4vGUa8QRx+x3hiZ32WPvCBKIdKMSdO/hYIs08m/npV1MIQJJZq9ZcCFkFxFGyJ1q4mdoXCSby7SHuqqxzrEEIYSQWixOcDdsNR57RufgjWdM9KwcVODTYaiDbf admin@starship.matrix.com'
+    admin_password: "C8Npp2E61Az@6z3L"
+
+outputs:
+  - name: vms_urls
+    value: $(ref.cisco_fmc.vm_urls)
+  - name: vms_ips
+    value: $(ref.cisco_fmc.vm_ips)

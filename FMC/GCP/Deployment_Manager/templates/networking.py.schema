@@ -1,0 +1,26 @@
+info:
+  title: Networking
+  author: IGNW
+  description: Provision networking resources
+  version: 1.0
+
+imports:
+- path: networking.py
+
+required:
+- region
+- network
+
+properties:
+  region:
+    type: string
+    description: Region for resources to be provisioned
+  network:
+    type: string
+    description: VPC network name
+  network_subnet_cidr_range: 
+    type: string
+    description: subnet cidr range
+  custom_route_tag:
+    type: string
+    description: Tag for custom route

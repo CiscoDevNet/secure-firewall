@@ -1,0 +1,21 @@
+# Shared management and outside Interface
+cisco_product_version     = "cisco-fmcv-7-0-0-94"
+project_id                = "cisco-asa-terraform"
+region                    = "us-west1"
+network                   = "vpc-1"
+subnet                    = "vpc-1-subnet-west1"
+network_subnet_cidr_range = ""
+# choose an ip address from the subnet's cidr range
+appliance_ips             = ["10.10.10.10"]
+hostname  = "cisco-fmc"
+vm_machine_type           = "c2-standard-8"
+vm_instance_labels = {
+  firewall    = "fmc"
+  environment = "dev"
+}
+day_0_config       = "fmcv.txt"
+admin_ssh_pub_key  = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDCII2+Zvw/Var0aEo7B5FMGSmLSByanSeoNyp15ztOl7hsvL7c52kPnF+O288cBTDSJCTHJ3gGp18h0daXlhV8ab6gsQFP+HZtuH60+93Pt+IFMzRq4fT5pY2wYLXQ1Cahkj6rZlrjHGRwDr0mi42TR5i9QiOvWtNAUH0L7RNywvntyWjU2l+bJ/SKJ1rGK1GsNUvTJmk9+vE/JXPfrBqHe3yTrR4vGUa8QRx+x3hiZ32WPvCBKIdKMSdO/hYIs08m/npV1MIQJJZq9ZcCFkFxFGyJ1q4mdoXCSby7SHuqqxzrEEIYSQWixOcDdsNR57RufgjWdM9KwcVODTYaiDbf admin@starship.matrix.com"
+boot_disk_type     = "pd-ssd"
+boot_disk_size     = 250
+admin_password = "C8Npp2E61Az@6z3L"
+num_instances      = 1

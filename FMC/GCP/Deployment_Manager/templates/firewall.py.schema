@@ -1,0 +1,20 @@
+info:
+  title: Firewall
+  author: IGNW
+  description: Provision firewall rule resources
+  version: 1.0
+
+imports:
+- path: firewall.py
+
+required:
+- network
+- service_account
+
+properties:
+  network_url:
+    type: string
+    description: network self link
+  service_account:
+    type: string
+    description: The email address of the service account which will be assigned to the compute instances.
