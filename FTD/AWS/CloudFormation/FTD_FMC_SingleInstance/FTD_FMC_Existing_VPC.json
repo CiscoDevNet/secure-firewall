@@ -186,10 +186,19 @@
         "FTDVersion": {
             "Description": "Cisco FTDv Version",
             "Type": "String",
-            "Default": "ftdv-6.7.0-65",
+            "Default": "ftdv-7.1.0-92",
             "AllowedValues": [
+                "ftdv-6.3.0-90",
+                "ftdv-6.4.0-113",
+                "ftdv-6.5.0-115",
+                "ftdv-6.6.0-90",
                 "ftdv-6.6.1-91",
-                "ftdv-6.7.0-65"               
+                "ftdv-6.6.4-59",
+                "ftdv-6.6.5-81",
+                "ftdv-6.7.0-65",
+                "ftdv-7.0.0-94",
+                "ftdv-7.0.1-84",
+                "ftdv-7.1.0-92"               
             ]
         },
         "FMCVersion": {
@@ -375,229 +384,334 @@
 
     "Mappings": {
         "KeynameMap": {
+            "ftdv-6.3.0-90": {
+                "BYOL": "BYOLv63090"
+            },
+            "ftdv-6.4.0-113": {
+                "BYOL": "BYOLv640113"
+            },
+            "ftdv-6.5.0-115": {
+                "BYOL": "BYOLv650115"
+            },
+            "ftdv-6.6.0-90": {
+                "BYOL": "BYOLv66090"
+            },
             "ftdv-6.6.1-91": {
-                "BYOL": "BYOLv66191",
-                "HOURLY": "HOURLYv66191"
+                "BYOL": "BYOLv66191"
+            },
+            "ftdv-6.6.4-59": {
+                "BYOL": "BYOLv66459"
+            },
+            "ftdv-6.6.5-81": {
+                "BYOL": "BYOLv66581"
             },
             "ftdv-6.7.0-65": {
-            "BYOL": "BYOLv67065",
-            "HOURLY": "HOURLY67065"
+                "BYOL": "BYOLv67065"
+            },
+            "ftdv-7.0.0-94": {
+                "BYOL": "BYOLv70094"
+            },
+            "ftdv-7.0.1-84": {
+                "BYOL": "BYOLv70184"
+            },
+            "ftdv-7.1.0-92": {
+                "BYOL": "BYOLv71092"
             },
             "fmcv-6.6.1-91": {
-            "BYOL": "FMCBYOLv66191"
+                "BYOL": "FMCBYOLv66191"
             },
             "fmcv-6.7.0-65": {
-            "BYOL": "FMCBYOLv67065"
+                "BYOL": "FMCBYOLv67065"
             }
         },
         "AWSAMIRegionMap": {
             "AMI": {
-            
+                "BYOLv63090": "ftdv-6.3.0-90-ad0af76e-c569-4a81-84d0-cff2308179ef-ami-0f3cd5a2bfb030a84.4",
+                "BYOLv640113": "ftdv-6.4.0-113-ad0af76e-c569-4a81-84d0-cff2308179ef-ami-04c9b1be846aeeadb.4",
+                "BYOLv650115": "ftdv-6.5.0-115-ad0af76e-c569-4a81-84d0-cff2308179ef-ami-0366ac197f203df62.4",
+                "BYOLv66090": "ftdv-6.6.0-90-ENA-REL-ad0af76e-c569-4a81-84d0-cff2308179ef-ami-0796ff5c44c3d8e7a.4",
                 "BYOLv66191": "ftdv-6.6.1-91-ENA-ad0af76e-c569-4a81-84d0-cff2308179ef-ami-054413fe26fb8ded2.4",
+                "BYOLv66459": "ftdv-6.6.4-59-ENA-ad0af76e-c569-4a81-84d0-cff2308179ef",
+                "BYOLv66581": "ftdv-6.6.5-81-ENA-ad0af76e-c569-4a81-84d0-cff2308179ef",
                 "BYOLv67065": "ftdv-6.7.0-65-ENA-ad0af76e-c569-4a81-84d0-cff2308179ef-ami-0957248a8d92c6ffb.4",
-                "HOURLYv66191": "ftdv-6.6.1-91-ENA-b28c8fc5-cc45-4a81-998e-6896ff098646-ami-054413fe26fb8ded2.4",
-                "HOURLY67065": "ftdv-6.7.0-65-ENA-b28c8fc5-cc45-4a81-998e-6896ff098646-ami-0957248a8d92c6ffb.4",
+                "BYOLv70094": "ftdv-7.0.0-94-ENA-ad0af76e-c569-4a81-84d0-cff2308179ef",
+                "BYOLv70184": "ftdv-7.0.1-84-ENA-ad0af76e-c569-4a81-84d0-cff2308179ef",
+                "BYOLv71092": "ftdv-7.1.0-92-ENA-ad0af76e-c569-4a81-84d0-cff2308179ef",
                 "FMCBYOLv66191": "fmcv-6.6.1-91-ENA-c2367183-ca3b-4173-9972-962164f5e75f-ami-0f3be9e657dd29eae.4",
                 "FMCBYOLv67065": "fmcv-6.7.0-65-ENA-c2367183-ca3b-4173-9972-962164f5e75f-ami-0d1365544b4850eb8.4"
             },
-            "ap-south-1": {
-                "BYOLv66191": "ami-0b7eef059a49035f9",
-                "BYOLv67065": "ami-08a2c83c59a66fe1e",
-                "HOURLYv66191":"ami-09266537e8a32361a",
-                "HOURLY67065": "ami-095fd5469dee2ff31",
-                "FMCBYOLv66191": "ami-0ec2f47ad46d24878",
-                "FMCBYOLv67065": "ami-0eb58cd56c6cf778d" 
-            },
             "eu-north-1": {
+                "BYOLv63090": "ami-0b530adc83a4d5019",
+                "BYOLv640113": "ami-0773a08a943548a74",
+                "BYOLv650115": "ami-a49e14da",
+                "BYOLv66090": "ami-092f64d94e455f840",
                 "BYOLv66191": "ami-0c2f7fc8effe3c3bd",
+                "BYOLv66459": "ami-0d29665efb7dc6444",
+                "BYOLv66581": "ami-0ce5b7beb73f30c1f",
                 "BYOLv67065": "ami-0e5312764a53bb03d",
-                "HOURLYv66191":"ami-0cfaad61bfc2bfa71",
-                "HOURLY67065": "ami-0808f2df1948e1545",
+                "BYOLv70094": "ami-0df44b6cf6c246b59",
+                "BYOLv70184": "ami-07538820746484309",
+                "BYOLv71092": "ami-0365e11a2f25fa2b9",
                 "FMCBYOLv66191": "ami-07b150aeb56508a9a",
                 "FMCBYOLv67065": "ami-0b816869cc85e1911" 
             },
+            "ap-south-1": {
+                "BYOLv63090": "ami-05a2127c7702a3bc7",
+                "BYOLv640113": "ami-094dacfe5ef8e82dd",
+                "BYOLv650115": "ami-0ddc2c7cc4abd5425",
+                "BYOLv66090": "ami-09600fbf398cc0d9d",
+                "BYOLv66191": "ami-0b7eef059a49035f9",
+                "BYOLv66459": "ami-092d0732d05770f00",
+                "BYOLv66581": "ami-07e9d070b467da8f1",
+                "BYOLv67065": "ami-08a2c83c59a66fe1e",
+                "BYOLv70094": "ami-080b5d0e6477bcdcf",
+                "BYOLv70184": "ami-03ad48677eacb2149",
+                "BYOLv71092": "ami-05a946a4fee822abd",
+                "FMCBYOLv66191": "ami-0ec2f47ad46d24878",
+                "FMCBYOLv67065": "ami-0eb58cd56c6cf778d" 
+            },
             "eu-west-3": {
+                "BYOLv63090": "ami-06641b4e72c925952",
+                "BYOLv640113": "ami-0fb284a9f7308deda",
+                "BYOLv650115": "ami-02522ebf43ca47a5b",
+                "BYOLv66090": "ami-0e9b7b4970f30ea20",
                 "BYOLv66191": "ami-050f0ed8d26aede8c",
+                "BYOLv66459": "ami-056c50edb032304f8",
+                "BYOLv66581": "ami-0cff33d7b046f8bf3",
                 "BYOLv67065": "ami-058321764fced59e0",
-                "HOURLYv66191":" ami-00c02a48efbe75450",
-                "HOURLY67065": "ami-0d5d982ccc140e252",
+                "BYOLv70094": "ami-0203d2068005db438",
+                "BYOLv70184": "ami-0d6062823c947a261",
+                "BYOLv71092": "ami-07860f83d74e661d3",
                 "FMCBYOLv66191": "ami-004a7819ff47a0e24",
                 "FMCBYOLv67065": "ami-05b08ec1ba165efa0" 
             },
-            "eu-west-1": {
-                "BYOLv66191": "ami-042c4182e8a398bf1",
-                "BYOLv67065": "ami-0da09346c7a6e9a62",
-                "HOURLYv66191":"ami-088d30368eabe0179 ",
-                "HOURLY67065": "ami-06d29df04b73bd144",
-                "FMCBYOLv66191": "ami-030c1f7a873ca8238",
-                "FMCBYOLv67065": "ami-04f9b9b415d697bda" 
-            },
             "eu-west-2": {
+                "BYOLv63090": "ami-0a23a865bb0df428a",
+                "BYOLv640113": "ami-07cdb41a4a40e4b2f",
+                "BYOLv650115": "ami-0ec213d5d8b236ac1",
+                "BYOLv66090": "ami-040b40c37c0a0a1a4",
                 "BYOLv66191": "ami-094cc9969a60a3ee4",
+                "BYOLv66459": "ami-00f8d502b06324d39",
+                "BYOLv66581": "ami-0c837d862e1cb12d1",
                 "BYOLv67065": "ami-01c0e4ce97137708f",
-                "HOURLYv66191":"ami-022af9ec2ba5f48a5 ",
-                "HOURLY67065": "ami-0459e907f3a2be4b3",
+                "BYOLv70094": "ami-0870360768d3e84a8",
+                "BYOLv70184": "ami-0b698b20e37e03f97",
+                "BYOLv71092": "ami-03652fd701092096a",
                 "FMCBYOLv66191": "ami-07646167e91c8276c",
                 "FMCBYOLv67065": "ami-047040ce9689807d9" 
-            },  
+            },
             "eu-south-1": {
+                "BYOLv640113": "ami-07667224da382acb6",
+                "BYOLv66090": "ami-0a2284f135104a096",
+                "BYOLv66190": "ami-03527b3f6d40a4379",
                 "BYOLv66191": "ami-00a50c1e5bfd97eba",
+                "BYOLv66459": "ami-07318248d3ea8f2fb",
+                "BYOLv66581": "ami-0b9b058664a8b2b60",
                 "BYOLv67065": "ami-0f6767008870bc265",
-                "HOURLYv66191":"ami-0d0b495f0edec9957",
-                "HOURLY67065": "ami-025ea3ea39d470e10",
+                "BYOLv70094": "ami-0e63a182c6a041808",
+                "BYOLv70184": "ami-055736b4061477641",
+                "BYOLv71092": "ami-0fbe6135a5392ba8f",
                 "FMCBYOLv66191": "ami-07822aa2b34fcb393",
                 "FMCBYOLv67065": "ami-047040ce9689807d9" 
             },
-            "eu-central-1": {
-
-                "BYOLv66191": "ami-0fd62f572d4a110be",
-                "BYOLv67065": "ami-0ab0d04820a798874",
-                "HOURLYv66191":"ami-0162f17f39e8f0e29",
-                "HOURLY67065": "ami-07da0b829c4c0a564",
-                "FMCBYOLv66191": "ami-0d5e019040edbf7a5",
-                "FMCBYOLv67065": "ami-09cf3d0d8446e921b"
-            },   
-            
-            "us-east-1": {
-                "BYOLv66191": "ami-01132cc1bf9e21ad1",
-                "BYOLv67065": "ami-08ec348387b80324f",
-                "HOURLYv66191":"ami-03f3a0732e04a063c",
-                "HOURLY67065": "ami-0fdea9adf90ed1996",
-                "FMCBYOLv66191": "ami-020790e9a294ea856",
-                "FMCBYOLv67065": "ami-0b2a7a329b9ded487"
-            },   
-            "us-east-2": {
-
-                "BYOLv66191": "ami-0b51e298db5bc5f70",
-                "BYOLv67065": "ami-071414791b8cdefee",
-                "HOURLYv66191":"ami-0f7c422b095ab74e4",
-                "HOURLY67065": "ami-058e5caac0648cbcb",
-                "FMCBYOLv66191": "ami-0e883f19cdf986f13",
-                "FMCBYOLv67065": "ami-0e6d094f0a3845268"
-            },  
-            "us-west-1": {
- 
-                "BYOLv66191": "ami-0f61b248924539063",
-                "BYOLv67065": "ami-09ec385d1e4b3064",
-                "HOURLYv66191":"ami-06327ee71843e5cbd",
-                "HOURLY67065": "ami-0f9eeacc79922ae9e",
-                "FMCBYOLv66191": "ami-0db08446455cc13a2",
-                "FMCBYOLv67065": "ami-0f4a66343609b1964"
-            }, 
-            "us-west-2": {
-
-                "BYOLv66191": "ami-081cb92e2b5f0bbcd",
-                "BYOLv67065": "ami-0f60c5dd409c31d63",
-                "HOURLYv66191":"ami-0338b7922fe4be11d",
-                "HOURLY67065": "ami-010f1430c2e966f6f",
-                "FMCBYOLv66191": "ami-0af70f9f6c4999f83",
-                "FMCBYOLv67065": "ami-01c54eb71703bb6f9"
-            }, 
-            "ca-central-1": {
-
-                "BYOLv66191": "ami-0b3be9326313aa4db",
-                "BYOLv67065": "ami-0194fe9bb1fc4c1e1",
-                "HOURLYv66191":"ami-01612aa06236bf9b6",
-                "HOURLY67065": "ami-0d6ea80350b3cc509",
-                "FMCBYOLv66191": "ami-076ebd01b840da693",
-                "FMCBYOLv67065": "ami-0d82a4518f4ab2512"
-            }, 
-            "af-south-1": {
-
-                "BYOLv66191": "ami-03cdcb7fe694379d1",
-                "BYOLv67065": "ami-081ef5f2a436f6171",
-                "HOURLYv66191":"ami-0e9391de7c663d463",
-                "HOURLY67065": "ami-0a3e54d3b8f91d699",
-                "FMCBYOLv66191": "ami-0e36cfe3295e7745f",
-                "FMCBYOLv67065": "ami-0ea65404be6364884"
+            "eu-west-1": {
+                "BYOLv63090": "ami-0629d543a1df21093",
+                "BYOLv640113": "ami-08b33b8a9452bbbd3",
+                "BYOLv650115": "ami-02b8c04fb49187d6c",
+                "BYOLv66090": "ami-0af466e098124cc58",
+                "BYOLv66191": "ami-042c4182e8a398bf1",
+                "BYOLv66459": "ami-0566f253285bd1f21",
+                "BYOLv66581": "ami-0ce0f4c5204ca1369",
+                "BYOLv67065": "ami-0da09346c7a6e9a62",
+                "BYOLv70094": "ami-05f4622e0fa8e091c",
+                "BYOLv70184": "ami-0eb0d5b446f2d064f",
+                "BYOLv71092": "ami-0784ff68f15c9f851",
+                "FMCBYOLv66191": "ami-030c1f7a873ca8238",
+                "FMCBYOLv67065": "ami-04f9b9b415d697bda" 
             },
-            "ap-east-1": {
-        
-                "BYOLv66090": "ami-0e722ab1f58dc1cbe",
-                "BYOLv66190": "ami-0e761a6782d2043d7",
-                "BYOLv66191": "ami-03cdcb7fe694379d1",
-                "BYOLv67065": "ami-0a3e54d3b8f91d699",
-                "FMCBYOLv66191": "ami-09bcebacd127532d5",
-                "FMCBYOLv67065": "ami-08369b38c0777addd"
-            },
-            "ap-northeast-1": {
-
-                "BYOLv66191": "ami-07fbd0a32988d2b02",
-                "BYOLv67065": "ami-03a471cfeaff17605",
-                "HOURLYv66191":"ami-0c7d2627d0c200cd9",
-                "HOURLY67065": " ami-0fbb8c6c0f3fd778a",
-                "FMCBYOLv66191": "ami-07625608234b2df3e",
-                "FMCBYOLv67065": "ami-05202f380329d6fac"
-            }, 
-            "ap-northeast-2": {
-                "BYOLv66191": "ami-07fbd0a32988d2b02",
-                "BYOLv67065": "ami-03a471cfeaff17605",
-                "HOURLYv66191":" ami-0b09a3a64a58c1e97",
-                "HOURLY67065": "ami-01fc52abdec3e323a",
-                "FMCBYOLv66191":"ami-047e0a65d6912455b",
-                "FMCBYOLv67065": "ami-0a54e4a551b7fb973"
-            }, 
             "ap-northeast-3": {
+                "BYOLv63090": "ami-0e303fd07bdb50dd4",
+                "BYOLv640113": "ami-0535644b28634dcef",
+                "BYOLv650115": "ami-0bc7af863f78dbc4c",
                 "BYOLv66090": "ami-0c6f4e78aabadb60d",
-                "BYOLv66190": "ami-039dc5f96cfa3dbe1",
                 "BYOLv66191": "ami-0f24c91e554c97050",
+                "BYOLv66459": "ami-00299229f56e616bc",
+                "BYOLv66581": "ami-031b4525696c9212a",
                 "BYOLv67065": "ami-004efc398b863d173",
+                "BYOLv70094": "ami-0396407c73793efa5",
+                "BYOLv70184": "ami-065a4392bb379138c",
+                "BYOLv71092": "ami-0a6bb1e881c9900aa",
                 "FMCBYOLv66191":"ami-05577edd84c54cb65",
                 "FMCBYOLv67065": "ami-09f58423ea47716cf"
-
-            }, 
-            "ap-southeast-1": {
-                "BYOLv66090": "ami-008ba318e87fcc0ae",
-                "BYOLv66190": "ami-069118218ee3b50c0",
-                "BYOLv66191": "ami-0ac4ca7c7b8ac4188",
-                "BYOLv67065": "ami-0938a2a376c67d560",
-                "FMCBYOLv66191":"ami-05dda38dedf41e7df",
-                "FMCBYOLv67065": "ami-0b8097d32be8a7c9c"
-
-            }, 
-            "ap-southeast-2": {
-                "BYOLv66090": "ami-0800301cdf0c2bc80",
-                "BYOLv66190": "ami-0699e87cf0bf8b4b5",
-                "BYOLv66191": "ami-0b1626690f8f67592",
-                "BYOLv67065": "ami-010cbd3d075215b52",
-                "FMCBYOLv66191":"ami-09f8d1fe23bb8255e",
-                "FMCBYOLv67065": "ami-0488ba909e349c831"
-
-            }, 
-            "me-south-1": {
-                "BYOLv66191": "ami-0d09915652ca52ffc",
-                "BYOLv67065": "ami-09a0fbe2cd1e5757d",
-                "FMCBYOLv66191":"ami-01dee15b928203d04",
-                "FMCBYOLv67065": "ami-03370f1f88e86de4f"
-            }, 
+            },
+            "ap-northeast-2": {
+                "BYOLv63090": "ami-0b43caf330cbaf38f",
+                "BYOLv640113": "ami-02d75a901ccf5a4f1",
+                "BYOLv650115": "ami-0ed4bbd781ecad795",
+                "BYOLv66090": "ami-02426bede36903f65",
+                "BYOLv66191": "ami-07291afbfeb544ec8",
+                "BYOLv66459": "ami-0fb4b0e0b8f1b8a9f",
+                "BYOLv66581": "ami-0ad026c909b64f8a3",
+                "BYOLv67065": "ami-06d5a8b8a348fff58",
+                "BYOLv70094": "ami-0f6f3b35de8c4f020",
+                "BYOLv70184": "ami-0a6ec6d7110205a67",
+                "BYOLv71092": "ami-019b8f75df34468d0",
+                "FMCBYOLv66191":"ami-047e0a65d6912455b",
+                "FMCBYOLv67065": "ami-0a54e4a551b7fb973"
+            },
+            "ap-northeast-1": {
+                "BYOLv63090": "ami-02d989038369cbd19",
+                "BYOLv640113": "ami-009458e36f40f2ea3",
+                "BYOLv650115": "ami-06f15f3c1f8c9dc16",
+                "BYOLv66090": "ami-00c0a0aad34c533f7",
+                "BYOLv66191": "ami-07fbd0a32988d2b02",
+                "BYOLv66459": "ami-0c1c9994fb93f63c4",
+                "BYOLv66581": "ami-011ea0435fe6746b7",
+                "BYOLv67065": "ami-03a471cfeaff17605",
+                "BYOLv70094": "ami-02b50e3e47eda2e2e",
+                "BYOLv70184": "ami-037ada7c132ddc99f",
+                "BYOLv71092": "ami-0a4f7db20ecedac18",
+                "FMCBYOLv66191": "ami-07625608234b2df3e",
+                "FMCBYOLv67065": "ami-05202f380329d6fac"
+            },
             "sa-east-1": {
-                "BYOLv66191": "ami-0b1626690f8f67592",
-                "BYOLv67065": "ami-010cbd3d075215b52",
-                "HOURLYv66191":"ami-0ac478df153397452",
-                "HOURLY67065": "ami-0500e1c06f3701ba1",
+                "BYOLv63090": "ami-093a851177070969b",
+                "BYOLv640113": "ami-0c500294050bfc14d",
+                "BYOLv650115": "ami-0cad87bd3de50b5a1",
+                "BYOLv66090": "ami-0d92f29697939ff6f",
+                "BYOLv66191": "ami-05846f051ce2d9f45",
+                "BYOLv66459": "ami-039db4722b56bce26",
+                "BYOLv66581": "ami-0f83734021fb378d5",
+                "BYOLv67065": "ami-0bfb960b26ba6a726",
+                "BYOLv70094": "ami-06fb98e352683a3f5",
+                "BYOLv70184": "ami-086d34e6e3473c1e8",
+                "BYOLv71092": "ami-0f03466eac2f95eab",
                 "FMCBYOLv66191":"ami-0d2e21991f7811b1d",
                 "FMCBYOLv67065": "ami-08bd807e8199303fd"
             },
-            "us-gov-west-1": {
-                "BYOLv66191": "ami-0198618ffee2901f7",
-                "BYOLv67065": "ami-06e6a00750ac5e8e9",
-                "HOURLYv66191":"ami-01bcea8f04d82784e",
-                "HOURLY67065": "ami-00c2b359cdb710f9c",
-                "FMCBYOLv66191":"ami-01dee15b928203d04",
-                "FMCBYOLv67065": "ami-0fbdd7d65ca56d589"
+            "ca-central-1": {
+                "BYOLv63090": "ami-01a819d682209eb1a",
+                "BYOLv640113": "ami-0e7927cfe5e5709f5",
+                "BYOLv650115": "ami-0e08a33cb50ddc3e7",
+                "BYOLv66090": "ami-0ccd91e7b958de635",
+                "BYOLv66191": "ami-0b3be9326313aa4db",
+                "BYOLv66459": "ami-0ee36144ed0552739",
+                "BYOLv66581": "ami-06d904e61c012b952",
+                "BYOLv67065": "ami-0194fe9bb1fc4c1e1",
+                "BYOLv70094": "ami-0ae8b30fd0bcca081",
+                "BYOLv70184": "ami-0992f65dcd2104f23",
+                "BYOLv71092": "ami-0e73d1ef2c2ba3dd1",
+                "FMCBYOLv66191": "ami-076ebd01b840da693",
+                "FMCBYOLv67065": "ami-0d82a4518f4ab2512"
             },
-            "us-gov-east-1": {
-                "BYOLv66191": "ami-091fd895f06b80c61",
-                "BYOLv67065": "ami-0d37247f8d352a269",
-                "HOURLYv66191":"ami-08dc45ff0baf572a5",
-                "HOURLY67065": "ami-0e1b84bf848c7ddb7",
-                "FMCBYOLv66191":"ami-01da631b568436f27",
-                "FMCBYOLv67065": "ami-0fb578a1dc6b1ef61"
+            "ap-southeast-1": {
+                "BYOLv63090": "ami-015aba09f3a6d2955",
+                "BYOLv640113": "ami-0cf954d5302c94d2c",
+                "BYOLv650115": "ami-0193ae64b5f2789de",
+                "BYOLv66090": "ami-008ba318e87fcc0ae",
+                "BYOLv66191": "ami-0ac4ca7c7b8ac4188",
+                "BYOLv66459": "ami-00506d1f5a416883e",
+                "BYOLv66581": "ami-07b2c1381f2c3b6ea",
+                "BYOLv67065": "ami-0938a2a376c67d560",
+                "BYOLv70094": "ami-0ef436f28c7e18d6d",
+                "BYOLv70184": "ami-0e6027c38e9fcf03d",
+                "BYOLv71092": "ami-067ef0cc5e5dbd09f",
+                "FMCBYOLv66191":"ami-05dda38dedf41e7df",
+                "FMCBYOLv67065": "ami-0b8097d32be8a7c9c"
+            },
+            "ap-southeast-2": {
+                "BYOLv63090": "ami-059b9c4b75b45f7b5",
+                "BYOLv640113": "ami-0240f80919253131a",
+                "BYOLv650115": "ami-06ea2c016090f284f",
+                "BYOLv66090": "ami-0800301cdf0c2bc80",
+                "BYOLv66191": "ami-0b1626690f8f67592",
+                "BYOLv66459": "ami-04f961b395e66eda6",
+                "BYOLv66581": "ami-0bc3b0d212d65836a",
+                "BYOLv67065": "ami-010cbd3d075215b52",
+                "BYOLv70094": "ami-06941cbd4b70c5aa2",
+                "BYOLv70184": "ami-01eea1e68588c18c9",
+                "BYOLv71092": "ami-0ec795e3113d80a24",
+                "FMCBYOLv66191":"ami-09f8d1fe23bb8255e",
+                "FMCBYOLv67065": "ami-0488ba909e349c831"
+            },
+            "eu-central-1": {
+                "BYOLv63090": "ami-0a6011983ae8fe10c",
+                "BYOLv640113": "ami-02aa53c4b44ab6708",
+                "BYOLv650115": "ami-0f148a582efa44efc",
+                "BYOLv66090": "ami-0c4f063d62ef2d308",
+                "BYOLv66191": "ami-0fd62f572d4a110be",
+                "BYOLv66459": "ami-0836925fc3d0f9930",
+                "BYOLv66581": "ami-05b6548e7ab705dad",
+                "BYOLv67065": "ami-0ab0d04820a798874",
+                "BYOLv70094": "ami-0359444566eef83f9",
+                "BYOLv70184": "ami-0c5f68d759c792e9d",
+                "BYOLv71092": "ami-0ce444adcf0193e04",
+                "FMCBYOLv66191": "ami-0d5e019040edbf7a5",
+                "FMCBYOLv67065": "ami-09cf3d0d8446e921b"
+            },
+            "us-east-1": {
+                "BYOLv63090": "ami-0ff84049557e4013c",
+                "BYOLv640113": "ami-09488841735329968",
+                "BYOLv650115": "ami-003b7b3f67cab262d",
+                "BYOLv66090": "ami-07bbfbc09cd5e69e9",
+                "BYOLv66191": "ami-01132cc1bf9e21ad1",
+                "BYOLv66459": "ami-0f57b620262c8e44e",
+                "BYOLv66581": "ami-01cff95fffb6e4d87",
+                "BYOLv67065": "ami-08ec348387b80324f",
+                "BYOLv70094": "ami-08ac087d538191ea1",
+                "BYOLv70184": "ami-0efa191313698c95c",
+                "BYOLv71092": "ami-05bab112f1bad817d",
+                "FMCBYOLv66191": "ami-020790e9a294ea856",
+                "FMCBYOLv67065": "ami-0b2a7a329b9ded487"
+            },
+            "us-east-2": {
+                "BYOLv63090": "ami-0b2c997ed790a2c24",
+                "BYOLv640113": "ami-03f20abe17f42d225",
+                "BYOLv650115": "ami-024bed1e4455e3f0d",
+                "BYOLv66090": "ami-0d83917cfe7d20a95",
+                "BYOLv66191": "ami-0b51e298db5bc5f70",
+                "BYOLv66459": "ami-0b1fe246769e4bf87",
+                "BYOLv66581": "ami-09e520c3386a51c1a",
+                "BYOLv67065": "ami-071414791b8cdefee",
+                "BYOLv70094": "ami-067247187160ec69c",
+                "BYOLv70184": "ami-0c651ffae238e1606",
+                "BYOLv71092": "ami-0668769c3e7739b6f",
+                "FMCBYOLv66191": "ami-0e883f19cdf986f13",
+                "FMCBYOLv67065": "ami-0e6d094f0a3845268"
+            },
+            "us-west-1": {
+                "BYOLv63090": "ami-0164475bc8b0f2181",
+                "BYOLv640113": "ami-02d61c7af3ae9bfef",
+                "BYOLv650115": "ami-0775941dad94ef102",
+                "BYOLv66090": "ami-0800f94cbdc903f32",
+                "BYOLv66191": "ami-0f61b248924539063",
+                "BYOLv66459": "ami-07ce72854865b11b7",
+                "BYOLv66581": "ami-045b02f3018a9065f",
+                "BYOLv67065": "ami-09ec385d1e4b30647",
+                "BYOLv70094": "ami-04f040335b358f898",
+                "BYOLv70184": "ami-0d597031631cf306a",
+                "BYOLv71092": "ami-0087373b1b83a33ed",
+                "FMCBYOLv66191": "ami-0db08446455cc13a2",
+                "FMCBYOLv67065": "ami-0f4a66343609b1964"
+            },
+            "us-west-2": {
+                "BYOLv63090": "ami-0af7c1d378d518f07",
+                "BYOLv640113": "ami-06e422fac3c9d4373",
+                "BYOLv650115": "ami-077962a25c41f791b",
+                "BYOLv66090": "ami-0ed8be695cc196696",
+                "BYOLv66191": "ami-081cb92e2b5f0bbcd",
+                "BYOLv66459": "ami-03ee8909c9655df2c",
+                "BYOLv66581": "ami-0f5244d7d89e54274",
+                "BYOLv67065": "ami-0f60c5dd409c31d63",
+                "BYOLv70094": "ami-0e9608826d428224b",
+                "BYOLv70184": "ami-09b0f184a86ca95af",
+                "BYOLv71092": "ami-02f59e7d61198e0e3",
+                "FMCBYOLv66191": "ami-0af70f9f6c4999f83",
+                "FMCBYOLv67065": "ami-01c54eb71703bb6f9"
             }
-
         } 
-
      },
+     
     "Resources": {
         "SecurityGroupAll": {
             "Type": "AWS::EC2::SecurityGroup",

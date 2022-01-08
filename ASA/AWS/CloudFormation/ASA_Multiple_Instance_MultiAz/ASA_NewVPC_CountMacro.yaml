@@ -477,9 +477,9 @@ Parameters:
   AsaVersion:
     Description: Cisco ASAv Version
     Type: String
-    Default: v9.15.1.1
+    Default: v9.17.1
     AllowedValues:
-      - v9.15.1.1
+      - v9.17.1
   AsaLicType:
     Description: Cisco ASAv License Type
     Type: String
@@ -560,43 +560,47 @@ Conditions:
 
 Mappings:
   KeynameMap:
-    v9.15.1.1:
-      BYOL: BYOLv9912
+    v9.17.1:
+      BYOL: BYOLv9171
   AWSAMIRegionMap:
     AMI:
-      BYOLv9912: Cisco-ASAv-9.9.1-2-6836725a-4399-455a-bf58-01255e5213b8-ami-9f0e0ee5.4
+      BYOLv9171: asav9-17-1-ENA-6836725a-4399-455a-bf58-01255e5213b8
     ap-south-1:
-      BYOLv9912: ami-0e324465fc11ae3a5
+      BYOLv9171: ami-081a415556b1c6d01
+    eu-north-1:
+      BYOLv9171: ami-029bd048299b70723
     eu-west-3:
-      BYOLv9912: ami-0f6922aa977439e04
+      BYOLv9171: ami-0c322c74504c0de46
     eu-west-2:
-      BYOLv9912: ami-09a829e2321cc8e6a
+      BYOLv9171: ami-0f2d4d8451e86905a
     eu-west-1:
-      BYOLv9912: ami-0bcbf4a58143c0ecc
+      BYOLv9171: ami-0dcb38f97ec692846
+    eu-south-1:
+      BYOLv9171: ami-0cad662c0d3e252d3
+    ap-northeast-3:
+      BYOLv9171: ami-022b3074b79191fd4
     ap-northeast-2:
-      BYOLv9912: ami-095f7b586c9f25672
+      BYOLv9171: ami-0bb8b0a4f48ba64c9
     ap-northeast-1:
-      BYOLv9912: ami-067b27c771c9f41f5
+      BYOLv9171: ami-0292946c1fa3214f3
     sa-east-1:
-      BYOLv9912: ami-098ccb56ed62b0643
+      BYOLv9171: ami-00007f37e1b8f76d7
     ca-central-1:
-      BYOLv9912: ami-029186752f847dc03
+      BYOLv9171: ami-08cdc900ae17e4d45
     ap-southeast-1:
-      BYOLv9912: ami-0e95d0e3304ed9a76
+      BYOLv9171: ami-0935fb9f373b65eec
     ap-southeast-2:
-      BYOLv9912: ami-0f9ea2ff2b1c30700
+      BYOLv9171: ami-0c6fa1eec3f2e98a0
     eu-central-1:
-      BYOLv9912: ami-0b9a77c9923ffecd8
+      BYOLv9171: ami-0e35a84a866500703
     us-east-1:
-      BYOLv9912: ami-0b4c2e006f719ba20
+      BYOLv9171: ami-01426821ff0f3a449
     us-east-2:
-      BYOLv9912: ami-03dda840f4c3d816e
+      BYOLv9171: ami-02881c12c63d013d3
     us-west-1:
-      BYOLv9912: ami-0bcbf4a58143c0ecc
+      BYOLv9171: ami-009f2fcce82c121d6
     us-west-2:
-      BYOLv9912: ami-09a829e2321cc8e6a
-    us-gov-west-1:
-      BYOLv9912: ami-0467537be582025e0
+      BYOLv9171: ami-0c573611f221e8ea3
 Transform: Count
 Resources:
   vpc:
