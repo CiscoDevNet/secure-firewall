@@ -1,0 +1,295 @@
+# Title shown in Application Information tab.
+title: Cisco FTD
+# Sub Title shown in Application Information tab.
+description: This template deployes FTD
+schemaVersion: 1.1.0
+
+variableGroups:
+  - title: "Hidden Variable Group"
+    visible: false
+    variables:
+      - tenancy_ocid
+      - region
+      - mp_listing_resource_id
+
+  - title: "variables"
+    variables:
+      - compartment_id
+      - label_prefix
+      - multiple_ad
+      - vm_compute_shape
+      - num_instances
+      - day_0_config
+      - admin_ssh_pub_key
+      - admin_password
+      - mgmt_network
+      - inside_network
+      - outside_network
+      - dmz_network
+      - diag_network
+      - hostname
+      - network_1_name
+      - network_1_vcn_cidr
+      - network_1_subnet_cidr
+      - network_1_private_ip
+      - network_1_external_ip
+      - network_2_name
+      - network_2_vcn_cidr
+      - network_2_subnet_cidr
+      - network_2_private_ip
+      - network_2_external_ip
+      - network_3_name
+      - network_3_vcn_cidr
+      - network_3_subnet_cidr
+      - network_3_private_ip
+      - network_3_external_ip
+      - network_4_name
+      - network_4_vcn_cidr
+      - network_4_subnet_cidr
+      - network_4_private_ip
+      - network_4_external_ip
+      - network_5_name
+      - network_5_vcn_cidr
+      - network_5_subnet_cidr
+      - network_5_private_ip
+      - network_5_external_ip
+
+
+
+variables:
+  # Hidden variables
+  tenancy_ocid:
+    type: string
+    title: Tenancy ID
+    description: The Oracle Cloud Identifier (OCID) for your tenancy
+    required: true
+
+  compartment_id:
+    type: oci:identity:compartment:id
+    required: true
+    title: Compartment OCID
+    description: The compartment in which to create all Compute resources
+    default: compartment_ocid
+
+  region:
+    type: oci:identity:region:name
+    title: Region
+    description: The region in which to create all resources
+    required: true
+
+  label_prefix:
+    type: string
+    title: Label Prefix
+    description: a string that will be prepended to all resources
+    default: ftd
+    required: false
+
+  multiple_ad:
+    type: boolean
+    required: true
+    default: false
+    description: Deploy VMs in single or different ADs
+
+  vm_compute_shape:
+    type: oci:core:instanceshape:name
+    default: VM.Standard2.4
+    title: Firewall Compute Shape
+    required: true
+    dependsOn:
+      compartmentId: compartment_id
+      imageId: mp_listing_resource_id
+
+  mp_listing_resource_id:
+    type: oci:core:image:id
+    required: true
+    description: Marketplace Image OCID
+    dependsOn:
+      compartmentId: compartment_id
+
+  num_instances:
+    type: numbers
+    description: Number of instances to create. This value is ignored if static_ips is provided
+    default: 1
+    required: true
+
+  day_0_config:
+    type: string
+    description: Render a startup script with a template
+    default: "startup_file.json"
+    required: false
+
+  admin_ssh_pub_key:
+    type: string
+    required: true
+    title: Public SSH Key string
+    description: Public SSH Key to access VM via SSH
+
+  admin_password:
+    type: string
+    required: true
+    description: admin password for FTD
+
+  hostname:
+    type: string
+    description: FTD hostname
+    default: cisco-ftd
+    required: false
+
+  mgmt_network:
+    type: string
+    required: true
+    description: Management Network name
+
+  inside_network:
+    type: string
+    required: true
+    description: Inside Network name
+
+  outside_network:
+    type: string
+    required: true
+    description: Outside Network name
+ 
+  diag_network:
+    type: string
+    description: Diag Network name
+
+  dmz_network:
+    type: string
+    description: DMZ  Network name
+    default: ""
+
+  network_1_name:
+    type: string
+    description: Name of 1st network
+    required: true
+  
+  network_1_vcn_cidr:
+    type: string
+    description: VCN CIDR of 1st network
+    required: true
+
+  network_1_subnet_cidr:
+    type: string
+    description: Subnet CIDR of 1st network
+    required: true
+  
+  network_1_private_ip:
+    type: array
+    items:
+      type: string
+    description: List of Interface IPs of 1st network
+    required: true
+
+  network_1_external_ip:
+    type: boolean
+    description: If external IP is required for Interface
+    required: true
+    default: false
+
+  network_2_name:
+    type: string
+    description: Name of 2nd network
+    required: true
+  
+  network_2_vcn_cidr:
+    type: string
+    description: VCN CIDR of 2nd network
+    required: true
+
+  network_2_subnet_cidr:
+    type: string
+    description: Subnet CIDR of 2nd network
+    required: true
+  
+  network_2_private_ip:
+    type: array
+    items:
+      type: string
+    description: List of Interface IPs of 2nd network
+    required: true
+
+  network_2_external_ip:
+    type: boolean
+    description: If external IP is required for Interface
+    required: true
+    default: false
+
+  network_3_name:
+    type: string
+    description: Name of 3rd network
+    required: true
+  
+  network_3_vcn_cidr:
+    type: string
+    description: VCN CIDR of 3rd network
+    required: true
+
+  network_3_subnet_cidr:
+    type: string
+    description: Subnet CIDR of 3rd network
+    required: true
+  
+  network_3_private_ip:
+    type: array
+    items:
+      type: string
+    description: List of Interface IPs of 3rd network
+    required: true
+
+  network_3_external_ip:
+    type: boolean
+    description: If external IP is required for Interface
+    required: true
+    default: false
+
+  network_4_name:
+    type: string
+    description: Name of 4th network
+    required: true
+  
+  network_4_vcn_cidr:
+    type: string
+    description: VCN CIDR of 4th network
+    required: true
+
+  network_4_subnet_cidr:
+    type: string
+    description: Subnet CIDR of 4th network
+    required: true
+  
+  network_4_private_ip:
+    type: array
+    items:
+      type: string
+    description: List of Interface IPs of 4th network
+    required: true
+
+  network_4_external_ip:
+    type: boolean
+    description: If external IP is required for Interface
+    required: true
+    default: false
+    
+  network_5_name:
+    type: string
+    description: Name of 4th network
+  
+  network_5_vcn_cidr:
+    type: string
+    description: VCN CIDR of 4th network
+
+  network_5_subnet_cidr:
+    type: string
+    description: Subnet CIDR of 4th network
+  
+  network_5_private_ip:
+    type: array
+    items:
+      type: string
+    description: List of Interface IPs of 4th network
+
+  network_5_external_ip:
+    type: boolean
+    description: If external IP is required for Interface
+    default: false
