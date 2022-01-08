@@ -1,0 +1,4 @@
+{
+"AdminPassword": "${admin_password}",
+"Hostname":      "${hostname}",
+}

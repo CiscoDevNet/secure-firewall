@@ -1,0 +1,23 @@
+# OOB
+tenancy_ocid      = "ocid1.tenancy.oc1..aaaaaaaaa63scrb7sovw7jr6l4nlkmrh6j5wz2tmqtukn47z2p5ah5krcl5a"
+user_ocid         = "ocid1.user.oc1..aaaaaaaaqcg4cghunmq4vtjkcnaqkwjz6cvsqi3i4gafm6lcodvwkol2eg4q"
+private_key_path  = "~/.oci/oci_api_key.pem"
+fingerprint       = "d2:0e:4f:c8:e6:28:7c:5a:ca:5e:e6:71:98:da:ce:bb"
+region            = "us-sanjose-1"
+compartment_id    = "ocid1.compartment.oc1..aaaaaaaav4qctsyrzsowwyxxsgnv222tdvse5geekeas26ycpk3rf53a2diq"
+label_prefix      = "fmc"
+hostname          = "cisco-fmc"
+day_0_config      = "fmcv.txt"
+admin_ssh_pub_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDCII2+Zvw/Var0aEo7B5FMGSmLSByanSeoNyp15ztOl7hsvL7c52kPnF+O288cBTDSJCTHJ3gGp18h0daXlhV8ab6gsQFP+HZtuH60+93Pt+IFMzRq4fT5pY2wYLXQ1Cahkj6rZlrjHGRwDr0mi42TR5i9QiOvWtNAUH0L7RNywvntyWjU2l+bJ/SKJ1rGK1GsNUvTJmk9+vE/JXPfrBqHe3yTrR4vGUa8QRx+x3hiZ32WPvCBKIdKMSdO/hYIs08m/npV1MIQJJZq9ZcCFkFxFGyJ1q4mdoXCSby7SHuqqxzrEEIYSQWixOcDdsNR57RufgjWdM9KwcVODTYaiDbf admin@starship.matrix.com"
+admin_password    = "C8Npp2E61Az@6z3L"
+vm_compute_shape  = "VM.Standard2.4"
+# nic0 needs to be the management interface
+num_instances     = 1
+# The Availability Domain Number for vm
+vm_ads_number               = [1]
+network_strategy            = "Use Existing VCN and Subnet"
+subnet_id                   = "ocid1.subnet.oc1.us-sanjose-1.aaaaaaaaglcqwruoxmvr2hqdcjkvoidk4j2yepld56lx7bj5vddv57lfuy3q"
+mangement_vcn_display_name  = "mgmt"
+mangement_vcn_cidr_block    = "10.20.0.0/16"
+mangement_subnet_cidr_block = "10.20.1.0/24"
+appliance_ips               = ["10.20.1.15"]
