@@ -77,6 +77,8 @@ Each specific usecase contains a README file with installation instructions.
 * **FTD on OCI:**
   * _Terraform templates:_
     * [Single FTD Instance](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/OCI/Terraform/examples/single-instance)
+  * _Oracle Resource Manager:_
+    * [FTD Deployment](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/OCI/Resource_Manager)
 
 * **FTD Ansible Modules**
   * [FTD Ansible Github](https://github.com/CiscoDevNet/FTDAnsible)
