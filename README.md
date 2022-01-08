@@ -109,9 +109,15 @@ Each specific usecase contains a README file with installation instructions.
 * **FMC on GCP:**
   * _Terraform templates:_
     * [FMC Deployment in New or Existing newtwork](https://github.com/CiscoDevNet/secure-firewall/tree/main/FMC/GCP/Terraform/examples/single-instance)
-  * _Deployment Manager Template:_
+  * _Resource Manager Templates:_
     * [FMC Deployment in New or Existing newtwork](https://github.com/CiscoDevNet/secure-firewall/tree/main/FMC/GCP/Deployment_Manager)
- 
+
+* **FMC on OCI:**
+  * _Terraform templates:_
+    * [FMC Deployment in New or Existing newtwork](https://github.com/CiscoDevNet/secure-firewall/tree/main/FMC/OCI/Terraform)
+  * _Deployment Manager templates:_
+    * [FMC Deployment in New or Existing newtwork](https://github.com/CiscoDevNet/secure-firewall/tree/main/FMC/OCI/Resource_Manager/resource-manager)
+
  * **Cloud Native:**
    * [SFCN GitHub Repository](https://github.com/CiscoDevNet/sfcn)
  
