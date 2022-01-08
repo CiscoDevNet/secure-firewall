@@ -1,0 +1,5 @@
+{
+    "AdminPassword": "${admin_password}",
+    "Hostname":    "${hostname}",
+    "ManageLocally": "Yes"
+}
