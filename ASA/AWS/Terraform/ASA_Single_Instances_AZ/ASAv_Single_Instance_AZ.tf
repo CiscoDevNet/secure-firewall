@@ -78,6 +78,10 @@ variable "instances_per_az" {
   default = 1
 }
 
+variable "enable_password" {
+  default = "P@ssw0rd!"
+}
+
 #########################################################################################################################
 # data
 #########################################################################################################################
@@ -103,7 +107,10 @@ data "aws_ami" "asav" {
 }
 
 data "template_file" "startup_file" {
-  template = file("ASA_startup_file.txt")
+  template = file("asa_startup_file.txt")
+  vars = {
+    enable_password = var.enable_password
+  }
 }
 
 data "aws_availability_zones" "available" {}
@@ -166,7 +173,6 @@ resource "aws_subnet" "inside_subnet" {
   }
 }
 
-
 resource "aws_subnet" "dmz_subnet" {
   count = var.availability_zone_count
   vpc_id            = aws_vpc.asa_vpc.id
@@ -177,7 +183,6 @@ resource "aws_subnet" "dmz_subnet" {
     Name = "dmz subnet"
   }
 }
-
 
 
 #################################################################################################################################
@@ -343,7 +348,6 @@ resource "aws_route" "inside_default_route" {
   route_table_id          = aws_route_table.asa_inside_route.id
   destination_cidr_block  = "0.0.0.0/0"
   network_interface_id    = aws_network_interface.ASA_inside[count.index].id
-
 }
 
 //To define the default route for DMZ network thur ASA inside interface 
@@ -353,7 +357,6 @@ resource "aws_route" "DMZ_default_route" {
   route_table_id          = aws_route_table.asa_dmz_route.id
   destination_cidr_block  = "0.0.0.0/0"
   network_interface_id    = aws_network_interface.ASA_dmz[count.index].id
-
 }
 
 resource "aws_route_table_association" "outside_association" {
@@ -417,27 +420,27 @@ resource "aws_eip_association" "asa-outside-ip-association" {
 # Create the Cisco NGFW Instances 
 ##################################################################################################################################
 resource "aws_instance" "asav" {
-   count = var.availability_zone_count * var.instances_per_az
-    ami                 = data.aws_ami.asav.id
-    instance_type       = var.size 
-    key_name            = var.key_name
+  count = var.availability_zone_count * var.instances_per_az
+  ami                 = data.aws_ami.asav.id
+  instance_type       = var.size 
+  key_name            = var.key_name
     
-network_interface {
+  network_interface {
     network_interface_id = aws_network_interface.ASA_mgmt[count.index].id
     device_index         = 0
   }
 
-   network_interface {
+  network_interface {
     network_interface_id = aws_network_interface.ASA_outside[count.index].id
     device_index         = 1
   }
 
-    network_interface {
+  network_interface {
     network_interface_id = aws_network_interface.ASA_inside[count.index].id
     device_index         = 2
   }
 
-    network_interface {
+  network_interface {
     network_interface_id = aws_network_interface.ASA_dmz[count.index].id
     device_index         = 3
   }

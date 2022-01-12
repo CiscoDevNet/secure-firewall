@@ -11,7 +11,7 @@ aws_secret_key      = ""
 ############################################################
 #Define New VPC in a specific Region and Avilability Zone 
 #############################################################
-vpc_name            = "Transit-Service-VPC"
+vpc_name            = "Transit-Service-VPC1"
 
 region               = "ap-south-1"
 
@@ -31,7 +31,7 @@ inside_subnet      = "10.1.2.0/24"
 
 dmz_subnet         = "10.1.3.0/24" 
 
-key_name             = "NGFW-KP"  
+key_name             = "lx1"  
 # Generate the key if you want to login thru the  key
 
 ###########################################################################################
@@ -45,7 +45,7 @@ key_name             = "NGFW-KP"
 
 size                = "c5.xlarge"
 
-ASA_version         = "asav9-15-1-1"
+ASA_version         = "asav9-17-1"
 //Allowed Values = asav9-15-1, asav9-14-1-30, asav9-12-4-4, asav9-14-1-10, asav9-13-1-12
 
 asa_mgmt_ip       =     "10.1.0.10"
@@ -55,4 +55,6 @@ asa_outside_ip    =     "10.1.1.10"
 asa_inside_ip     =     "10.1.2.10"       
 
 asa_dmz_ip        =     "10.1.3.10"
+
+enable_password   =     "P@ssw0rd!"
 
