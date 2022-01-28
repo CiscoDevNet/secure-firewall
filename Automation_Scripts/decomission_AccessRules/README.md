@@ -26,7 +26,7 @@ To view a description of the parameters, use: -h or --help
  - <'IP'>:          IP or network object id. Example: 0.0.0.0 dde11d62-288b-4b4c-92e0-1dad0496f14b
  - [--delete]:      Optional argument to be used if the identified rules should be deleted
 
-* **Note: This script lists all rules containing the mentioned IP address or object UUID, including rules containing additional network elements.**
+**Note:** This script lists all rules containing the mentioned IP address or object UUID, including rules containing additional network elements.
 
 #### ADDITIONAL
 
