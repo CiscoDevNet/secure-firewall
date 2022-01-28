@@ -124,5 +124,9 @@ Each specific usecase contains a README file with installation instructions.
  * **CSDAC - Cisco Secure Dynamic Attributes Connector:**
    * [CSDAC Ansible](https://galaxy.ansible.com/cisco/csdac)
 
+ * **Automation Scripts:**
+   * [Retrieve Access Rules hit counts and rule usage](https://github.com/CiscoDevNet/secure-firewall/tree/main/Automation_Scripts/FMC_AccessRule_HitCount)
+   * [Decomission access rules](https://github.com/CiscoDevNet/secure-firewall/tree/main/Automation_Scripts/decomission_AccessRules)
+
 ## Disclaimer
 These repositories should be used only as a **proof of concept**. It is your duty to secure the provisioned device's by following cloud provider and product based security best practices guidelines.
