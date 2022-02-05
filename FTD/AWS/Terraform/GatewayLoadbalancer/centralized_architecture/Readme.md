@@ -16,7 +16,7 @@ Using this Terraform template, AWS Transit Gateway to connect VPCs will be creat
 
 ## Topology
 
-
+![GWLB Centralized Architecture](../images/centralized_architecture.png)
 
 ## Prerequisites
 
