@@ -56,6 +56,8 @@ Each specific usecase contains a README file with installation instructions.
      * [Active/Active FTDv(stateless) with NLB and FMCv in a Single AZ](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/AWS/Terraform/FTD_FMC_A_A_Single_AZ)
      * [FTDv and FMCv in single instances in a AZ](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/AWS/Terraform/FTD_FMC_Single_Instance_in_AZ)
      * [FTDv single instance in an Availability Zone (AZ)](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/AWS/Terraform/FTD_Single_Instance_AZ)
+     * [Gateway Loadbalancer Setup](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/AWS/Terraform/GatewayLoadbalancer)
+       * Centralized Architecture
 
 * **FTD on Azure:**
   * _ARM templates:_
@@ -67,8 +69,6 @@ Each specific usecase contains a README file with installation instructions.
      * [Single FTDv Instance in Existing Resouce Group](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/Azure/Terraform/SingleInstance_ExistingRG)
      * [Multiple FTDv Instances in Multiple Availablility Zones](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/Azure/Terraform/MultiInstance_MultiAZ)
      * [Multiple FTDv Instances in Multiple Availability Zones using Existing Subnets](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/Azure/Terraform/MultiInstance_MultiAZ_ExistingSubnet)
-     * [Gateway Loadbalancer Setup](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/AWS/Terraform/GatewayLoadbalancer)
-       * Centralized Architecture
 
 * **FTD on GCP:**
   * _Terraform templates:_
