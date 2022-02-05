@@ -16,7 +16,7 @@ Using this Terraform template, Gateway Load Balancer will be setup in AWS based 
 
 ## topology
 
-![GWLB Appliance VPC](images/GWLB.png)
+![GWLB Appliance VPC](../images/GWLB.png)
 
 ## Prerequisites
 
