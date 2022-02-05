@@ -1,0 +1,41 @@
+// AWS Environment -- Remove the # to before configure a value to it. 
+// If you dont provide any value, it will take the default value 
+
+############################################################
+#AWS Creditials to access the AWS Cloud
+#############################################################
+aws_access_key      = ""
+
+aws_secret_key      = ""
+
+region              = "ap-south-1"
+
+############################################################
+#Define VPC id
+#############################################################
+vpc_spoke_id        = ""
+
+vpc_service_id      = ""
+
+############################################################
+#Define Subnets Parametrs
+#############################################################
+subnet_spoke_name = "spoke_subnet"
+
+subnet_service_name = "service_subnet"
+
+id_spoke_sub    = [""]
+
+cidr_service_sub = ["172.16.188.0/24","172.16.189.0/24"]
+
+############################################################
+#Load Balancer Network Interface
+#############################################################
+gwlbe = [""]
+
+############################################################
+#Transit Gateway 
+#############################################################
+transit_gateway_name = "tgw"
+
+aws_availability_zones = ["ap-south-1a","ap-south-1b"]

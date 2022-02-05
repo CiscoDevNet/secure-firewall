@@ -1,0 +1,19 @@
+aws_access_key         = ""
+
+aws_secret_key         = ""
+
+region                 = "ap-south-1"
+
+use_existing_vpc       = true
+
+vpc_name               = "Service-VPC"
+
+igw_name               = "FMCv Internet Gateway"
+
+appliance_subnet       = ["outside-1", "outside-2"]
+
+GWLB_name              = "GWLB"
+
+aws_availability_zones = ["ap-south-1a","ap-south-1b"]
+
+instance               = ["80.0.1.31","80.0.10.245"]
