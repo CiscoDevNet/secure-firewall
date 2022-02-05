@@ -67,6 +67,8 @@ Each specific usecase contains a README file with installation instructions.
      * [Single FTDv Instance in Existing Resouce Group](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/Azure/Terraform/SingleInstance_ExistingRG)
      * [Multiple FTDv Instances in Multiple Availablility Zones](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/Azure/Terraform/MultiInstance_MultiAZ)
      * [Multiple FTDv Instances in Multiple Availability Zones using Existing Subnets](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/Azure/Terraform/MultiInstance_MultiAZ_ExistingSubnet)
+     * [Gateway Loadbalancer Setup](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/AWS/Terraform/GatewayLoadbalancer)
+       * Centralized Architecture
 
 * **FTD on GCP:**
   * _Terraform templates:_
