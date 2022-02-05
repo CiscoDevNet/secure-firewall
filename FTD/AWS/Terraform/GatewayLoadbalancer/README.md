@@ -6,6 +6,10 @@ This section contains sample Terraform templates to setup a Gateway Loadbalancer
 
 [Template to setup Gateway Loadbalaner and associated resources](GWLB)
 
+![Gateway loadbalancer setup](images/GWLB.png)
+
 ### **GWLB Centralized Architecture**
 
 [Template to setup a centralized architecture for GWLB deployed using link above](centralized_architecture)
+
+![GWLB Centralized Architecture](images/centralized_architecture.png)
