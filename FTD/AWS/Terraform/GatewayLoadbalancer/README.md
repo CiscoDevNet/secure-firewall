@@ -8,7 +8,7 @@ This section contains sample Terraform templates to setup a Gateway Loadbalancer
 
 ![Gateway loadbalancer setup](images/GWLB.png)
 
-<img src="images/GWLB.png" width="100" height="100">
+<img src="images/GWLB.png" width="700" height="500">
 
 ### **GWLB Centralized Architecture**
 
