@@ -227,6 +227,7 @@
     },
     "storageAccountType": {
       "type": "string",
+      "defaultValue": "Standard_LRS",
       "metadata": {
         "description": "Storage account type"
       }
