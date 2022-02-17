@@ -4,9 +4,9 @@
 ############################################################
 #AWS Creditials to access the AWS Cloud
 #############################################################
-aws_access_key      = "AKIAV2HIGYPVSIHVXXSL"
+aws_access_key      = ""
 
-aws_secret_key      = "QBR/DJdeR9cTV1OO/Pekm546vii8zBAbAhNFZmKG"
+aws_secret_key      = ""
 
 ############################################################
 #Define New VPC in a specific Region and Avilability Zone 
