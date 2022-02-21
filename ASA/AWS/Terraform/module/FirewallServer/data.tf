@@ -19,7 +19,6 @@ data "aws_ami" "asav" {
 }
 
 data "template_file" "asa_startup_file" {
-  count    = var.instances_per_az * var.availability_zone_count
   template = file("${path.module}/asa_startup_file.txt")
 }
 
