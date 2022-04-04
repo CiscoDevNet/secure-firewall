@@ -8,7 +8,7 @@
 
 ## Overview
 
-<img src="https://github.com/CiscoDevNet/Cisco-FTD-PublicCloud/blob/main/AWS/Terraform/FTD_FMC_A_A_Multiple_AZ/FTD_AA_Multi_AZ.png" alt="FTD A/A in Single AZ" style="max-width:50%;">
+<img src="https://github.com/CiscoDevNet/secure-firewall/blob/main/FTD/AWS/Terraform/FTD_FMC_A_A_Multiple_AZ/FTD_AA_Multi_AZ.png" alt="FTD A/A in Single AZ" style="max-width:50%;">
 
 Using this Terraform template, two instances of FTD will be deployed in  Active/Active using AWS native Network Load Balancer in two different Availability Zone, with FMC in a new VPC with the following components, 
 
