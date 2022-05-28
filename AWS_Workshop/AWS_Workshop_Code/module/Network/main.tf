@@ -53,121 +53,18 @@ resource "aws_subnet" "diag_subnet" {
   }, var.tags)
 }
 
-# # #################################################################################################################################
-# # # Security Group
-# # #################################################################################################################################
-
-resource "aws_security_group" "allow_all" {
-  name        = "Allow All"
-  description = "Allow all traffic"
-  vpc_id      = local.con
-
-
-  dynamic "ingress" {
-    for_each = var.security_group_ingress_with_cidr
-    content {
-      from_port   = lookup(ingress.value, "from_port", null)
-      to_port     = lookup(ingress.value, "to_port", null)
-      protocol    = lookup(ingress.value, "protocol", null)
-      cidr_blocks = lookup(ingress.value, "cidr_blocks", null)
-      description = lookup(ingress.value, "description", null)
-    }
-  }
-
-
-  dynamic "egress" {
-    for_each = var.security_group_egress
-    content {
-      from_port   = lookup(egress.value, "from_port", null)
-      to_port     = lookup(egress.value, "to_port", null)
-      protocol    = lookup(egress.value, "protocol", null)
-      cidr_blocks = lookup(egress.value, "cidr_blocks", null)
-      description = lookup(egress.value, "description", null)
-    }
-  }
-
-  tags = merge({
-    Name = "Public Allow"
-  }, var.tags)
-}
-
-resource "aws_default_security_group" "default" {
-  vpc_id = local.con
-
-  dynamic "ingress" {
-    for_each = var.security_group_ingress_with_cidr
-    content {
-      from_port   = lookup(ingress.value, "from_port", null)
-      to_port     = lookup(ingress.value, "to_port", null)
-      protocol    = lookup(ingress.value, "protocol", null)
-      cidr_blocks = [ "0.0.0.0/0", ]
-      description = lookup(ingress.value, "description", null)
-    }
-  }
-
-
-  dynamic "egress" {
-    for_each = var.security_group_egress
-    content {
-      from_port   = lookup(egress.value, "from_port", null)
-      to_port     = lookup(egress.value, "to_port", null)
-      protocol    = lookup(egress.value, "protocol", null)
-      cidr_blocks = [ "0.0.0.0/0", ]
-      description = lookup(egress.value, "description", null)
-    }
-  }
-
-  tags = merge({
-    Name = "Local Allow"
-  }, var.tags)
-}
-resource "aws_security_group" "testSG" {
-  name        = "KDD"
-  description      = "testingKDtesting"
-  vpc_id      = local.con
-  egress = [
-    {
-      cidr_blocks      = [ "0.0.0.0/0", ]
-      description      = ""
-      from_port        = 0
-      ipv6_cidr_blocks = []
-      prefix_list_ids  = []
-      protocol         = "-1"
-      security_groups  = []
-      self             = false
-      to_port          = 0
-    }
-  ]
- ingress                = [
-   {
-     cidr_blocks      = [ "0.0.0.0/0", ]
-     description      = ""
-     from_port        = 22
-     ipv6_cidr_blocks = []
-     prefix_list_ids  = []
-     protocol         = "tcp"
-     security_groups  = []
-     self             = false
-     to_port          = 22
-  }
-  ]
-}
-
 # # ##################################################################################################################################
-# # # Network Interfaces, FTD instance, Attaching the SG to interfaces
+# # # Network Interfaces
 # # ##################################################################################################################################
 resource "aws_network_interface" "ftd_mgmt" {
-  #count = length(var.mgmt_subnet_cidr) != 0 ? length(var.mgmt_subnet_cidr) : 0 || length(var.mgmt_subnet_name) != 0 ? length(var.mgmt_subnet_name) : 0
   count             = length(var.mgmt_interface) != 0 ? length(var.mgmt_interface) : length(var.ftd_mgmt_ip)
   description       = "asa${count.index}-mgmt"
-  #subnet_id         = var.mgmt_subnet_cidr != [] ? aws_subnet.mgmt_subnet[count.index].id : data.aws_subnet.mgmt[count.index].id
-  subnet_id         = local.mgmt_subnet[local.azs[count.index] - 1].id #element(local.mgmt_subnet[*])
+  subnet_id         = local.mgmt_subnet[local.azs[count.index] - 1].id
   source_dest_check = false
   private_ips       = [var.ftd_mgmt_ip[count.index]]
 }
 
 resource "aws_network_interface" "ftd_outside" {
-  #count = length(var.outside_subnet_cidr) != 0 ? length(var.outside_subnet_cidr) : 0 ||  length(var.outside_subnet_name) != 0 ? length(var.outside_subnet_name) : 0
   count             = length(var.outside_interface) != 0 ? length(var.outside_interface) : length(var.ftd_outside_ip)
   description       = "asa${count.index}-outside"
   subnet_id         = local.outside_subnet[local.azs[count.index] - 1].id
@@ -176,7 +73,6 @@ resource "aws_network_interface" "ftd_outside" {
 }
 
 resource "aws_network_interface" "ftd_inside" {
-  #count = length(var.inside_subnet_cidr) != 0 ? length(var.inside_subnet_cidr) : 0 ||  length(var.inside_subnet_name) != 0 ? length(var.inside_subnet_name) : 0
   count             = length(var.inside_interface) != 0 ? length(var.inside_interface) : length(var.ftd_inside_ip)
   description       = "asa${count.index}-inside"
   subnet_id         = local.inside_subnet[local.azs[count.index] - 1].id
@@ -185,7 +81,6 @@ resource "aws_network_interface" "ftd_inside" {
 }
 
 resource "aws_network_interface" "ftd_diag" {
-  #count = length(var.dmz_subnet_cidr) != 0 ? length(var.dmz_subnet_cidr) : 0  ||  length(var.dmz_subnet_name) != 0 ? length(var.dmz_subnet_name) : 0
   count             = length(var.diag_interface) != 0 ? length(var.diag_interface) : length(var.ftd_diag_ip)
   description       = "asa{count.index}-diag"
   subnet_id         = local.diag_subnet[local.azs[count.index] - 1].id
@@ -201,38 +96,6 @@ resource "aws_network_interface" "fmcmgmt" {
   private_ips       = [var.fmc_ip]
 }
 
-resource "aws_network_interface_sg_attachment" "ftd_mgmt_attachment" {
-  count                = length(var.mgmt_interface) != 0 ? length(var.mgmt_interface) : length(var.ftd_mgmt_ip)
-  depends_on           = [aws_network_interface.ftd_mgmt]
-  security_group_id    = aws_security_group.allow_all.id
-  network_interface_id = aws_network_interface.ftd_mgmt[count.index].id
-}
-
-resource "aws_network_interface_sg_attachment" "ftd_outside_attachment" {
-  count                = length(var.outside_interface) != 0 ? length(var.outside_interface) : length(var.ftd_outside_ip)
-  security_group_id    = aws_security_group.allow_all.id
-  network_interface_id = aws_network_interface.ftd_outside[count.index].id
-}
-
-resource "aws_network_interface_sg_attachment" "ftd_inside_attachment" {
-  count                = length(var.inside_interface) != 0 ? length(var.inside_interface) : length(var.ftd_inside_ip)
-  depends_on           = [aws_network_interface.ftd_inside]
-  security_group_id    = aws_security_group.allow_all.id
-  network_interface_id = aws_network_interface.ftd_inside[count.index].id
-}
-
-resource "aws_network_interface_sg_attachment" "ftd_diag_attachment" {
-  count                = length(var.diag_interface) != 0 ? length(var.diag_interface) : length(var.ftd_diag_ip)
-  depends_on           = [aws_network_interface.ftd_diag]
-  security_group_id    = aws_security_group.allow_all.id
-  network_interface_id = aws_network_interface.ftd_diag[count.index].id
-}
-
-resource "aws_network_interface_sg_attachment" "fmc_attachment" {
-  depends_on           = [aws_network_interface.fmcmgmt]
-  security_group_id    = aws_security_group.allow_all.id
-  network_interface_id = aws_network_interface.fmcmgmt[0].id
-}
 # # ##################################################################################################################################
 # # #Internet Gateway and Routing Tables
 # # ##################################################################################################################################
@@ -267,28 +130,11 @@ resource "aws_route_table" "ftd_diag_route" {
   }, var.tags)
 }
 
-#think how to make routes based on user inputs
-# # //To define the default routes thru IGW
-
 resource "aws_route" "ext_default_route" {
   route_table_id         = aws_route_table.ftd_outside_route.id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = var.create_igw ? aws_internet_gateway.int_gw[0].id : data.aws_internet_gateway.default[0].internet_gateway_id
 }
-
-# # //To define the default route for inside network thur FTDv inside interface 
-# # #resource "aws_route" "inside_default_route" {
-# # #  route_table_id          = aws_route_table.ftd_inside_route.id
-# # #  destination_cidr_block  = "0.0.0.0/0"
-# # #  network_interface_id    = aws_network_interface.asa01_inside.id
-# # #}
-
-# # //To define the default route for DMZ network thur ASA DMZ interface 
-# # #resource "aws_route" "DMZ_default_route" {
-# # #  route_table_id          = aws_route_table.asa_dmz_route.id
-# # #  destination_cidr_block  = "0.0.0.0/0"
-# # #  network_interface_id    = aws_network_interface.asa01_dmz.id
-# # #}
 
 resource "aws_route_table_association" "outside_association" {
   count          = var.outside_subnet_cidr != null ? length(var.outside_subnet_cidr) : length(var.outside_subnet_name)
@@ -315,9 +161,8 @@ resource "aws_route_table_association" "diag_association" {
 }
 
 # # ##################################################################################################################################
-# # # AWS External IP address creation and associating it to the mgmt and outside interface. 
+# # # AWS External IP address creation and associating it to the mgmt interface. 
 # # ##################################################################################################################################
-# # //External ip address creation 
 
 resource "aws_eip" "ftd_mgmt-EIP" {
   count = length(var.mgmt_interface) != 0 ? length(var.mgmt_interface) : length(var.ftd_mgmt_ip)
@@ -327,25 +172,11 @@ resource "aws_eip" "ftd_mgmt-EIP" {
   }, var.tags)
 }
 
-# resource "aws_eip" "ftd_outside-EIP" {
-#   count = length(var.outside_interface) != 0 ? length(var.outside_interface) : length(var.outside_subnet_name)
-#   vpc   = true
-#   tags = merge({
-#     "Name" = "ftd-${count.index} outside IP"
-#   }, var.tags)
-# }
-
 resource "aws_eip_association" "ftd-mgmt-ip-assocation" {
   count                = length(var.mgmt_interface) != 0 ? length(var.mgmt_interface) : length(var.ftd_outside_ip)
   network_interface_id = length(var.mgmt_interface) != 0 ? var.mgmt_interface[count.index] : aws_network_interface.ftd_mgmt[count.index].id
   allocation_id        = aws_eip.ftd_mgmt-EIP[count.index].id
 }
-
-# resource "aws_eip_association" "ftd-outside-ip-association" {
-#   count                = length(var.outside_interface) != 0 ? length(var.outside_interface) : length(var.outside_subnet_name)
-#   network_interface_id = length(var.outside_interface) != 0 ? var.outside_interface[count.index] : aws_network_interface.ftd_outside[count.index].id
-#   allocation_id        = aws_eip.ftd_outside-EIP[count.index].id
-# }
 
 resource "aws_eip" "fmcmgmt-EIP" {
   vpc   = true

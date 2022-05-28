@@ -96,42 +96,6 @@ variable "tags" {
   default = {}
 }
 
-variable "security_group_ingress_with_cidr" {
-  description = "Can be specified multiple times for each ingress rule. "
-  type = list(object({
-    from_port   = number
-    protocol    = string
-    to_port     = number
-    cidr_blocks = list(string)
-    description = string
-  }))
-  default = [{
-    from_port   = 0
-    protocol    = "-1"
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
-    description = null
-  }]
-}
-
-variable "security_group_egress" {
-  description = "Can be specified multiple times for each egress rule. "
-  type = list(object({
-    from_port   = number
-    protocol    = string
-    to_port     = number
-    cidr_blocks = list(string)
-    description = string
-  }))
-  default = [{
-    from_port   = 0
-    protocol    = "-1"
-    to_port     = 0
-    cidr_blocks = ["10.0.0.0/8"]
-    description = null
-  }]
-}
-
 variable "mgmt_interface_id" {
   type    = list(string)
   default = []
@@ -241,4 +205,112 @@ variable "bastion_ip" {
 
 variable "bastion_subnet_name" {
   default = ""
+}
+
+variable "outside_interface_sg" {
+  description = "Can be specified multiple times for each ingress rule. "
+  type = list(object({
+    from_port   = number
+    protocol    = string
+    to_port     = number
+    cidr_blocks = list(string)
+    description = string
+  }))
+  default = [{
+    from_port   = 0
+    protocol    = "-1"
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+    description = null
+  }]
+}
+
+variable "inside_interface_sg" {
+  description = "Can be specified multiple times for each ingress rule. "
+  type = list(object({
+    from_port   = number
+    protocol    = string
+    to_port     = number
+    cidr_blocks = list(string)
+    description = string
+  }))
+  default = [{
+    from_port   = 0
+    protocol    = "-1"
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+    description = null
+  }]
+}
+
+variable "mgmt_interface_sg" {
+  description = "Can be specified multiple times for each ingress rule. "
+  type = list(object({
+    from_port   = number
+    protocol    = string
+    to_port     = number
+    cidr_blocks = list(string)
+    description = string
+  }))
+  default = [{
+    from_port   = 0
+    protocol    = "-1"
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+    description = null
+  }]
+}
+
+variable "fmc_mgmt_interface_sg" {
+  description = "Can be specified multiple times for each ingress rule. "
+  type = list(object({
+    from_port   = number
+    protocol    = string
+    to_port     = number
+    cidr_blocks = list(string)
+    description = string
+  }))
+  default = [{
+    from_port   = 0
+    protocol    = "-1"
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+    description = null
+  }]
+}
+
+variable "bastion_interface_sg" {
+  description = "Can be specified multiple times for each ingress rule. "
+  type = list(object({
+    from_port   = number
+    protocol    = string
+    to_port     = number
+    cidr_blocks = list(string)
+    description = string
+  }))
+  default = [{
+    from_port   = 0
+    protocol    = "-1"
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+    description = null
+  }]
+}
+
+variable "app_interface_sg" {
+  description = "Can be specified multiple times for each ingress rule. "
+  type = list(object({
+    from_port   = number
+    protocol    = string
+    to_port     = number
+    cidr_blocks = list(string)
+    description = string
+  }))
+  default = [{
+    from_port   = 0
+    protocol    = "-1"
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+    description = null
+  }]
 }

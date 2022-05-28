@@ -32,7 +32,7 @@ variable "internal_health_check" {
 variable "external_health_check" {
   default = {
     protocol = "TCP"
-    port     = 80
+    port     = 22
   }
 }
 

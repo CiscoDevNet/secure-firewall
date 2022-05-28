@@ -62,10 +62,6 @@ output "mgmt_sub" {
   value = local.mgmt_subnet
 }
 
-output "security_group" {
-  value = aws_security_group.allow_all.id
-}
-
 output "internet_gateway" {
-  value = aws_internet_gateway.int_gw.*.id
+  value = var.create_igw ? aws_internet_gateway.int_gw.*.id : data.aws_internet_gateway.default.*.internet_gateway_id
 }

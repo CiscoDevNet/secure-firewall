@@ -65,31 +65,18 @@ resource "aws_key_pair" "deployer" {
 }
 
 resource "aws_security_group" "bastion_sg" {
-  name        = "Allow All Bastion"
-  description = "Allow all traffic"
+  name        = "Bastion SG"
   vpc_id      = module.network.vpc_id
 
 
   dynamic "ingress" {
-    for_each = var.security_group_ingress_with_cidr
+    for_each = var.bastion_interface_sg
     content {
       from_port   = lookup(ingress.value, "from_port", null)
       to_port     = lookup(ingress.value, "to_port", null)
       protocol    = lookup(ingress.value, "protocol", null)
       cidr_blocks = lookup(ingress.value, "cidr_blocks", null)
       description = lookup(ingress.value, "description", null)
-    }
-  }
-
-
-  dynamic "egress" {
-    for_each = var.security_group_egress
-    content {
-      from_port   = lookup(egress.value, "from_port", null)
-      to_port     = lookup(egress.value, "to_port", null)
-      protocol    = lookup(egress.value, "protocol", null)
-      cidr_blocks = lookup(egress.value, "cidr_blocks", null)
-      description = lookup(egress.value, "description", null)
     }
   }
 }

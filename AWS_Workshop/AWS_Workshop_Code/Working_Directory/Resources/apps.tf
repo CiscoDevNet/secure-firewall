@@ -35,13 +35,12 @@ resource "aws_network_interface" "ftd_app" {
 }
 
 resource "aws_security_group" "app_sg" {
-  name        = "Allow All App"
-  description = "Allow all traffic"
+  name        = "App SG"
   vpc_id      = module.network.vpc_id
 
 
   dynamic "ingress" {
-    for_each = var.security_group_ingress_with_cidr
+    for_each = var.app_interface_sg
     content {
       from_port   = lookup(ingress.value, "from_port", null)
       to_port     = lookup(ingress.value, "to_port", null)
@@ -50,22 +49,6 @@ resource "aws_security_group" "app_sg" {
       description = lookup(ingress.value, "description", null)
     }
   }
-
-
-  dynamic "egress" {
-    for_each = var.security_group_egress
-    content {
-      from_port   = lookup(egress.value, "from_port", null)
-      to_port     = lookup(egress.value, "to_port", null)
-      protocol    = lookup(egress.value, "protocol", null)
-      cidr_blocks = lookup(egress.value, "cidr_blocks", null)
-      description = lookup(egress.value, "description", null)
-    }
-  }
-
-  tags = merge({
-    Name = "Public Allow"
-  }, var.tags)
 }
 
 resource "aws_network_interface_sg_attachment" "ftd_app_attachment" {

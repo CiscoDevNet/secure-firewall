@@ -88,42 +88,6 @@ variable "tags" {
   default = {}
 }
 
-variable "security_group_ingress_with_cidr" {
-  description = "Can be specified multiple times for each ingress rule. "
-  type = list(object({
-    from_port   = number
-    protocol    = string
-    to_port     = number
-    cidr_blocks = list(string)
-    description = string
-  }))
-  default = [{
-    from_port   = 0
-    protocol    = "-1"
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
-    description = null
-  }]
-}
-
-variable "security_group_egress" {
-  description = "Can be specified multiple times for each egress rule. "
-  type = list(object({
-    from_port   = number
-    protocol    = string
-    to_port     = number
-    cidr_blocks = list(string)
-    description = string
-  }))
-  default = [{
-    from_port   = 0
-    protocol    = "-1"
-    to_port     = 0
-    cidr_blocks = ["10.0.0.0/8"]
-    description = null
-  }]
-}
-
 variable "mgmt_interface" {
   type    = list(string)
   default = []

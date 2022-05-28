@@ -12,10 +12,10 @@ region = "ap-south-1"
 #Define New VPC in a specific Region and Avilability Zone 
 #############################################################
 vpc_name = "IAC-VPC"
-vpc_cidr = "10.0.0.0/16"
-create_igw = true
+vpc_cidr = ""
+create_igw = false
 # Generate the key if you want to login thru the  key
-keyname = ""
+keyname = "lx1"
 instances_per_az        = 1
 availability_zone_count = 2
 
@@ -45,4 +45,82 @@ diag_subnet_name = ["diag1","diag2"]
 app_subnet_name = ["app1","app2"]
 bastion_subnet_name = "bastion"
 
-create = "both"
+create = "external"
+
+outside_interface_sg = [
+    {
+        from_port = 0
+        protocol = "TCP"
+        to_port = 80
+        cidr_blocks = ["10.0.2.50","10.0.20.77"]
+    },
+    {
+        from_port = 0
+        protocol = "TCP"
+        to_port = 22
+        cidr_blocks = ["10.0.2.50","10.0.20.77"]
+    }
+]
+
+inside_interface_sg = [
+    {
+        from_port = 0
+        protocol = "TCP"
+        to_port = 80
+        cidr_blocks = ["10.0.5.10","10.0.50.10"]
+    }
+]
+
+mgmt_interface_sg = [
+    {
+        from_port = 0
+        protocol = "TCP"
+        to_port = 8305
+        cidr_blocks = [module.Network.fmc_interface_ip[0]]
+    }
+]
+
+fmc_mgmt_interface_sg = [
+    {
+        from_port = 0
+        protocol = "TCP"
+        to_port = 443
+        cidr_blocks = ["0.0.0.0/0"]
+    },
+    {
+        from_port = 0
+        protocol = "TCP"
+        to_port = 8305
+        cidr_blocks = [module.Network.mgmt_interface_ip[0],module.Network.mgmt_interface_ip[1]]
+    }
+]
+
+bastion_interface_sg = [
+    {
+        from_port = 0
+        protocol = "TCP"
+        to_port = 80
+        cidr_blocks = ["10.0.5.10","10.0.50.10"]
+    },
+    {
+        from_port = 0
+        protocol = "TCP"
+        to_port = 22
+        cidr_blocks = ["10.0.5.10","10.0.50.10"]
+    }
+]
+
+app_interface_sg = [
+    {
+        from_port = 0
+        protocol = "TCP"
+        to_port = 80
+        cidr_blocks = ["10.0.5.100","10.0.50.100"]
+    },
+    {
+        from_port = 0
+        protocol = "TCP"
+        to_port = 22
+        cidr_blocks = ["10.0.5.100","10.0.50.100"]
+    }
+]
