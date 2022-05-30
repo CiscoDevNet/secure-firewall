@@ -1,23 +1,12 @@
 data "aws_ami" "ftdv" {
   #most_recent = true      // you can enable this if you want to deploy more
-  owners      = ["aws-marketplace"]
-
- filter {
+  owners      = ["self"]
+  filter {
     name   = "name"
     values = ["${var.FTD_version}*"]
   }
-
-  filter {
-    name   = "product-code"
-    values = ["a8sxy6easi2zumgtyr564z6y7"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
 }
-
+#one file should be good for all
 data "template_file" "ftd_startup_file" {
     count = var.instances_per_az * var.availability_zone_count
     template = file("${path.module}/ftd_startup_file.txt")
@@ -30,18 +19,10 @@ data "template_file" "ftd_startup_file" {
 
 data "aws_ami" "fmcv" {
   #most_recent = true      // you can enable this if you want to deploy more
-  owners      = ["aws-marketplace"]
+  owners      = ["self"]
   filter {
     name   = "name"
     values = ["${var.FMC_version}*"]
-  }
-  filter {
-    name   = "product-code"
-    values = ["bhx85r4r91ls2uwl69ajm9v1b"]
-  }
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
   }
 }
 
