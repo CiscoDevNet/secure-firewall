@@ -93,6 +93,9 @@ Each specific usecase contains a README file with installation instructions.
 * **FMC Terraform Provider:**
   * [FMC Terraform Provider Github](https://github.com/CiscoDevNet/terraform-provider-fmc)
   * [FMC Terraform Registry](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest)
+  
+* **FMC Ansible Collection:**
+  * [An Ansible collection for managing FMC](https://galaxy.ansible.com/cisco/fmcansible)
 
 * **FMC on Azure:**
   * _Terraform templates:_
