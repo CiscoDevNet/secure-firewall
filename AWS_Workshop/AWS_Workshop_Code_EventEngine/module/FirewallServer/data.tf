@@ -1,6 +1,6 @@
 data "aws_ami" "ftdv" {
   #most_recent = true      // you can enable this if you want to deploy more
-  owners      = ["self"]
+  owners      = ["<Enter Owner Account ID"]
   filter {
     name   = "name"
     values = ["${var.FTD_version}*"]
@@ -19,7 +19,7 @@ data "template_file" "ftd_startup_file" {
 
 data "aws_ami" "fmcv" {
   #most_recent = true      // you can enable this if you want to deploy more
-  owners      = ["self"]
+  owners      = ["<Enter Owner Account ID"]
   filter {
     name   = "name"
     values = ["${var.FMC_version}*"]
