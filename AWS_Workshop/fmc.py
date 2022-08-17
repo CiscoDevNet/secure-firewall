@@ -93,6 +93,7 @@ def main(args):
         ftd1.regKey = "cisco"
         ftd1.acp(name="IAC-ACP")
         ftd1.name = "ftd1"
+        ftd1.type = "Device"
         ftd1.licensing(action="add", name="BASE")
         ftd1.post(post_wait_time=200)
         #Register Device 2
