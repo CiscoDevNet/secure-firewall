@@ -58,6 +58,8 @@ Each specific usecase contains a README file with installation instructions.
      * [FTDv single instance in an Availability Zone (AZ)](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/AWS/Terraform/FTD_Single_Instance_AZ)
      * [Gateway Loadbalancer Setup](https://github.com/CiscoDevNet/secure-firewall/tree/main/FTD/AWS/Terraform/GatewayLoadbalancer)
        * Centralized Architecture
+      * [AWS Lab to deploy FTDv and FMC using IaC](https://catalog.us-east-1.prod.workshops.aws/workshops/38565e8c-3a5f-4e93-8412-5fdec23744ca/en-US)
+        * Lab to programmatically deploy FTDv and FMC using Infrastructure as Code (Terraform)
 
 * **FTD on Azure:**
   * _ARM templates:_
@@ -93,6 +95,9 @@ Each specific usecase contains a README file with installation instructions.
 * **FMC Terraform Provider:**
   * [FMC Terraform Provider Github](https://github.com/CiscoDevNet/terraform-provider-fmc)
   * [FMC Terraform Registry](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest)
+  
+* **FMC Ansible Collection:**
+  * [An Ansible collection for managing FMC](https://galaxy.ansible.com/cisco/fmcansible)
 
 * **FMC on Azure:**
   * _Terraform templates:_

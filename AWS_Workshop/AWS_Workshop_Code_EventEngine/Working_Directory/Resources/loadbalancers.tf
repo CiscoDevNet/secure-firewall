@@ -6,5 +6,4 @@ module "load_balancer" {
   external_listener_ports = var.external_listener_ports
   create                  = var.create
   external_health_check   = var.external_health_check
-
 }

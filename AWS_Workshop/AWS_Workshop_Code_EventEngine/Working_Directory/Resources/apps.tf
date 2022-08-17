@@ -82,7 +82,7 @@ resource "aws_instance" "EC2-Ubuntu" {
     aws_instance.testLinux
   ]
   count         = 2
-  ami           = "ami-0851b76e8b1bce90b" 
+  ami           = "<Add the AMI ID for Ubuntu Server in your region>" 
   instance_type = "t2.micro"
   key_name      = var.keyname
   
