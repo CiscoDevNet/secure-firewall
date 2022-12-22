@@ -1,0 +1,29 @@
+- hosts: all
+  connection: httpapi
+  tasks:
+    - name: Get Domain UUID
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: Find an intrustion policy
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllIntrusionPolicy
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: policies
+
+    - name: Allow traffic by default
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertAccessPolicy
+        data:
+          name: NGFW-Access-Policy28
+          defaultAction:
+            action: BLOCK
+            intrusionPolicy:
+              id: "{{ policies[0].id }}"
+              type: "{{ policies[0].type }}"
+            type: defaultAction
+          type: AccessPolicy
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'

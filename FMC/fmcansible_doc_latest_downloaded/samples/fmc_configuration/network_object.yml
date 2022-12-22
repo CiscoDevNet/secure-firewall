@@ -1,0 +1,41 @@
+- hosts: all
+  connection: httpapi
+  tasks:
+    - name: Get Domain UUID
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: Create a network object for Cisco FTD 1
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertNetworkObject
+        data:
+          name: net-15
+          value: 10.10.30.0/24
+          type: Network
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+
+    - name: Create a network object for Cisco FTD 2
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertNetworkObject
+        data:
+          name: net-13
+          value: 10.10.40.0/24
+          type: Network
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+
+    - name: Create a Cisco network group
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertNetworkGroup
+        data:
+          name: netg-1
+          type: networkgroup
+          objects:
+            - id: '{{ Network_net_15.id }}'
+              type: '{{ Network_net_15.type }}'
+            - id: '{{ Network_net_13.id }}'
+              type: '{{ Network_net_13.type }}'
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'

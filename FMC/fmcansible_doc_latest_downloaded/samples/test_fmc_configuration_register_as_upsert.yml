@@ -1,0 +1,66 @@
+- hosts: all
+  connection: httpapi
+
+  tasks:
+    - name: Get all domain for Cisco FMC
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: cra1
+
+    - name: Single-object response must be registered as 'TYPE_NAME' when 'register_as' is absent
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertNetworkObject
+        path_params:
+          domainUUID: '{{ cra1[0].uuid }}'
+        data:
+          name: test-network6
+          value: 3.3.3.0/24
+          type: networkobject
+    - assert:
+        that:
+          - Network_test_network6 != None
+          - Network_test_network6.name == "test-network6"
+
+    - name: Single-object response must be registered as 'register_as' value when 'register_as' is present
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertNetworkObject
+        path_params:
+          domainUUID: '{{ cra1[0].uuid }}'
+        data:
+          name: test-network8
+          value: 192.23.23.0/24
+          type: networkobject
+        register_as: test_network
+    - assert:
+        that:
+          - test_network != None
+          - test_network.name  == "test-network8"
+
+    - name: List-object response must be ignored when 'register_as' is absent
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllNetworkObject
+        path_params:
+          domainUUID: '{{ cra1[0].uuid }}'
+        query_params:
+          filter: "nameOrValue:test-network6"
+
+    - name: List-object response must be registered as 'register_as' value when 'register_as' is present
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllNetworkObject
+        path_params:
+          domainUUID: '{{ cra1[0].uuid }}'
+        query_params:
+          filter: "nameOrValue:test-network8"
+        register_as: networks
+    - assert:
+       that:
+         - networks != None
+         - networks | length == 1
+         - networks.0.name == "test-network8"
+
+    - name: Delete created Network Object
+      cisco.fmcansible.fmc_configuration:
+        operation: deleteNetworkObject
+        path_params:
+          domainUUID: '{{ cra1[0].uuid }}'
+          objectId: "{{ test_network.id }}"

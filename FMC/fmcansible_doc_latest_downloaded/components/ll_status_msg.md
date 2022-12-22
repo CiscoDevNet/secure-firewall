@@ -1,0 +1,5 @@
+# LLStatusMsg
+
+
+**Type:** object
+

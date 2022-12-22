@@ -1,0 +1,35 @@
+- hosts: all
+  connection: httpapi
+  tasks:
+    - name: Get Domain UUID
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: Create security zone - Inside
+      cisco.fmcansible.fmc_configuration:
+        operation: createMultipleSecurityZoneObject
+        data:
+          name: ini5
+          interfaceMode: ROUTED
+          type: SecurityZone
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+
+    - name: Update security zone - Inside
+      cisco.fmcansible.fmc_configuration:
+        operation: updateSecurityZoneObject
+        data:
+          name: ini5
+          interfaceMode: ROUTED
+          type: SecurityZone
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+          objectId: '{{ SecurityZone_ini5.id }}'
+
+    - name: Delete security zone - Inside
+      cisco.fmcansible.fmc_configuration:
+        operation: deleteSecurityZoneObject
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+          objectId: '{{ SecurityZone_ini5.id }}'

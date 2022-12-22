@@ -1,0 +1,86 @@
+- hosts: all
+  connection: httpapi
+
+  tasks:
+    - name: Get all domain for Cisco FMC
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: cra1
+
+    - name: createMultipleNetworkObject should create a new network
+      cisco.fmcansible.fmc_configuration:
+        operation: createMultipleNetworkObject
+        path_params:
+          domainUUID: '{{ cra1[0].uuid }}'        
+        data:
+          name: "ansible-test-network-no2"
+          description: "Ansible Integration tests in action"
+          value: "3.3.3.0/24"
+          type: "networkobject"
+        register_as: "testObj"
+      register: result
+    - assert:
+        that:
+          - result.changed == true
+          - testObj['name'] == "ansible-test-network-no2"
+
+    - name: createMultipleNetworkObject should raise an error when the network with the same name but different params exists
+      cisco.fmcansible.fmc_configuration:
+        operation: createMultipleNetworkObject
+        path_params:
+          domainUUID: '{{ cra1[0].uuid }}'        
+        data:
+          name: "ansible-test-network-no2"
+          description: "Ansible Integration tests in action. Change #1"
+          value: "3.3.3.0/24"
+          type: "networkobject"
+      register: result
+      ignore_errors: yes
+    - assert:
+        that:
+          - result.changed == false
+          - result.failed == true
+          - "'An object with the same name but different parameters already exists' in result.msg"
+
+    - name: updateNetworkObject should update the existing network when it exists
+      cisco.fmcansible.fmc_configuration:
+        operation: updateNetworkObject
+        path_params:
+          domainUUID: '{{ cra1[0].uuid }}'
+          objectId: '{{ testObj.id }}'        
+        data:
+          name: "ansible-test-network-no2"
+          description: "Ansible Integration tests in action. Change #2"
+          value: "3.3.3.0/24"
+          type: "networkobject"
+          # note: the id is auto-populated from path_params/objectId
+          # id: '{{ testObj.id }}'
+        register_as: "updatedTestObj"
+      register: result
+    - assert:
+        that:
+          - result.changed == true
+          - updatedTestObj['id'] == testObj['id']
+          - updatedTestObj['value'] == "3.3.3.0/24"
+
+    - name: deleteNetworkObject should delete the network object
+      cisco.fmcansible.fmc_configuration:
+        operation: deleteNetworkObject
+        path_params:
+          domainUUID: '{{ cra1[0].uuid }}'
+          objectId: '{{ testObj.id }}'            
+      register: result
+    - assert:
+        that:
+          - result.changed == true
+
+    - name: deleteNetworkObject should quietly succeed when the referenced network does not exist
+      cisco.fmcansible.fmc_configuration:
+        operation: deleteNetworkObject
+        path_params:
+          domainUUID: '{{ cra1[0].uuid }}'
+          objectId: '{{ testObj.id }}'
+      register: result
+    - assert:
+        that:
+          - result.changed == false

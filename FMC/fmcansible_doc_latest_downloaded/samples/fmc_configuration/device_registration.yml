@@ -1,0 +1,38 @@
+- hosts: all
+  gather_facts: False
+  any_errors_fatal: true
+  connection: httpapi
+  tasks:
+    - name: Get Domain
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+    
+    - name: Get Access Policy
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllAccessPolicy
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        filters:
+          name: NGFW-Access-Policy27
+        register_as: accesspolicy
+
+    - name: device onboarding
+      cisco.fmcansible.fmc_configuration:
+        operation: createDevice
+        data:
+          hostName: "1.1.1.1"
+          license_caps:
+            - 'BASE'
+          ftdMode: 'ROUTED'
+          type: Device
+          regKey: cisco
+          performanceTier: "FTDv30"
+          name: "FTD1"
+          accessPolicy:
+            id: '{{ accesspolicy[0].id }}'
+            type: 'AccessPolicy'
+          natID: '1234'
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: ftd

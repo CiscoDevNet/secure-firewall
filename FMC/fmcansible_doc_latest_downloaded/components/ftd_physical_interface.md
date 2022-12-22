@@ -1,0 +1,42 @@
+# FTDPhysicalInterface
+
+
+**Type:** object
+
+## Properties
+* metadata
+* description
+* type
+* enabled
+* MTU
+* mode
+* fmcAccessConfig
+* arpConfig
+* ipv4
+* ifname
+* ipv6
+* links
+* id
+* lacpMode
+* hardware
+* enableSGTPropagate
+* macLearn
+* managementOnly
+* channelGroupId
+* enableAntiSpoofing
+* switchPortConfig
+* securityZone
+* isRedundantMember
+* activeMACAddress
+* fragmentReassembly
+* macTable
+* standbyMACAddress
+* powerOverEthernet
+* enableDNSLookup
+* overrideDefaultFragmentSetting
+* priority
+* version
+* LLDP
+* erspanFlowId
+* erspanSourceIP
+* name

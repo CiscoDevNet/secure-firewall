@@ -1,0 +1,42 @@
+- hosts: all
+  connection: httpapi
+  tasks:
+    - name: Get Domain
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: Create a Cisco URL Object
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertURLObject
+        data:
+          name: Cisco
+          description: URL for FB
+          url: www.cisco.com
+          type: urlobject
+        path_params:
+          domainUUID: '{{ domain[0].id }}'
+
+    - name: Get Devices
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDevice
+        path_params:
+          domainUUID: '{{ domain[0].id }}' 
+        register_as: device_list 
+
+    - name: Find a Security Intelligence URL Policy
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllAccessPolicySecurityIntelligencePolicy
+        path_params:
+          containerUUID: '{{ device_list[0].id }}'
+          domainUUID: '{{ domain[0].id }}'
+        register_as: policies
+
+    - name: Add Cisco as whitelisted URL to SecurityIntelligenceURLPolicy
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertAccessPolicySecurityIntelligencePolicy
+        data:
+          name: NGFW-Default-Security-Intelligence-URL-Policy
+          urls: 
+            allowlist: '{{ policies[0]["urls"]["allowlist"]["url"] + [urlobject_cisco] }}'
+          type: SecurityIntelligencePolicy

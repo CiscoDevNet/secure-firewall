@@ -1,0 +1,44 @@
+# FTDEtherChannelInterface
+
+
+**Type:** object
+
+## Properties
+* metadata
+* minActivePhysicalInterface
+* description
+* type
+* enabled
+* MTU
+* mode
+* fmcAccessConfig
+* arpConfig
+* etherChannelId
+* selectedInterfaces
+* ipv4
+* ifname
+* ipv6
+* links
+* id
+* lacpRate
+* lacpMode
+* hardware
+* enableSGTPropagate
+* macLearn
+* managementOnly
+* enableAntiSpoofing
+* securityZone
+* activeMACAddress
+* fragmentReassembly
+* macTable
+* standbyMACAddress
+* maxActivePhysicalInterface
+* enableDNSLookup
+* overrideDefaultFragmentSetting
+* loadBalancing
+* priority
+* version
+* LLDP
+* erspanFlowId
+* erspanSourceIP
+* name

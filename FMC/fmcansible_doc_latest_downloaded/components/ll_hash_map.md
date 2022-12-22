@@ -1,0 +1,5 @@
+# LLHashMap
+
+
+**Type:** object
+

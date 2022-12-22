@@ -1,0 +1,52 @@
+- hosts: all
+  connection: httpapi
+  tasks:
+    - name: Get Domain
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: Get all SecurityZone objects
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllSecurityZoneObject
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: zones
+
+    - name: Get an IPv4 network object
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllNetworkObject
+        query_params:
+          filter: 'nameOrValue:any-ipv4'
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: network_results
+
+    - name: Create NAT Policy
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertFTDNatPolicy
+        data:
+          name: NAT-Policy-1
+          type: FTDNatPolicy
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: natpolicy
+
+    - name: Setup an inside-outside NAT rule
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertFTDManualNatRule
+        data:
+          # note that name isn't actually stored
+          # providing a name property will force an update even if object already matches wheat's on server
+          # name: InsideOutsideNatRule
+          natType: STATIC
+          destinationInterface: "{{ zones[0] }}"
+          sourceInterface: "{{ zones[1] }}"
+          originalSource: "{{ network_results[0] }}"
+          interfaceInTranslatedSource: True
+          dns: False
+          enabled: True
+          type: FTDManualNatRule
+        path_params:
+          containerUUID: '{{ natpolicy.id }}'
+          domainUUID: '{{ domain[0].uuid }}'

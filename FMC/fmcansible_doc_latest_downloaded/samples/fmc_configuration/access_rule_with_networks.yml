@@ -1,0 +1,73 @@
+- hosts: all
+  connection: httpapi
+  tasks:
+    - name: Get Domain
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: create auxilary network object
+      cisco.fmcansible.fmc_configuration:
+        operation: createMultipleNetworkObject
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        data:
+          name: "ansible-test-network466"
+          value: "192.22.22.0/24"
+          type: "networkobject"
+        register_as: net1
+
+    - name: Get Access Policy
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllAccessPolicy
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        filters:
+          name: NGFW-Access-Policy25
+        register_as: accesspolicy
+                  
+    - name: Create an access rule allowing trafic from Cisco DevNet
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertAccessRule
+        data:
+          name: AllowCiscoTraffic8
+          type: accessrule
+          sourceNetworks:
+            objects:
+              - id: '{{ net1.id }}'
+                name: '{{net1.name }}'
+                type: '{{ net1.type }}'
+          action: ALLOW
+        path_params:
+          containerUUID: '{{ accesspolicy[0].id }}'
+          domainUUID: '{{ domain[0].uuid }}'
+
+    - name: Update the access rule allowing trafic from/to Cisco DevNet
+      cisco.fmcansible.fmc_configuration:
+        operation: updateAccessRule
+        data:
+          name: AllowCiscoTraffic8
+          type: accessrule
+          sourceNetworks:
+            objects:
+              - id: '{{ net1.id }}'
+                name: '{{net1.name }}'
+                type: '{{ net1.type }}'
+          destinationNetworks:
+            objects:
+              - id: '{{ net1.id }}'
+                name: '{{net1.name }}'
+                type: '{{ net1.type }}'
+          action: BLOCK
+        path_params:
+          objectId: '{{ AccessRule_allowciscotraffic8.id }}'
+          containerUUID: '{{ accesspolicy[0].id }}'
+          domainUUID: '{{ domain[0].uuid }}'
+
+    - name: Delete the access rule allowing trafic from/to Cisco DevNet
+      cisco.fmcansible.fmc_configuration:
+        operation: deleteAccessRule
+        path_params:
+          objectId: '{{ AccessRule_allowciscotraffic8.id }}'
+          containerUUID: '{{ accesspolicy[0].id }}'
+          domainUUID: '{{ domain[0].uuid }}'

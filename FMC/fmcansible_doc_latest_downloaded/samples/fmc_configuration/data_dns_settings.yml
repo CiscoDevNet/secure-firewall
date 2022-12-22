@@ -1,0 +1,17 @@
+- hosts: all
+  connection: httpapi
+  tasks:
+    - name: Create custom DNS object
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertDNSServerGroupObject
+        data:
+          type: dnsservergroup
+          name: CustomDNSServerGroup
+          timeout: 2
+          retries: 3
+          defaultdomain: cisco.com
+          dnsservers:
+            - name-server: 1.2.3.4
+            - name-server: 2.3.4.5
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'

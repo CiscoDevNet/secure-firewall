@@ -1,0 +1,56 @@
+- hosts: all
+  connection: httpapi
+  tasks:
+    - name: Get Domain
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: Get Deployable Devices
+      cisco.fmcansible.fmc_configuration:
+        operation: getDeployableDevice
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        query_params:
+          expanded: true
+        register_as: devices
+
+    - name: Complete playbook when nothing to deploy
+      meta: end_play
+      when: devices[0].device is undefined
+
+    - name: Fetch pending changes
+      cisco.fmcansible.fmc_configuration:
+        operation: getPendingChanges
+        path_params:
+          containerUUID: '{{ devices[0].device.id }}'
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: pending_changes
+
+    - name: Start deployment
+      cisco.fmcansible.fmc_configuration:
+        operation: createDeploymentRequest
+        data:
+          version: '{{ devices[0].version }}'
+          deviceList:
+            - '{{ devices[0].device.id }}'
+          forceDeploy: True
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: deployment_job
+
+    - name: Poll deployment status until the job is finished
+      cisco.fmcansible.fmc_configuration:
+        operation: getDeploymentDetail
+        path_params:
+          containerUUID: '{{ devices[0].device.id }}'
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: deployment_status
+      until: deployment_status[0].status is match("SUCCEEDED")
+      retries: 100
+      delay: 3
+
+    - name: Stop the playbook if the deployment failed
+      fail:
+        msg: 'Deployment failed. Status: {{ deployment_status[0].status }}'
+      when: deployment_status[0].status is not match("SUCCEEDED")

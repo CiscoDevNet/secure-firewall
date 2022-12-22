@@ -1,0 +1,62 @@
+- hosts: all
+  connection: httpapi
+  tasks:
+    - name: Get Domain
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: Get Devices
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDevice
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}' 
+        register_as: device_list 
+
+    - name: Get Physical Interfaces
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllFTDPhysicalInterface
+        path_params:
+          containerUUID: '{{ device_list[0].id }}'
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: physical_interfaces
+
+    - name: Setup SubInterface under GigabitEthernet0/1 with DHCP
+      cisco.fmcansible.fmc_configuration:
+        operation: createMultipleFTDSubInterface
+        data:
+          ifname: outside_subinterface
+          name: GigabitEthernet0/0
+          subIntfId: 1
+          ipv4:
+            dhcp:
+              enableDefaultRouteDHCP: True
+              dhcpRouteMetric: 100
+          enabled: True
+          vlanId: 101
+          MTU: 1500
+          mode: NONE
+          type: subinterface
+        path_params:
+          containerUUID: '{{ device_list[0].id }}'
+          domainUUID: '{{ domain[0].uuid }}'
+
+    - name: Setup SubInterface under GigabitEthernet0/0 with static IP
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertFTDSubInterface
+        data:
+          ifname: outside_subinterface2
+          name: GigabitEthernet0/0
+          subIntfId: 2
+          ipv4:
+            static:
+              address: 192.168.5.15
+              netmask: 255.255.255.0
+          enabled: True
+          vlanId: 102
+          MTU: 1500
+          mode: NONE
+          type: subinterface
+        path_params:
+          containerUUID: '{{ device_list[0].id }}'
+          domainUUID: '{{ domain[0].uuid }}'

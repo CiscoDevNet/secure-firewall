@@ -1,0 +1,45 @@
+- hosts: all
+  connection: httpapi
+  tasks:
+    - name: Get Domain
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: Create Prefilter Policy
+      cisco.fmcansible.fmc_configuration:
+        operation: createPrefilterPolicy
+        data:
+          name: NGFW-Prefilter-Policy104
+          defaultAction:
+            action: ANALYZE_TUNNELS
+            type: PrefilterPolicyDefaultAction
+          type: PrefilterPolicy
+          description: testing upsert
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: prefilter
+
+    - name: Update Prefilter Policy
+      cisco.fmcansible.fmc_configuration:
+        operation: updatePrefilterPolicy
+        data:
+          name: NGFW-Prefilter-Policy104
+          defaultAction:
+            action: ANALYZE_TUNNELS
+            type: PrefilterPolicyDefaultAction
+            id: '{{ prefilter.defaultAction.id }}'
+          type: PrefilterPolicy
+          description: testing upsert new
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+          objectId: '{{ prefilter.id }}'
+
+    - name: Delete Prefilter Policy
+      cisco.fmcansible.fmc_configuration:
+        operation: deletePrefilterPolicy
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+          objectId: '{{ prefilter.id }}'
+
+    

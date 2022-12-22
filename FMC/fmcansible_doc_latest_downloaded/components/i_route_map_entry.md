@@ -1,0 +1,54 @@
+# IRouteMapEntry
+
+## List of route maps entries already configured for this route map object.
+
+**Type:** object
+
+## Properties
+* extendedCommunityAdditive
+* ipv4PrefixListRouteSources
+* metricBandwidth
+* policyLists
+* ipv6AccessListRouteSources
+* ipv6AccessListAddresses
+* ipv4AccessListAddresses
+* routeTypeNSSAExternal1
+* routeTypeNSSAExternal2
+* ipv6PrefixListNexthops
+* nextHopIPV4Setting
+* metricType
+* nextHopIPV6Setting
+* ipv4AccessListNextHops
+* ipv4PrefixListNexthops
+* action
+* asPathLists
+* tagValues
+* communityListSettingInternet
+* communityListSetting
+* ipv6AccessListNextHops
+* interfaces
+* specificIPsIPV6Setting
+* originSetting
+* communityListSettingNoExport
+* localPreferenceSetting
+* extendedCommunityLists
+* automaticTagSetting
+* interfaceNames
+* ipv4PrefixListAddresses
+* asPathPrependLastASToASPath
+* ipv6PrefixListAddresses
+* ipv6PrefixListRouteSources
+* prefixListIPV4Setting
+* prefixListIPV6Setting
+* extendedCommunityRouteTarget
+* sequence
+* metricRouteValues
+* routeTypeExternal2
+* routeTypeExternal1
+* communityListSettingNoAdvertise
+* communityLists
+* specificIPsIPV4Setting
+* asPathPrependASPath
+* ipv4AccessListRouteSources
+* weightSetting
+* routeTypeLocal

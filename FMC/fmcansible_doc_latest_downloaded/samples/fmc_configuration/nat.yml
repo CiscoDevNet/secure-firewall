@@ -1,0 +1,58 @@
+- hosts: all
+  connection: httpapi
+  tasks:
+    - name: Get Domain
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: Get Sec Zone
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllSecurityZoneObject
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: zones
+
+    - name: Get an IPv4 network
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllNetworkObject
+        query_params:
+          filter: 'nameOrValue:any-ipv4'
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: network_results
+
+    - name: Create NAT Policy
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertFTDNatPolicy
+        data:
+          name: Test-NAT-Policys3
+          type: FTDNatPolicy
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: NAT
+
+    - name: Setup an inside-outsite NAT rule
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertFTDManualNatRule
+        data:
+          natType: STATIC
+          destinationInterface: "{{ zones[2] }}"
+          sourceInterface: "{{ zones[1] }}"
+          originalSource: "{{ network_results[0] }}"
+          interfaceInTranslatedSource: True
+          dns: False
+          enabled: True
+          type: ftdmanualnatrule
+        path_params:
+          containerUUID: '{{ NAT.id }}'
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: nat1
+
+    - name: Delete an inside-outsite NAT rule
+      cisco.fmcansible.fmc_configuration:
+        operation: deleteFTDManualNatRule
+        path_params:
+          containerUUID: '{{ NAT.id }}'
+          domainUUID: '{{ domain[0].uuid }}'
+          objectId: '{{ nat1.id }}'

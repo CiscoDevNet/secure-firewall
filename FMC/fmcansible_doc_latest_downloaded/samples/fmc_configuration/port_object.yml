@@ -1,0 +1,80 @@
+- hosts: all
+  connection: httpapi
+  tasks:
+    - name: Get Domain
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: Create a TCP port for PostgreSQL
+      cisco.fmcansible.fmc_configuration:
+        operation: createMultipleProtocolPortObject
+        data:
+          name: PostgreSQLporte
+          port: "5432"
+          protocol: "TCP"
+          type: protocolportobject
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: postgr
+
+    - name: Update TCP port for PostgreSQL
+      cisco.fmcansible.fmc_configuration:
+        operation: updateProtocolPortObject
+        data:
+          name: PostgreSQLporte
+          port: "5433"
+          protocol: "TCP"
+          type: protocolportobject
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+          objectId: '{{ postgr.id }}'
+        register_as: postgre
+
+    - name: Create a TCP port for MySQL
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertProtocolPortObject
+        data:
+          name: MySQLport
+          port: "3306"
+          protocol: "TCP"
+          type: protocolportobject
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: mysql
+
+    - name: Create a database port group
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertPortObjectGroup
+        data:
+          name: Databaseports
+          objects:
+            - id: "{{ mysql.id }}"
+              type: "{{ mysql.type }}"
+            - id: "{{ postgre.id }}"
+              type: "{{ postgre.type }}"
+          type: portobjectgroup
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+
+    - name: Create a UDP port for NTP protocol
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertProtocolPortObject
+        data:
+          name: NTPport
+          port: "123"
+          protocol: "UDP"
+          type: protocolportobject
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+
+    - name: Create a UDP port for NTP protocol 2
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertProtocolPortObject
+        data:
+          name: NTPport
+          port: "122"
+          protocol: "UDP"
+          type: protocolportobject
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'

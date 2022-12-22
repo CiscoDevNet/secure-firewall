@@ -1,0 +1,5 @@
+# LLAdditionalProperties
+
+
+**Type:** object
+

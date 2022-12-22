@@ -1,0 +1,49 @@
+- hosts: all
+  connection: httpapi
+  tasks:
+    - name: Get Domain
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: Get Prefilter Policy
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllPrefilterPolicy
+        register_as: prefilter
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+
+    - name: Create Prefilter Rule
+      cisco.fmcansible.fmc_configuration:
+        operation: createMultiplePrefilterRule
+        data:
+          name: NGFW-Prefilter-Policy10
+          enabled: true
+          ruleType: PREFILTER
+          action: FASTPATH
+          type: PrefilterRule
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+          containerUUID: '{{ prefilter[1].id }}'
+
+    - name: update Prefilter Rule
+      cisco.fmcansible.fmc_configuration:
+        operation: updatePrefilterRule
+        data:
+          name: NGFW-Prefilter-Policy10
+          enabled: true
+          ruleType: PREFILTER
+          action: FASTPATH
+          type: PrefilterRule
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+          containerUUID: '{{ prefilter[1].id }}'
+          objectId: '{{ PrefilterRule_ngfw_prefilter_policy10.id }}'
+
+    - name: delete Prefilter Rule
+      cisco.fmcansible.fmc_configuration:
+        operation: deletePrefilterRule
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+          containerUUID: '{{ prefilter[1].id }}'
+          objectId: '{{ PrefilterRule_ngfw_prefilter_policy10.id }}'

@@ -1,0 +1,5 @@
+# LLSettings
+
+
+**Type:** object
+
