@@ -13,7 +13,7 @@ source_address = "*"
 vn_cidr = "10.0.0.0/16"
 
 // ASA Version to be deployed - Please validate the correct version using - 'az vm image list -p cisco -f cisco-ftdv -s ftdv-azure-byol --all'
-image_version = "710.3.0"
+image_version = "72082.0.0"
 
 // Size of the FTDv to be deployed
 vm_size = "Standard_D3_v2"
