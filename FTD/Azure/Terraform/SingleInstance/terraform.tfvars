@@ -13,7 +13,7 @@ source-address = "*"
 IPAddressPrefix = "10.10"
 
 // ASA Version to be deployed - Please validate the correct version using - 'az vm image list --offer asav --all'
-Version = "700.94.0"
+Version = "72082.0.0"
 
 // Size of teh FTDv to be deployed
 VMSize = "Standard_D3_v2"
