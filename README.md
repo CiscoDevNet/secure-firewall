@@ -136,4 +136,4 @@ Each specific usecase contains a README file with installation instructions.
    * [Decomission access rules](https://github.com/CiscoDevNet/secure-firewall/tree/main/Automation_Scripts/decomission_AccessRules)
 
 ## Disclaimer
-These repositories should be used only as a **proof of concept**. It is your duty to secure the provisioned device's by following cloud provider and product based security best practices guidelines.
+These repositories should be used only as a **proof of concept**. It is your duty and responsability to secure the provisioned device's by following cloud provider and product based security best practices guidelines.
