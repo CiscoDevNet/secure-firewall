@@ -119,10 +119,6 @@ data "aws_ami" "fmcv" {
     values = ["${var.fmc_version}*"]
   }
 
-  filter {
-    name   = "product-code"
-    values = ["bhx85r4r91ls2uwl69ajm9v1b"]
-  }
 
   filter {
     name   = "virtualization-type"

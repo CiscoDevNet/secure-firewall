@@ -96,7 +96,7 @@ variable "password" {
 }
 
 variable "image_version" {
-  default     = "710.3.0"
+  default     = "73069.0.0"//"710.3.0"
   description = "Version of the FTDv"
 }
 
@@ -436,13 +436,13 @@ resource "azurerm_lb" "ftd-ilb" {
   frontend_ip_configuration {
     name                          = "InternalIPAddress"
     subnet_id                     = azurerm_subnet.subnets["inside"].id
-    private_ip_address            = cidrhost(azurerm_subnet.subnets["inside"].address_prefix, 100)
+    private_ip_address            = cidrhost(azurerm_subnet.subnets["inside"].address_prefixes[0], 100)//cidrhost([azurerm_subnet.subnets["inside"].address_prefixes], 100)
     private_ip_address_allocation = "Static"
   }
 }
 
 resource "azurerm_lb_backend_address_pool" "ILB-Backend-Pool" {
-  count           = var.instances > 1 ? 1 : 0
+  //count           = var.instances > 1 ? 1 : 0
   loadbalancer_id = azurerm_lb.ftd-ilb[0].id
   name            = "BackEndAddressPool"
 }
@@ -450,14 +450,14 @@ resource "azurerm_lb_backend_address_pool" "ILB-Backend-Pool" {
 resource "azurerm_lb_backend_address_pool_address" "ILB-Backend-Address" {
   count                   = var.instances > 1 ? var.instances : 0
   name                    = "ILB-Backend-Address%{if var.instances > 1}-${count.index}%{endif}"
-  backend_address_pool_id = azurerm_lb_backend_address_pool.ILB-Backend-Pool[0].id
+  backend_address_pool_id = azurerm_lb_backend_address_pool.ILB-Backend-Pool.id
   virtual_network_id      = var.create_vn ? azurerm_virtual_network.ftdv[0].id : data.azurerm_virtual_network.ftdv[0].id
   ip_address              = azurerm_network_interface.ftdv-inside[count.index].private_ip_address
 }
 
 resource "azurerm_lb_probe" "FTD-ILB-Probe" {
   count               = var.instances > 1 ? 1 : 0
-  resource_group_name = local.rg_name
+ // resource_group_name = local.rg_name
   loadbalancer_id     = azurerm_lb.ftd-ilb[0].id
   name                = "ssh-running-probe"
   port                = 22
@@ -465,14 +465,14 @@ resource "azurerm_lb_probe" "FTD-ILB-Probe" {
 
 resource "azurerm_lb_rule" "ilbrule" {
   count                          = var.instances > 1 ? 1 : 0
-  resource_group_name            = local.rg_name
+  //resource_group_name            = local.rg_name
   loadbalancer_id                = azurerm_lb.ftd-ilb[0].id
   name                           = "ILBRule"
   protocol                       = "All"
   frontend_port                  = 0
   backend_port                   = 0
   frontend_ip_configuration_name = "InternalIPAddress"
-  backend_address_pool_id        = azurerm_lb_backend_address_pool.ILB-Backend-Pool[0].id
+  backend_address_pool_ids        = [azurerm_lb_backend_address_pool.ILB-Backend-Pool.id]
   probe_id                       = azurerm_lb_probe.FTD-ILB-Probe[0].id
 }
 
@@ -518,7 +518,7 @@ resource "azurerm_lb_backend_address_pool_address" "ELB-Backend-Address" {
 
 resource "azurerm_lb_probe" "FTD-ELB-Probe" {
   count               = var.instances > 1 ? 1 : 0
-  resource_group_name = local.rg_name
+  //resource_group_name = local.rg_name
   loadbalancer_id     = azurerm_lb.ftd-elb[0].id
   name                = "ssh-running-probe"
   port                = 22
@@ -526,14 +526,14 @@ resource "azurerm_lb_probe" "FTD-ELB-Probe" {
 
 resource "azurerm_lb_rule" "elbrule" {
   count                          = var.instances > 1 ? 1 : 0
-  resource_group_name            = local.rg_name
+  //resource_group_name            = local.rg_name
   loadbalancer_id                = azurerm_lb.ftd-elb[0].id
   name                           = "ELBRule"
   protocol                       = "Tcp"
   frontend_port                  = 80
   backend_port                   = 80
   frontend_ip_configuration_name = "ExternalIPAddress"
-  backend_address_pool_id        = azurerm_lb_backend_address_pool.ELB-Backend-Pool[0].id
+  backend_address_pool_ids        = [azurerm_lb_backend_address_pool.ELB-Backend-Pool[0].id]
   probe_id                       = azurerm_lb_probe.FTD-ELB-Probe[0].id
 }
 

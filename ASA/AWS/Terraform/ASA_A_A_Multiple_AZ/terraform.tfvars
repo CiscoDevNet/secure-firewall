@@ -50,7 +50,7 @@ key_name             = "Test01"
 
 asa_size                = "c5.2xlarge"
 
-ASA_version         = "asav9-15-1-1"
+ASA_version         = "asav9-19-1"
 //Allowed Values = asav9-15-1, asav9-14-1-30, asav9-12-4-4, asav9-14-1-10, asav9-13-1-12
 
 asa01_mgmt_ip       =     "172.16.0.10"

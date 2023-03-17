@@ -363,7 +363,6 @@ resource "azurerm_lb_backend_address_pool_address" "ILB-Backend-Address" {
 
 resource "azurerm_lb_probe" "ASA-ILB-Probe" {
   count               = var.instances > 1 ? 1 : 0
-  resource_group_name = var.rg_name
   loadbalancer_id     = azurerm_lb.asa-ilb[0].id
   name                = "ssh-running-probe"
   port                = 22
@@ -371,14 +370,13 @@ resource "azurerm_lb_probe" "ASA-ILB-Probe" {
 
 resource "azurerm_lb_rule" "ilbrule" {
   count                          = var.instances > 1 ? 1 : 0
-  resource_group_name            = var.rg_name
   loadbalancer_id                = azurerm_lb.asa-ilb[0].id
   name                           = "ILBRule"
   protocol                       = "All"
   frontend_port                  = 0
   backend_port                   = 0
   frontend_ip_configuration_name = "InternalIPAddress"
-  backend_address_pool_id        = azurerm_lb_backend_address_pool.ILB-Backend-Pool[0].id
+  backend_address_pool_ids        = azurerm_lb_backend_address_pool.ILB-Backend-Pool[0].id
   probe_id                       = azurerm_lb_probe.ASA-ILB-Probe[0].id
 }
 
@@ -424,7 +422,7 @@ resource "azurerm_lb_backend_address_pool_address" "ELB-Backend-Address" {
 
 resource "azurerm_lb_probe" "ASA-ELB-Probe" {
   count               = var.instances > 1 ? 1 : 0
-  resource_group_name = var.rg_name
+ // resource_group_name = var.rg_name
   loadbalancer_id     = azurerm_lb.asa-elb[0].id
   name                = "ssh-running-probe"
   port                = 22
@@ -432,14 +430,13 @@ resource "azurerm_lb_probe" "ASA-ELB-Probe" {
 
 resource "azurerm_lb_rule" "elbrule" {
   count                          = var.instances > 1 ? 1 : 0
-  resource_group_name            = var.rg_name
   loadbalancer_id                = azurerm_lb.asa-elb[0].id
   name                           = "ELBRule"
   protocol                       = "Tcp"
   frontend_port                  = 80
   backend_port                   = 80
   frontend_ip_configuration_name = "ExternalIPAddress"
-  backend_address_pool_id        = azurerm_lb_backend_address_pool.ELB-Backend-Pool[0].id
+  backend_address_pool_ids        = azurerm_lb_backend_address_pool.ELB-Backend-Pool[0].id
   probe_id                       = azurerm_lb_probe.ASA-ELB-Probe[0].id
 }
 

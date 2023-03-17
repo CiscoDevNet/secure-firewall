@@ -45,7 +45,7 @@ key_name             = "lx1"
 
 size                = "c5.xlarge"
 
-ASA_version         = "asav9-17-1"
+ASA_version         = "asav9-19-1"
 //Allowed Values = asav9-15-1, asav9-14-1-30, asav9-12-4-4, asav9-14-1-10, asav9-13-1-12
 
 asa_mgmt_ip       =     "10.1.0.10"
