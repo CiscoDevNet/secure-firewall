@@ -220,7 +220,6 @@ resource "aws_vpc" "ftd_vpc" {
   cidr_block           = var.vpc_cidr
   enable_dns_support   = true
   enable_dns_hostnames = true
-  enable_classiclink   = false
   instance_tenancy     = "default"
   tags = {
     Name = var.vpc_name
@@ -346,14 +345,14 @@ resource "aws_default_security_group" "default" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = [var.vpc_cidr]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = [var.vpc_cidr]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = {
@@ -382,7 +381,7 @@ resource "aws_network_interface" "fmcmgmt" {
   description   = "fmc-mgmt"
   subnet_id     = aws_subnet.mgmt01_subnet.id
   source_dest_check = false
-  #private_ips = [var.fmc_mgmt_ip]
+  private_ips = [var.fmc_mgmt_ip]
 }
 
 resource "aws_network_interface" "ftd01_diag" {
@@ -991,4 +990,3 @@ value = aws_eip.ftd02_mgmt-EIP.public_ip
 output "FMCip" {
   value = aws_eip.fmcmgmt-EIP.public_ip
 }
-

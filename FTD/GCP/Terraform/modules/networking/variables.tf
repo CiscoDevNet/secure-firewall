@@ -46,3 +46,9 @@ variable "custom_route_tag" {
   type        = string
   description = "tag for custom route"
 }
+
+variable "appliance_ips_fmc" {
+  type        = list(string)
+  default     = []
+  description = "internal IP addresses for FMC"
+}
