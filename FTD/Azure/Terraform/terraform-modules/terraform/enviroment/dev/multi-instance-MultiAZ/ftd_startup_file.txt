@@ -1,0 +1,9 @@
+#Sensor
+  {
+      "AdminPassword": "${password}",
+      "Hostname":       "${hostname}",
+      "ManageLocally":  "No",
+      "FmcIp":          "1.1.1.1",
+      "FmcRegKey":      "Cisco123",
+      "FmcNatId":       "5738",
+}
