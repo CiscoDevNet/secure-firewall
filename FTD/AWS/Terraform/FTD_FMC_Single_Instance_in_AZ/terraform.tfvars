@@ -13,15 +13,13 @@ aws_secret_key      = ""
 #############################################################
 vpc_name            = "FTD-Service-VPC"
 
-region              = "ap-south-1"
+region              = "us-east-1"
 
-aws_az              = "ap-south-1a"
+aws_az              = "us-east-1a"
 
-FTD_version         = "ftdv-6.6.0"
-//Allowed Values = ftdv-6.7.0, ftdv-6.6.0. 
+FTD_version         = "ftdv-7.3.0"
 
-FMC_version         = "fmcv-6.7.0"
-//Allowed Values = fmcv-6.7.0, fmcv-6.6.0. 
+FMC_version         = "fmcv-7.3.0"
 
 ##################################################################################
 #Define CIDR, five Subnets. Two for managment and three for Inside, Outisde and DMZ 
@@ -38,7 +36,7 @@ inside_subnet      =  "172.16.3.0/24"
 
 dmz_subnet         =  "172.16.4.0/24"
 
-key_name             = "NGFW-KP"  
+key_name             = ""  
 # Generate the key if you want to login thru the certifcation key
 
 ###########################################################################################

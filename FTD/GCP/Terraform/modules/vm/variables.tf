@@ -11,7 +11,6 @@ variable "networks_list" {
   type        = list(object({ name = string, network_self_link = string, subnet_self_link = string, subnet_cidr = string, appliance_ip = list(string), external_ip = bool, routes = list(string) }))
   description = "network links in a map(network_name)"
 }
-
 variable "mgmt_network" {
   type        = string
   description = "management network name"
@@ -21,10 +20,6 @@ variable "num_instances" {
   description = "Number of instances to create. This value is ignored if static_ips is provided."
   type        = number
   default     = 1
-  # validation {
-  #   condition     = var.num_instances <= 2
-  #   error_message = "The num_instances value must be less than or equal to 2."
-  # }
 }
 
 variable "vm_zones" {
@@ -63,32 +58,58 @@ variable "vm_instance_tags" {
 variable "cisco_product_version" {
   type        = string
   description = "cisco product version"
-  default     = "cisco-ftdv-7-0-0-94"
+  default     = "cisco-ftdv-7-3-0-69"
 }
 
 variable "admin_ssh_pub_key" {
   type        = string
   description = "ssh public key for admin"
 }
-variable "day_0_config" {
+variable "day_0_config_ftd" {
   type        = string
   description = "zero day configuration"
   default     = ""
 }
-
+variable "day_0_config_fmc" {
+  type        = string
+  description = "zero day configuration of fmc"
+  default     = ""
+}
 variable "service_account" {
   description = "The email address of the service account which will be assigned to the compute instances."
   type        = string
 }
-
-
 variable "admin_password" {
   type        = string
   description = "password for ftd admin"
   sensitive   = true
 }
-
-variable "hostname" {
+variable "ftd_hostname" {
   default     = "ftd"
   description = "FTD hostname"
 }
+variable "fmc_hostname" {
+  default     = "fmc"
+  description = "FMC hostname"
+}
+variable "subnet_self_link_fmc" {
+  description = "subnet self link of management network"
+}
+variable "network_project_id" {
+  type        = string
+  description = "The project ID of the shared VPC's host (for shared vpc support)"
+  default     = ""
+}
+variable "appliance_ips_fmc" {
+  type        = list(string)
+  description = "appliance IPs of management network"
+}
+
+variable "boot_disk_size" {
+  description = "Root disk size in GB."
+}
+
+variable "boot_disk_type" {
+  description = "The GCE boot disk type. May be set to pd-standard (for PD HDD) or pd-ssd."
+}
+
