@@ -25,8 +25,7 @@ vm_size = "Standard_D3_v2"
 instancename = "ASAv"
 
 // ASA Version to be deployed - Please validate the correct version using - 'az vm image list --offer asav --all'
-image_version = "917.0.3"
-
+image_version = "9191.0.0"
 //Name of subnets to be used for ASAv interfaces
 management_subnet = "mgmt"
 

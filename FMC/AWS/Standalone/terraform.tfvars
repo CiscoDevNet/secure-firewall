@@ -13,9 +13,9 @@ aws_secret_key      = ""
 #############################################################
 vpc_name            = "Cisco-FMCv"
 
-region              = "ap-south-1"
+region              = "ap-southeast-1"
 
-fmc_version         = "fmcv-7.0.0"
+fmc_version         = "fmcv-7.3.0"
 //Allowed Values = fmcv-6.7.0, fmcv-6.6.4. 
 
 ##################################################################################

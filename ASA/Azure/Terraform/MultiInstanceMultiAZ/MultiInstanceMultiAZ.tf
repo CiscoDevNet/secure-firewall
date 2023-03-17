@@ -402,7 +402,7 @@ resource "azurerm_lb" "asa-ilb" {
   frontend_ip_configuration {
     name                          = "InternalIPAddress"
     subnet_id                     = azurerm_subnet.subnets["internal"].id
-    private_ip_address            = cidrhost(azurerm_subnet.subnets["internal"].address_prefix, 100)
+    private_ip_address            = cidrhost(azurerm_subnet.subnets["internal"].address_prefixes[0], 100)
     private_ip_address_allocation = "Static"
   }
 }
@@ -423,7 +423,7 @@ resource "azurerm_lb_backend_address_pool_address" "ILB-Backend-Address" {
 
 resource "azurerm_lb_probe" "ASA-ILB-Probe" {
   count               = var.instances > 1 ? 1 : 0
-  resource_group_name = local.rg_name
+  //resource_group_name = local.rg_name
   loadbalancer_id     = azurerm_lb.asa-ilb[0].id
   name                = "ssh-running-probe"
   port                = 22
@@ -431,7 +431,7 @@ resource "azurerm_lb_probe" "ASA-ILB-Probe" {
 
 resource "azurerm_lb_rule" "ilbrule" {
   count                          = var.instances > 1 ? 1 : 0
-  resource_group_name            = local.rg_name
+  //resource_group_name            = local.rg_name
   loadbalancer_id                = azurerm_lb.asa-ilb[0].id
   name                           = "ILBRule"
   protocol                       = "All"
@@ -484,7 +484,7 @@ resource "azurerm_lb_backend_address_pool_address" "ELB-Backend-Address" {
 
 resource "azurerm_lb_probe" "ASA-ELB-Probe" {
   count               = var.instances > 1 ? 1 : 0
-  resource_group_name = local.rg_name
+  //resource_group_name = local.rg_name
   loadbalancer_id     = azurerm_lb.asa-elb[0].id
   name                = "ssh-running-probe"
   port                = 22
@@ -492,7 +492,7 @@ resource "azurerm_lb_probe" "ASA-ELB-Probe" {
 
 resource "azurerm_lb_rule" "elbrule" {
   count                          = var.instances > 1 ? 1 : 0
-  resource_group_name            = local.rg_name
+  //resource_group_name            = local.rg_name
   loadbalancer_id                = azurerm_lb.asa-elb[0].id
   name                           = "ELBRule"
   protocol                       = "Tcp"

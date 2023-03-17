@@ -137,10 +137,7 @@ data "aws_ami" "asav" {
     values = ["${var.ASA_version}*"]
   }
 
-  filter {
-    name   = "product-code"
-    values = ["663uv4erlxz65quhgaz9cida0"]
-  }
+  
 
   filter {
     name   = "virtualization-type"
