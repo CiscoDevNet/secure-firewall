@@ -4,6 +4,6 @@
       "Hostname":       "FTD-01",
       "ManageLocally":  "No",
       "FmcIp":          "${fmc_ip}",
-      "FmcRegKey":      "cisco",
+      "FmcRegKey":      "Cisco@123",
       "FmcNatId":       "${fmc_nat_id}",
 }

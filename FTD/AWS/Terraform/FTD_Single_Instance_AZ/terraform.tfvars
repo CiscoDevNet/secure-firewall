@@ -1,18 +1,18 @@
 // AWS Environment
-aws_access_key      = "<Enter access key name>"
+aws_access_key      = "<enter value here>"
 
-aws_secret_key      = "<Enter secret key name>"
+aws_secret_key      = "<enter value here>"
 
-key_name            = "<Enter key name>"
+key_name            = "<enter value here>"
 
 vpc_name            = "Service-VPC"
 
-region              = "us-east-1"
+region              = "eu-central-1"
 
-aws_az              = "us-east-1b"
+aws_az              = "eu-central-1b"
 
 //Allowed Values = ftdv-6.7.0, ftdv-6.6.0,
-FTD_version         = "ftdv-7.3.0"
+FTD_version         = "ftdv-6.7.0"
 
 vpc_cidr            = "10.1.0.0/16"
 

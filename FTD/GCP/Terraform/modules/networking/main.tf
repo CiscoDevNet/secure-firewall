@@ -19,4 +19,16 @@ module "vpc-module" {
       subnet_flow_logs      = "false"
     },
   ]
+  # enable routing if desired
+  #ILB as next hop : https://cloud.google.com/load-balancing/docs/internal/ilb-next-hop-overview#ilb-nh-multi-nic
+  #routes = [
+  #  {
+  #    name              = "${each.value.name}-egress-default"
+  #    description       = "${each.value.name} egress route"
+  #    destination_range = "0.0.0.0/0"
+  #    tags              = var.custom_route_tag
+  #    next_hop_ip       = each.value.appliance_ip[0]
+  #    priority          = 100
+  # }
+  #]
 }

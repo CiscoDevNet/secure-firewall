@@ -87,7 +87,3 @@ variable "win_virtual_machine_name" {
   type        = string
   description = "Win10 in Azure"
 }
-variable "fmc_version" {
-  type        = string
-  description = "Version of FMC in Azure"
-}
