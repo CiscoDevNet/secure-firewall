@@ -1,4 +1,4 @@
-name: terraform-cdk-version
+name: test-terraform-code
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
 
-  build:
+  test:
 
     runs-on: ubuntu-latest
     steps:
