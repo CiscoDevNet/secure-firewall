@@ -2,11 +2,14 @@ name: test-terraform-code
 
 on:
   push:
-    branches: [ main ]
-
+    branches:
+      - 'main'
+      - 'releases/**'
+      - 'feature/**'
+      
 jobs:
 
-  test:
+  test-tf-code:
 
     runs-on: ubuntu-latest
     steps:
@@ -15,9 +18,23 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: 3.8
-      - name: Test with Checkov
-        id: checkov
+          
+      - name: Test infrastructure FMC/AWS
         uses: bridgecrewio/checkov-action@master
         with:
-          directory: ASA/AWS/Terraform/ASA_A_A_Multiple_AZ
+          directory: FMC/AWS/Standalone
+          framework: terraform
+          
+      - name: Test infrastructure FMC/GSP
+        if: always()
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: FMC/GCP/Terraform
+          framework: terraform
+          
+      - name: Test infrastructure FMC/Azure
+        if: always()
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: FMC/Azure/Terraform/standalone
           framework: terraform 
