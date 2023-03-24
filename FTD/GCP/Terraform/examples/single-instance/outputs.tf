@@ -1,9 +1,8 @@
-output "networks_list" {
-  value       = module.ftd-1.networks_list
-  description = "list of networks"
+output "FMC_Public_IP" {
+  value       = module.vm.external_ips_fmc
+  description = "Public IP of FMC"
 }
-
-output "vm_external_ips" {
-  value       = module.ftd-1.vm_external_ips
-  description = "external ips for VPC networks"
+output "FTD_Public_IP" {
+  value       = module.vm.external_ips_ftd
+  description = "Public IP of FMC"
 }

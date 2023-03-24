@@ -1,6 +1,0 @@
-  #Sensor
-  {
-      "AdminPassword": "Cisco@123",
-      "Hostname": "FTD-01",
-      "ManageLocally": "Yes",
-   }

@@ -7,17 +7,30 @@ data "google_compute_zones" "available" {
   status  = "UP"
 }
 
-# e.g. https://www.googleapis.com/compute/v1/projects/cisco-public/global/images/cisco-ftdv-7-0-0-94
 data "google_compute_image" "ftd" {
   project = "cisco-public"
   name    = var.cisco_product_version
 }
+data "google_compute_image" "fmc" {
+  project = "cisco-public"
+  name    = "cisco-fmcv-7-3-0-69"
+}
 
-data "template_file" "startup_script" {
+data "template_file" "startup_script_ftd" {
   count    = var.num_instances
-  template = file("${path.module}/templates/${var.day_0_config}")
+  template = file("${path.module}/templates/${var.day_0_config_ftd}")
   vars = {
     admin_password = var.admin_password
-    hostname       = "${var.hostname}%{if var.num_instances > 0}-${count.index + 1}%{endif}"
+    fmc_ip = "10.10.0.20"
+    reg_key = "cisco"
+    fmc_nat_id = ""
+  }
+}
+data "template_file" "startup_script_fmc" {
+  count    = 1
+  template = file("${path.module}/templates/${var.day_0_config_fmc}")
+  vars = {
+    admin_password = var.admin_password
+    hostname       = "${var.fmc_hostname}%{if var.num_instances > 0}-${count.index + 1}%{endif}"
   }
 }

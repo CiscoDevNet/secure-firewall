@@ -13,13 +13,11 @@ aws_secret_key      = ""
 #############################################################
 vpc_name            = "FTD-Service-VPC"
 
-region              = "ap-south-1"
+region              = "us-east-1"
 
-FTD_version         = "ftdv-6.7.0"
-//Allowed Values = ftdv-6.7.0, ftdv-6.6.1. 
+FTD_version         = "ftdv-7.3.0" 
 
-FMC_version         = "fmcv-6.7.0"
-//Allowed Values = fmcv-6.7.0, fmcv-6.6.1. 
+FMC_version         = "fmcv-7.3.0"
 
 ##################################################################################
 #Define CIDR, four Subnets. One managment and three for Inside, Outisde and DMZ 

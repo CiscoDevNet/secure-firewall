@@ -13,7 +13,7 @@ source_address = "*"
 vn_cidr = "70.0.0.0/16"
 
 // ASA Version to be deployed - Please validate the correct version using - 'az vm image list --offer asav --all'
-image_version = "917.0.3"
+image_version = "9191.0.0"
 
 // Size of the ASAv to be deployed
 vm_size = "Standard_D3_v2"

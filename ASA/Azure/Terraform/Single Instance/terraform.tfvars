@@ -9,7 +9,7 @@ source-address = "*"
 // All the IP Address segment will use this as prefix with .0,.1,.2 and .3 as the 3rd octet
 IPAddressPrefix = "10.10"
 // ASA Version to be deployed - Please validate the correct version using - 'az vm image list --offer asav --all'
-Version = "917.0.3"
+Version = "9191.0.0"
 
 // Size of teh ASAv to be deployed 
 VMSize = "Standard_D3_v2"
