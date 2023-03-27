@@ -2,14 +2,15 @@ name: test-terraform-code
 
 on:
   push:
-    branches:
-      - 'main'
-      - 'releases/**'
-      - 'feature/**'
-      
+    branches: "**"
+#       - 'main'
+#       - 'releases/**'
+#       - 'feature/**'
+    tags:
+      - 'v*'      
 jobs:
 
-  test-tf-code:
+  Chekov:
 
     runs-on: ubuntu-latest
     steps:
@@ -22,19 +23,39 @@ jobs:
       - name: Test infrastructure FMC/AWS
         uses: bridgecrewio/checkov-action@master
         with:
-          directory: FMC/AWS/Standalone
+          directory: .
           framework: terraform
           
-      - name: Test infrastructure FMC/GSP
-        if: always()
-        uses: bridgecrewio/checkov-action@master
-        with:
-          directory: FMC/GCP/Terraform
-          framework: terraform
-          
-      - name: Test infrastructure FMC/Azure
-        if: always()
-        uses: bridgecrewio/checkov-action@master
-        with:
-          directory: FMC/Azure/Terraform/standalone
-          framework: terraform 
+  tflinter:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+    - uses: actions/checkout@v3
+      name: Checkout source code
+
+    - uses: actions/cache@v3
+      name: Cache plugin dir
+      with:
+        path: ~/.tflint.d/plugins
+        key: ${{ matrix.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
+
+    - uses: terraform-linters/setup-tflint@v3
+      name: Setup TFLint
+      with:
+        tflint_version: v0.44.1
+
+    - name: Show version
+      run: tflint --version
+
+    - name: Init TFLint
+      run: tflint --init
+      env:
+        # https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/plugins.md#avoiding-rate-limiting
+        GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Run TFLint
+      run: tflint -f compact --recursive
