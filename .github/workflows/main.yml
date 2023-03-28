@@ -23,6 +23,7 @@ on:
 #     #        │  │ │ │ │
 #     #        *  * * * *
 #     - cron: '30 1 * * 0'
+
 jobs:
 
 # Checkov scans cloud infrastructure configurations to find misconfigurations before they're deployed
@@ -91,7 +92,7 @@ jobs:
         uses: dflook/terraform-validate@v1
         id: validate
         with:
-          path: testinfra/fmc
+          path: "FMC/Azure/Terraform/standalone"
 
       - name: Validate failed
         if: ${{ failure() && steps.validate.outputs.failure-reason == 'validate-failed' }}
