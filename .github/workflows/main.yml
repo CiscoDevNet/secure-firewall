@@ -88,11 +88,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: terraform validate
+      - name: Terraform validate FMC/Azure
         uses: dflook/terraform-validate@v1
         id: validate
         with:
           path: "FMC/Azure/Terraform/standalone"
+
+      - name: Terraform validate FMC/AWS
+        uses: dflook/terraform-validate@v1
+        id: validate1
+        with:
+          path: "FMC/AWS/Standalone"
+ 
+      - name: Terraform validate FMC/GCP
+        uses: dflook/terraform-validate@v1
+        id: validate2
+        with:
+          path: "FMC/GCP/Terraform"          
 
       - name: Validate failed
         if: ${{ failure() && steps.validate.outputs.failure-reason == 'validate-failed' }}
