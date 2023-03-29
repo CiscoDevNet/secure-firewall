@@ -1,0 +1,172 @@
+name: weekly-repo-scan
+
+on:
+  push:
+    branches:
+       - 'main'
+#       - 'releases/**'
+#       - 'feature/**'
+#     tags:
+#       - 'v*'
+#   pull_request:
+#     types:
+#       - opened
+#------------------------------------------------------------------------------------------------
+   schedule:
+#     #        ┌───────────── minute (0 - 59)
+#     #        │  ┌───────────── hour (0 - 23)
+#     #        │  │ ┌───────────── day of the month (1 - 31)
+#     #        │  │ │ ┌───────────── month (1 - 12 or JAN-DEC)
+#     #        │  │ │ │ ┌───────────── day of the week (0 - 6 or SUN-SAT)
+#     #        │  │ │ │ │
+#     #        │  │ │ │ │
+#     #        │  │ │ │ │
+#     #        *  * * * *
+     - cron: '30 1 * * 0'
+
+jobs:
+
+#Trivy, comprehensive and versatile security scanner
+
+  trivy:
+    name: Build
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run Trivy vulnerability scanner in repo mode
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          ignore-unfixed: true
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+# Checkov scans cloud infrastructure configurations to find misconfigurations before they're deployed
+
+  Chekov:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+          
+      - name: Test infrastructure
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: .
+          framework: terraform
+
+# FLint, checks for possible errors, best practices, etc in your terraform code
+
+  tflinter:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+    - uses: actions/checkout@v3
+      name: Checkout source code
+
+    - uses: actions/cache@v3
+      name: Cache plugin dir
+      with:
+        path: ~/.tflint.d/plugins
+        key: ${{ matrix.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
+
+    - uses: terraform-linters/setup-tflint@v3
+      name: Setup TFLint
+      with:
+        tflint_version: v0.44.1
+
+    - name: Show version
+      run: tflint --version
+
+    - name: Init TFLint
+      run: tflint --init
+      env:
+        # https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/plugins.md#avoiding-rate-limiting
+        GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Run TFLint
+      run: tflint -f compact --recursive
+
+# The terraform validate command validates the configuration files in a directory, referring only to the configuration and not accessing any remote services such as remote state, provider APIs, etc.
+
+  terraform-validate:
+    runs-on: ubuntu-latest
+    name: Validate terraform
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Terraform validate FMC/Azure
+        uses: dflook/terraform-validate@v1
+        id: validate
+        with:
+          path: "FMC/Azure/Terraform/standalone"
+
+      - name: Terraform validate FMC/AWS
+        uses: dflook/terraform-validate@v1
+        id: validate1
+        with:
+          path: "FMC/AWS/Standalone"
+ 
+      - name: Terraform validate FMC/GCP
+        uses: dflook/terraform-validate@v1
+        id: validate2
+        with:
+          path: "FMC/GCP/Terraform"          
+
+      - name: Validate failed
+        if: ${{ failure() && steps.validate.outputs.failure-reason == 'validate-failed' }}
+        run: echo "terraform validate failed"
+  
+# Rewrite Terraform configuration files to a canonical format and style
+  
+  terraform-fmt:
+    runs-on: ubuntu-latest
+    name: Check terraform file are formatted correctly
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: terraform fmt
+        uses: dflook/terraform-fmt@v1
+        with:
+          path: .
+
+#       - name: Create Pull Request
+#         uses: peter-evans/create-pull-request@v2
+#         with:
+#           commit-message: terraform fmt
+#           title: Reformat terraform files
+#           body: Update terraform files to canonical format using `terraform fmt`
+#           branch: automated-terraform-fmt
+
+# Generate terraform documentations  
+
+  terraform-docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      
+    - name: Render terraform docs inside the USAGE.md and push changes back to PR branch
+      uses: Dirrk/terraform-docs@v1.0.8
+      with:
+        tf_docs_find_dir: .
+#        tf_docs_working_dir: FMC/
+        tf_docs_output_file: Docs.md
+        tf_docs_output_method: inject
+        tf_docs_git_push: 'true'
