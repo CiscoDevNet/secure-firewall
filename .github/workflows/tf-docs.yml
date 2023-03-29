@@ -28,6 +28,10 @@ jobs:
 
 # Generate terraform documentation  
 
+# This step may not work if any folder in the repository contains a space in the folder name
+# For exemple: folder "ASA/Azure/Terraform/Single Instance/" in this repository
+# To fix this, rename the folder (Single Instance => SingleInstance) 
+
   terraform-docs:
     runs-on: ubuntu-latest
     steps:
