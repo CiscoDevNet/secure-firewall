@@ -1,0 +1,13 @@
+!
+interface GigabitEthernet0/0
+ no shutdown
+ nameif outside
+ security-level 0
+ ip address dhcp
+!
+interface GigabitEthernet0/1
+ no shutdown
+ nameif inside
+ security-level 100
+ ip address dhcp
+!
