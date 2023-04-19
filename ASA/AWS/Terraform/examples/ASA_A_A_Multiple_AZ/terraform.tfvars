@@ -4,31 +4,34 @@
 ############################################################
 #AWS Creditials to access the AWS Cloud
 #############################################################
-aws_access_key      = ""
+aws_access_key = ""
 
-aws_secret_key      = ""
+aws_secret_key = ""
 
 ############################################################
 #Define New VPC in a specific Region and Avilability Zone 
 #############################################################
-vpc_name            = "Transit-Service-VPC"
+vpc_name = "Transit-Service-VPC3"
 
-region               = "us-east-1"
+region = "ap-northeast-3"
+
+
+
 
 ##################################################################################
 #Define CIDR, Subnets for managment and three for Inside, Outisde and DMZ
 ###################################################################################
-vpc_cidr           = "10.1.0.0/16"
+vpc_cidr = "10.0.0.0/16"
 
-mgmt_subnet        = "10.1.0.0/24"
+mgmt_subnet_cidr = ["10.0.1.0/24","10.0.10.0/24"]
 
-outside_subnet     = "10.1.1.0/24"
+outside_subnet_cidr = ["10.0.3.0/24","10.0.30.0/24"]
 
-inside_subnet      = "10.1.2.0/24"
+inside_subnet_cidr = ["10.0.5.0/24","10.0.50.0/24"]
 
-dmz_subnet         = "10.1.3.0/24" 
+dmz_subnet_cidr = ["10.0.4.0/24","10.0.40.0/24"]
 
-key_name             = "Test01"  
+keyname = "kgreeshm-osaka"
 # Generate the key if you want to login thru the  key
 
 ###########################################################################################
@@ -40,30 +43,23 @@ key_name             = "Test01"
 //https://www.cisco.com/c/en/us/products/collateral/security/adaptive-security-virtual-appliance-asav/datasheet-c78-733399.html?dtid=osscdc000283
 #Remove the # before using it
 
-asa_size                = "c5.2xlarge"
+size = "c5.xlarge"
 
-ASA_version         = "asav9-19-1"
+ASA_version = "asav9-19-1"
 //Allowed Values = asav9-15-1, asav9-14-1-30, asav9-12-4-4, asav9-14-1-10, asav9-13-1-12
 
-asa01_mgmt_ip       =     "10.1.0.10"
+asa_mgmt_ip = ["10.0.1.10","10.0.10.20"]
 
-asa01_outside_ip    =     "10.1.1.10"  
+asa_outside_ip = ["10.0.3.10","10.0.30.20"]
 
-asa01_inside_ip     =     "10.1.2.10"       
+asa_dmz_ip = ["10.0.4.10","10.0.40.20"]
 
-asa01_dmz_ip        =     "10.1.3.10"
+asa_inside_ip = ["10.0.5.10","10.0.50.20"]
 
-asa02_mgmt_ip       =     "10.1.0.20"
+instances_per_az        = 1
+availability_zone_count = 2
 
-asa02_outside_ip    =     "10.1.1.20"
-
-asa02_inside_ip     =     "10.1.2.20"       
-
-asa02_dmz_ip        =     "10.1.3.20"
-
-listener_ports      =  {
-    80  =   "TCP"
-    22  =   "TCP"
-    443 =   "TCP"
-}
-
+inside_subnet_name = ["inside1","inside2"]
+outside_subnet_name = ["outside1","outside2"]
+mgmt_subnet_name = ["mgmt1","mgmt2"]
+dmz_subnet_name = ["dmz1","dmz2"]
