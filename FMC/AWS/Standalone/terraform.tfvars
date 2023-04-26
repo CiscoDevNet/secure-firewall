@@ -13,7 +13,7 @@ aws_secret_key      = ""
 #############################################################
 vpc_name            = "Cisco-FMCv"
 
-region              = "ap-southeast-1"
+region              = "ap-northeast-3"
 
 fmc_version         = "fmcv-7.3.0"
 //Allowed Values = fmcv-6.7.0, fmcv-6.6.4. 
@@ -33,4 +33,4 @@ password            = "P@$$w0rd1234"
 //https://www.cisco.com/c/en/us/products/collateral/security/firesight-management-center/datasheet-c78-736775.html
 fmc_size            = "c5.4xlarge"
 
-key_name            = "cisco-fmc"
+key_name            = "key_name"
