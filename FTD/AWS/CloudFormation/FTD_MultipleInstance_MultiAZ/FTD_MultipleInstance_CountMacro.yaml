@@ -375,8 +375,8 @@ Mappings:
       BYOLv63090: ami-0629d543a1df21093
       BYOLv66191: ami-042c4182e8a398bf1
       BYOLv67065: ami-0da09346c7a6e9a62
-      BYOLv70094": ami-05f4622e0fa8e091c
-      BYOLv71092": ami-0784ff68f15c9f851
+      BYOLv70094: ami-05f4622e0fa8e091c
+      BYOLv71092: ami-0784ff68f15c9f851
       HOURLYv66191: ami-088d30368eabe0179
       HOURLY67065: ami-06d29df04b73bd144
       FMCBYOLv66191: ami-030c1f7a873ca8238
