@@ -7,9 +7,16 @@ Please visit our latest cloud resources [website on developer.cisco.com](https:/
 
 Repos are organized per: **Product** >> **Cloud Platform** >>  **Infrastructure as Code (IaC)** >> **Use Case**
 
-Each specific usecase contains a README file with installation instructions.
+## The Cisco eStreamer client for Open Cyber Security Framework (OCSF)
+
+The Cisco Event Streamer (also known as eStreamer) allows you to stream System intrusion, discovery, and connection data from Firepower Management Center or managed device (also referred to as the eStreamer server) to external client applications.
+
+Please visit [Cisco Security on Github](https://github.com/CiscoSecurity/fp-05-firepower-cli/blob/ocsf/README.md) for more information and installation scripts and templates
 
 ## Index
+
+Each specific usecase contains a README file with installation instructions.
+
 * **ASA on AWS:**
   * _CloudFormation templates:_
      * [Multiple ASA instances in multiple AZ](https://github.com/CiscoDevNet/secure-firewall/tree/main/ASA/AWS/CloudFormation/ASA_Multiple_Instance_MultiAz)
