@@ -1,4 +1,4 @@
-devnet_pod = "devnet03"
+devnet_pod = "03"
 
 fmc_username = "devnet-user03"
 fmc_password = ""

@@ -2,18 +2,31 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="61a8c3c4-ddfd-45eb-bf8d-1681718f491e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/pod01/task02/terraform.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/pod01/task02/terraform.tfvars" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pod02/task02/terraform.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/pod02/task02/terraform.tfvars" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pod03/task02/terraform.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/pod03/task02/terraform.tfvars" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pod04/task02/terraform.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/pod04/task02/terraform.tfvars" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pod05/task02/terraform.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/pod05/task02/terraform.tfvars" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pod06/task02/terraform.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/pod06/task02/terraform.tfvars" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pod07/task02/terraform.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/pod07/task02/terraform.tfvars" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pod08/task02/terraform.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/pod08/task02/terraform.tfvars" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pod09/task02/terraform.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/pod09/task02/terraform.tfvars" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pod10/task02/terraform.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/pod10/task02/terraform.tfvars" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pod11/task02/terraform.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/pod11/task02/terraform.tfvars" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pod12/task02/terraform.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/pod12/task02/terraform.tfvars" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pod01/task04/terraform.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/pod01/task04/terraform.tfvars" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pod01/task04/terraform.tfvars.example" beforeDir="false" afterPath="$PROJECT_DIR$/pod01/task04/terraform.tfvars.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pod02/task04/terraform.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/pod02/task04/terraform.tfvars" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pod02/task04/terraform.tfvars.example" beforeDir="false" afterPath="$PROJECT_DIR$/pod02/task04/terraform.tfvars.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pod03/task04/terraform.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/pod03/task04/terraform.tfvars" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pod03/task04/terraform.tfvars.example" beforeDir="false" afterPath="$PROJECT_DIR$/pod03/task04/terraform.tfvars.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pod04/task04/terraform.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/pod04/task04/terraform.tfvars" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pod04/task04/terraform.tfvars.example" beforeDir="false" afterPath="$PROJECT_DIR$/pod04/task04/terraform.tfvars.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pod05/task04/terraform.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/pod05/task04/terraform.tfvars" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pod05/task04/terraform.tfvars.example" beforeDir="false" afterPath="$PROJECT_DIR$/pod05/task04/terraform.tfvars.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pod06/task04/terraform.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/pod06/task04/terraform.tfvars" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pod06/task04/terraform.tfvars.example" beforeDir="false" afterPath="$PROJECT_DIR$/pod06/task04/terraform.tfvars.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pod07/task04/terraform.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/pod07/task04/terraform.tfvars" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pod07/task04/terraform.tfvars.example" beforeDir="false" afterPath="$PROJECT_DIR$/pod07/task04/terraform.tfvars.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pod08/task04/terraform.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/pod08/task04/terraform.tfvars" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pod08/task04/terraform.tfvars.example" beforeDir="false" afterPath="$PROJECT_DIR$/pod08/task04/terraform.tfvars.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pod09/task04/terraform.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/pod09/task04/terraform.tfvars" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pod09/task04/terraform.tfvars.example" beforeDir="false" afterPath="$PROJECT_DIR$/pod09/task04/terraform.tfvars.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pod10/task04/terraform.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/pod10/task04/terraform.tfvars" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pod10/task04/terraform.tfvars.example" beforeDir="false" afterPath="$PROJECT_DIR$/pod10/task04/terraform.tfvars.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pod11/task04/terraform.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/pod11/task04/terraform.tfvars" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pod11/task04/terraform.tfvars.example" beforeDir="false" afterPath="$PROJECT_DIR$/pod11/task04/terraform.tfvars.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pod12/task04/terraform.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/pod12/task04/terraform.tfvars" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pod12/task04/terraform.tfvars.example" beforeDir="false" afterPath="$PROJECT_DIR$/pod12/task04/terraform.tfvars.example" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
