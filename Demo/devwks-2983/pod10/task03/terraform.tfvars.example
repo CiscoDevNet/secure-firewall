@@ -1,0 +1,11 @@
+devnet_pod = "01"
+
+fmc_username = "devnet-user01"
+fmc_domain = "devnet-d01"
+fmc_password = ""
+fmc_host = ""
+
+ftd_registration_key = "devnet-clus23"
+ftd_ips =  "10.10.0.11"
+ftd_hostname = "devnet-clus23-ftd-1"
+
