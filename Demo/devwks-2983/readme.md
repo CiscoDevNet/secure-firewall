@@ -93,3 +93,71 @@ It will take upwards of 10 minutes for an FTD to fully initialize and over 30 mi
 Therefore an FMC instance has been created and access to this instance was tested in Task01. In addition an FTDv instance was created for every pod.
 Every pod has it's own domain in the FMC and we will now create an access-policy in the pod domain and register the FTDv in the FMC instance.
 
+1. Change directory to task03 directory:
+```
+cd ../task03
+```
+
+2. Initialize Terraform
+
+Download the required providers by running the following command:
+```
+terraform init
+```
+Note that since we are in a different directory from task02, terraform needs to be initialized again, and a new, separate statefile will be created and maintained
+
+3. Update the terraform.tfvars file:
+
+Replace XX with assigned pod number and fill in remaining values with inputs from table with credentials.
+
+4. Verify the changes Terraform intends to make.
+
+Before actually deploying the changes, it is always good to first check the proposed changes. Run the below command to evaluate what Terraform intends to do:
+```
+terraform plan
+```
+Make sure all values reflect the right pod numbers, host names, passwords, etc ...
+
+5. Deploy the access-policy and register the FTDv into the FMCv
+
+Run the following command to have Terraform create the access-policy and register the FTDv.
+```
+terraform apply
+```
+Enter yes when asked.
+
+Log into the [FMC](https://35.247.118.180) to see the progress of the policy being created and the FTD being registered. This step takes on average about 5 minutes.
+
+## Task04: Create a NAT policy and push it to the FTD.
+
+1. First change into the appropriate directory
+
+We want to show how to apply policy to an existing FTD so we will go to a different directory:
+```
+cd ../task04
+```
+This will cause terraform to again start from a blank canvas. So we will need to initialize terraform again.
+
+2. Create the NAT policy, update the values from terraform.tfvars
+
+Fill in the required values in terraform.tfvars based on the provided table with credentials and hostnames.
+
+3. Initialize Terraform and check what changes are proposed
+
+```
+terraform init
+terraform plan
+```
+
+4. Push the NAT policy to the FTD
+
+Now that terraform knows what to do, let's execute Terraform again and deploy to the FTDv
+```
+terraform apply
+```
+Ensure to enter yes when asked.
+
+Log into the [FMC](https://35.247.118.180) and verify the NAT policy is created and applied.
+
+
+
