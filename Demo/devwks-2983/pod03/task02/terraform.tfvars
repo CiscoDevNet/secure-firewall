@@ -7,7 +7,7 @@ project_id            = "gcp-netsecgcptenant-nprd-79235"
 region                = "us-west1"
 sa_email              = "devnet-terraform@gcp-netsecgcptenant-nprd-79235.iam.gserviceaccount.com"
 vm_zones              = ["us-west1-a"]
-vm_machine_type       = "c2-standard-4"
+vm_machine_type       = "c2-standard-8"
 vm_instance_labels = {
   firewall    = "ftd"
 }
