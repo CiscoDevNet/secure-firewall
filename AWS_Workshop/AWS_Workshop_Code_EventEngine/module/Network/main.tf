@@ -271,7 +271,7 @@ resource "aws_route_table_association" "diag_association" {
 
 resource "aws_eip" "ftd_mgmt-EIP" {
   count = length(var.mgmt_interface) != 0 ? length(var.mgmt_interface) : length(var.ftd_mgmt_ip)
-  vpc   = true
+  domain = "vpc"
   tags = merge({
     "Name" = "ftd-${count.index} Management IP"
   }, var.tags)
@@ -284,7 +284,7 @@ resource "aws_eip_association" "ftd-mgmt-ip-assocation" {
 }
 
 resource "aws_eip" "fmcmgmt-EIP" {
-  vpc   = true
+  domain = "vpc"
   tags = {
     "Name" = "FMCv Management IP"
   }
