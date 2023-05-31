@@ -1,4 +1,6 @@
-###Setting up the environment
+#DEVWKS-2984 Manage FTDv and FMCv with Ansible
+
+##Setting up the environment
 
 Ensure that Ansible is installed.
 ```commandline
@@ -60,7 +62,7 @@ git clone https://github.com/CiscoDevNet/secure-firewall.git
 
 Now cd into the directory with you assigned pod number. This is the directory where the playbooks you will use are located.
 
-###Task 01: Create an Inventory
+##Task 01: Create an Inventory
 
 Open the inventory file named `hosts` and replace the placeholders with FMC credentials of your account like below-
     ```
@@ -75,7 +77,7 @@ Open the inventory file named `hosts` and replace the placeholders with FMC cred
     ```
 You will need to add the FMC ip address, FMC username and FMC password. You will find the values to use in the pod documentation.
 
-###Task 02: Find the UUID of your assigned domain.
+##Task 02: Find the UUID of your assigned domain.
 
 Ansible will need to know the UUID of your assigned domain in order to run the plabyooks. 
 We need to open the [FMC api-explorer](https://35.247.118.180/api/api-explorer/) and log in with the provided credentials.
@@ -110,7 +112,7 @@ The response should look something like below:
 This indicates that the UUID for domain devnet-d01 is 27f4034d-208f-c9b6-6724-000000000001. In different pods, the UUID will be different.
 Make sure you only use the UUID for your assigned domain!
 
-###Task 03: Update the required variables
+##Task 03: Update the required variables
 
 Open `vars.yml` file and
 - replace the domain_uuid with the UUID you determined in Task 02.
@@ -118,7 +120,7 @@ Open `vars.yml` file and
 
 Look in vars.yml.example for what a completed file could look like. Note the values in the example will not work for your pod.
 
-###Task 04: Register the FTDv that was pre-created into your FMC domain
+##Task 04: Register the FTDv that was pre-created into your FMC domain
 
 Note: You might encounter an error like the one below when running the playbooks.
 If you get an error that looks like the below error:
@@ -185,7 +187,7 @@ Log into the [FMC](https://35.247.118.180) with the credentials from the pod doc
 
 Note: You will see the playbook complete at the time the device registration completes. FMC will than still continue to deploy the access policy.
 
-###Task 05: Get the list of registered devices from the FMC
+##Task 05: Get the list of registered devices from the FMC
 
 Now that we have registered our first FTD into the FMC, let's run a playbook that will list all registerd devices.
 
@@ -217,7 +219,7 @@ PLAY RECAP *********************************************************************
 
 ```
 
-###Task 06: Create some network objects
+##Task 06: Create some network objects
 
 The purpose here is to show how to create some configuration on the FMC.
 We will do this with the playbook called 'playbook-objects.yaml'.
@@ -258,7 +260,7 @@ PLAY RECAP *********************************************************************
 
 Log into the [FMC](https://35.247.118.180) with the credentials from the pod documentation to verify the objects have been created. (Objects -> Object Management)
 
-###Task 07: Deploy the objects you created to your FTD.
+##Task 07: Deploy the objects you created to your FTD.
 
 In the final task of this lab we will push the created objects to the FTD.
 Update the domain UUID in the file 'playbook-deploy.yml' and run it:
