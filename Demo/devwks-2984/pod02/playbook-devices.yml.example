@@ -1,0 +1,15 @@
+- hosts: all
+  connection: httpapi
+  vars:
+    uuid: "27f4034d-208f-c9b6-6724-100000000001"
+  tasks:
+    - name: Get all devices in the domain
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDevice
+        path_params:
+          domainUUID: '{{ uuid }}'
+        register_as: devices
+
+    - name: Debug devices
+      debug:
+        var: devices
