@@ -1,0 +1,48 @@
+- hosts: all
+  connection: httpapi
+  tasks:
+    - ansible.builtin.include_vars: vars.yml
+
+    - name: Create Access Policy
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertAccessPolicy
+        data:
+          type: "AccessPolicy"
+          name: "devnet-AccessPolicy"
+          defaultAction: {'action': 'BLOCK'}
+        path_params:
+          domainUUID: "{{ domain_uuid }}"
+        register_as: accesspolicy
+
+    - name: Device Registration
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertDevice
+        data:
+          hostName: "{{ ftd_ip }}"
+          license_caps:
+            - "BASE"
+          ftdMode: "ROUTED"
+          type: Device
+          regKey: "{{ reg_key }}"
+          performanceTier: "FTDv10"
+          name: "devnet-FTD"
+          accessPolicy:
+            id: "{{ accesspolicy.id }}"
+            type: "AccessPolicy"
+        path_params:
+          domainUUID: "{{ domain_uuid }}"
+        register_as: ftd
+
+    - name: Poll until device registration is complete
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDevice
+        path_params:
+          domainUUID: '{{ domain_uuid }}' 
+        register_as: device_list
+      until: device_list | map(attribute='name') | list | select('search','devnet-FTD') | list | length == 1
+      retries: 30
+      delay: 20
+    
+    - name: Device Output
+      ansible.builtin.debug:
+        var: ftd
