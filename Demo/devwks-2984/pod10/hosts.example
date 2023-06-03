@@ -1,0 +1,8 @@
+[all:vars]
+ansible_network_os=cisco.fmcansible.fmc
+
+[vfmc]
+1.2.3.4 ansible_user=devnet-user ansible_password=SuperSecretPassword ansible_httpapi_port=443 ansible_httpapi_use_ssl=True ansible_httpapi_validate_certs=False
+
+[vfmc:vars]
+network_type=HOST
