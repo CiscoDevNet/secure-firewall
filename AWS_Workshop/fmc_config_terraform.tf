@@ -49,7 +49,7 @@ resource "fmc_host_objects" "APP-LB" {
 resource "fmc_network_objects" "APP" {
   count = 2
   name        = "APP${count.index+1}"
-  value       = var.ftd_app_ip[count.index]
+  value       = var.ftd_app_subnet[count.index]
 }
 
 resource "fmc_access_rules" "access_rule_1" {
