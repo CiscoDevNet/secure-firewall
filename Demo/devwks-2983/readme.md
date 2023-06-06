@@ -61,7 +61,7 @@ cat devnet-userXX-key.pub
 
 line 16: admin_ssh_pub_key = "contents_of_devnet-userXX-key.pub_goes_here"
 
-line 17: admin_password = "provided_admin_password_goes_here"
+line 17: admin_password = "provided_FMC_admin_password_goes_here"
 
 lines 24, 30, 36, 42 and 49: Replace XX with 200 plus your provided pod number. 
 So for example if your pod number is 04 than XX becomes 204, if your pod number is 11 than XX becomes 211.
