@@ -71,9 +71,9 @@ lines 54-58: replace XX with your pod number
 line 59: replace XX with 150 plus your pod number.
 So for example if your pod number is 05 than XX becomes 155, if your pod number is 12, than XX becomes 162.
 
-4. Update provders.tf file
+4. Verify provders.tf file
 
-Update the filename of credentials.json on lines 5 and 11
+Validate that the filename of credentials.json on lines 5 and 11 matches with what you downloaded into this folder in an earlier step.
 
 5. Verify that Terraform knows what to do
 
