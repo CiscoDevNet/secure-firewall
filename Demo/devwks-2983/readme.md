@@ -176,5 +176,15 @@ Ensure to enter yes when asked.
 
 Log into the [FMC](https://35.247.118.180) and verify the NAT policy is created and applied.
 
+## Task05: Check access to the FMC you created
 
+By now the FMC should be up and running, so connect to the ip address that the output of task02 showed and try to go to the UI and log in with username admin and the password you provided in the terraform.tfvars file.
+
+## Task06: Remove the FTDv and FMCv you created
+
+Navigate back to directory called task02 and run the terraform destroy command. Make sure you are in the right directory before issuing this command to ensure you only remove what you created in task 02! Review the output before entering yes to continue with the cleanup.
+
+```
+terraform destroy
+```
 
