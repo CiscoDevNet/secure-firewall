@@ -20,9 +20,7 @@ In the example below, replace XX with your assigned pod number.
 ```
 ssh-keygen -b 2048 -t rsa -f devnet-userXX-key -C devnet-userXX
 ```
-5. Download the pod information and GCP credentials
 
-In the Webex chat for the session you will be given the ip and credentials of the jumphost. Make sure to copy the pod information for your assigned pod!
 
 ## Task 02: Deploy an FMCv and an FTDv
 
@@ -36,6 +34,8 @@ Ensure you replace podXX in the example below with your assigned pod.
 ```
 cd secure-firewall/Demo/devwks-2983/podXX/task02/
 ```
+
+Next, in the Webex chat for the session you will be given the ip and credentials of the jumphost. Make sure to copy the pod information for your assigned pod!
 
 2. Initialize Terraform
 
