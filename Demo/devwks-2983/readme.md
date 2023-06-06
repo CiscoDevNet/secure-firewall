@@ -119,12 +119,13 @@ Replace XX with assigned pod number and fill in remaining values with inputs fro
 Ensure it will show the id of your FTDv, so change the FTDv number to your assigned FTDv.
 
 So for example if your assigned FTDv name is devnet-clus23-ftd-1, than the file should look like this:
-'''
+
+```
 output "fmc_device_id" {
   value = fmc_devices.devnet-clus23-ftd-1.id
   description = "ID of the registered FTD in FMC."
 }
-'''
+```
 
 5. Verify the changes Terraform intends to make.
 
