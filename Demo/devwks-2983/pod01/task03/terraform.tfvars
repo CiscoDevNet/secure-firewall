@@ -1,11 +1,11 @@
-devnet_pod = "03"
+devnet_pod = ""
 
-fmc_username = "devnet-user03"
-fmc_domain = "devnet-d03"
-fmc_password = "Tw#.mu:5-^GzheH"
-fmc_host = "35.247.118.180"
+fmc_username = ""
+fmc_domain = ""
+fmc_password = ""
+fmc_host = ""
 
-ftd_registration_key = "devnet-clus23"
-ftd_ips =  "10.10.0.13"
-ftd_hostname = "devnet-clus23-ftd-3"
+ftd_registration_key = ""
+ftd_ips =  ""
+ftd_hostname = "devnet-clus23-ftd-XX"
 
