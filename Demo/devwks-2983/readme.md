@@ -20,7 +20,7 @@ In the example below, replace XX with your assigned pod number.
 ```
 ssh-keygen -b 2048 -t rsa -f devnet-userXX-key -C devnet-userXX
 ```
-
+Do not use a password to press enter without providing any input when asked.
 
 ## Task 02: Deploy an FMCv and an FTDv
 
