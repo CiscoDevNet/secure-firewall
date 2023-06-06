@@ -182,9 +182,30 @@ By now the FMC should be up and running, so connect to the ip address that the o
 
 ## Task06: Remove the FTDv and FMCv you created
 
-Navigate back to directory called task02 and run the terraform destroy command. Make sure you are in the right directory before issuing this command to ensure you only remove what you created in task 02! Review the output before entering yes to continue with the cleanup.
+Navigate back to directory called task02 and so that we can clean up everything you created. 
+
+- Make sure you are in the right directory before issuing this command to ensure you only remove what you created in task 02! 
+- Review the output before entering yes to continue with the cleanup. It should indicate that it will remove 20 resources.
 
 ```
 terraform destroy
 ```
 
+If everything goes according to plan, you should see something like this when asked to confirm the destroy action:
+
+```
+Plan: 0 to add, 0 to change, 20 to destroy.
+
+Changes to Outputs:
+  - FMC_Public_IP = [
+      - [
+          - "a.b.c.d",
+        ],
+    ] -> null
+
+Do you really want to destroy all resources?
+  Terraform will destroy all your managed infrastructure, as shown above.
+  There is no undo. Only 'yes' will be accepted to confirm.
+
+  Enter a value: yes
+  ```
