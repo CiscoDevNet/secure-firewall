@@ -2,86 +2,6 @@
 # Terraform Template to install a Single FTDv in a AZ using BYOL AMI with Mgmt + Diag + Three Interfaces in a New VPC
 #####################################################################################################################
 
-#####################################################################################################################
-# Variables 
-#####################################################################################################################
-
-variable "aws_access_key" {}
-variable "aws_secret_key" {}
-variable "key_name" {}
-variable "region" {
-        default = "us-east-2"
-}
-
-variable "FTD_version" {
-    default = "ftdv-6.7.0"
-} 
-
-variable "vpc_name" {
-    default = "Service-VPC"
-}
-
-//Including the Avilability Zone
-variable "aws_az" {
-    default = "us-east-2a"
-}
-
-//defining the VPC CIDR
-variable "vpc_cidr" {
-    default = "10.0.0.0/16"
-}
-
-// defining the subnets variables with the default value for Three Tier Architecure. 
-
-variable "mgmt_subnet" {
-    default = "10.0.1.0/24"
-}
-
-variable "ftd01_mgmt_ip" {
-    default = "10.0.1.10"
-}
-
-variable "ftd01_outside_ip" {
-    default = "10.0.5.10"
-}
-
-variable "ftd01_inside_ip" {
-    default = "10.0.3.10"
-}
-        
-variable "ftd01_diag_ip" {
-    default = "10.0.2.10"
-}        
-
-variable "ftd01_dmz_ip" {
-    default = "10.0.4.10"
-}
-
-variable "diag_subnet" {
-    default = "10.0.2.0/24"
-}
-
-variable "outside_subnet" {
-    default = "10.0.5.0/24"
-}
-
-variable "dmz_subnet" {
-    default = "10.0.4.0/24"
-}
-
-variable "inside_subnet" {
-    default = "10.0.3.0/24"
-}
-
-variable "size" {
-  default = "c5.4xlarge"
-}
-
-//  Existing SSH Key on the AWS 
-variable "keyname" {
-  default = "NGFW-KP"
-}
-
 #########################################################################################################################
 # data
 #########################################################################################################################
@@ -109,6 +29,15 @@ data "aws_ami" "ftdv" {
 data "template_file" "startup_file" {
   template = file("startup_file.txt")
 }
+
+data "aws_vpc" "ftd_vpc" {
+  count = var.existing_vpc ? 1 : 0
+  filter {
+    name   = "tag:Name"
+    values = [var.vpc_name]
+  }
+}
+
 #########################################################################################################################
 # providers
 #########################################################################################################################
@@ -122,8 +51,12 @@ provider "aws" {
 ###########################################################################################################################
 #VPC Resources 
 ###########################################################################################################################
+locals {
+  nw = var.existing_vpc ? data.aws_vpc.ftd_vpc[0].id : aws_vpc.ftd_vpc[0].id
+}
 
 resource "aws_vpc" "ftd_vpc" {
+  count                = var.existing_vpc ? 0 : 1
   cidr_block           = var.vpc_cidr
   enable_dns_support   = true
   enable_dns_hostnames = true
@@ -134,45 +67,36 @@ resource "aws_vpc" "ftd_vpc" {
 }
 
 resource "aws_subnet" "mgmt_subnet" {
-  vpc_id            = aws_vpc.ftd_vpc.id
+  vpc_id            = local.nw
   cidr_block        = var.mgmt_subnet
-  availability_zone = var.aws_az
+  availability_zone = "${var.region}a"
   tags = {
     Name = "Managment subnet"
   }
 }
 
 resource "aws_subnet" "diag_subnet" {
-  vpc_id            = aws_vpc.ftd_vpc.id
+  vpc_id            = local.nw
   cidr_block        = var.diag_subnet
-  availability_zone = var.aws_az
+  availability_zone = "${var.region}a"
   tags = {
     Name = "diag subnet"
   }
 }
 
 resource "aws_subnet" "outside_subnet" {
-  vpc_id            = aws_vpc.ftd_vpc.id
+  vpc_id            = local.nw
   cidr_block        = var.outside_subnet
-  availability_zone = var.aws_az
+  availability_zone = "${var.region}a"
   tags = {
     Name = "outside subnet"
   }
 }
 
-resource "aws_subnet" "dmz_subnet" {
-  vpc_id            = aws_vpc.ftd_vpc.id
-  cidr_block        = var.dmz_subnet
-  availability_zone = var.aws_az
-  tags = {
-    Name = "dmz subnet"
-  }
-}
-
 resource "aws_subnet" "inside_subnet" {
-  vpc_id            = aws_vpc.ftd_vpc.id
+  vpc_id            = local.nw
   cidr_block        = var.inside_subnet
-  availability_zone = var.aws_az
+  availability_zone = "${var.region}a"
   tags = {
     Name = "inside subnet"
   }
@@ -186,29 +110,7 @@ resource "aws_subnet" "inside_subnet" {
 resource "aws_security_group" "allow_all" {
   name        = "Allow All"
   description = "Allow all traffic"
-  vpc_id      = aws_vpc.ftd_vpc.id
-
-  ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "Public Allow"
-  }
-}
-
-resource "aws_default_security_group" "default" {
-  vpc_id      = aws_vpc.ftd_vpc.id
+  vpc_id      = local.nw
 
   ingress {
     from_port   = 0
@@ -257,13 +159,6 @@ resource "aws_network_interface" "ftd01inside" {
   source_dest_check = false
 }
 
-resource "aws_network_interface" "ftd01dmz" {
-  description = "ftd01-dmz"
-  subnet_id   = aws_subnet.dmz_subnet.id
-  private_ips = [var.ftd01_dmz_ip]
-  source_dest_check = false
-}
-
 resource "aws_network_interface_sg_attachment" "ftd_mgmt_attachment" {
   depends_on           = [aws_network_interface.ftd01mgmt]
   security_group_id    = aws_security_group.allow_all.id
@@ -282,26 +177,20 @@ resource "aws_network_interface_sg_attachment" "ftd_inside_attachment" {
   network_interface_id = aws_network_interface.ftd01inside.id
 }
 
-resource "aws_network_interface_sg_attachment" "ftd_dmz_attachment" {
-  depends_on           = [aws_network_interface.ftd01dmz]
-  security_group_id    = aws_security_group.allow_all.id
-  network_interface_id = aws_network_interface.ftd01dmz.id
-}
-
 ##################################################################################################################################
 #Internet Gateway and Routing Tables
 ##################################################################################################################################
 
 //define the internet gateway
 resource "aws_internet_gateway" "int_gw" {
-  vpc_id = aws_vpc.ftd_vpc.id
+  vpc_id = local.nw
   tags = {
     Name = "Internet Gateway"
   }
 }
-//create the route table for outside, inside and DMZ
+//create the route table for outsid & inside
 resource "aws_route_table" "ftd_outside_route" {
-  vpc_id = aws_vpc.ftd_vpc.id
+  vpc_id = local.nw
 
   tags = {
     Name = "outside network Routing table"
@@ -309,18 +198,10 @@ resource "aws_route_table" "ftd_outside_route" {
 }
 
 resource "aws_route_table" "ftd_inside_route" {
-  vpc_id = aws_vpc.ftd_vpc.id
+  vpc_id = local.nw
 
   tags = {
     Name = "inside network Routing table"
-  }
-}
-
-resource "aws_route_table" "ftd_dmz_route" {
-  vpc_id = aws_vpc.ftd_vpc.id
-
-  tags = {
-    Name = "dmz network Routing table"
   }
 }
 
@@ -340,15 +221,6 @@ resource "aws_route" "inside_default_route" {
 
 }
 
-//To define the default route for DMZ network thur FTDv inside interface 
-resource "aws_route" "DMZ_default_route" {
-  depends_on              = [aws_instance.ftdv]  
-  route_table_id          = aws_route_table.ftd_dmz_route.id
-  destination_cidr_block  = "0.0.0.0/0"
-  network_interface_id    = aws_network_interface.ftd01dmz.id
-
-}
-
 resource "aws_route_table_association" "outside_association" {
   subnet_id      = aws_subnet.outside_subnet.id
   route_table_id = aws_route_table.ftd_outside_route.id
@@ -363,18 +235,13 @@ resource "aws_route_table_association" "inside_association" {
   subnet_id      = aws_subnet.inside_subnet.id
   route_table_id = aws_route_table.ftd_inside_route.id
 }
-
-resource "aws_route_table_association" "dmz_association" {
-  subnet_id      = aws_subnet.dmz_subnet.id
-  route_table_id = aws_route_table.ftd_dmz_route.id
-}
 ##################################################################################################################################
 # AWS External IP address creation and associating it to the mgmt and outside interface. 
 ##################################################################################################################################
 //External ip address creation 
 
 resource "aws_eip" "ftd01mgmt-EIP" {
-  vpc   = true
+  domain = "vpc"
   depends_on = [aws_internet_gateway.int_gw,aws_instance.ftdv]
   tags = {
     "Name" = "FTDv-01 Management IP"
@@ -382,7 +249,7 @@ resource "aws_eip" "ftd01mgmt-EIP" {
 }
 
 resource "aws_eip" "ftd01outside-EIP" {
-  vpc   = true
+  domain = "vpc"
   depends_on = [aws_internet_gateway.int_gw,aws_instance.ftdv]
   tags = {
     "Name" = "FTDv-01 outside IP"
@@ -405,7 +272,7 @@ resource "aws_instance" "ftdv" {
     ami                 = data.aws_ami.ftdv.id
     instance_type       = var.size 
     key_name            = var.key_name
-    availability_zone   = var.aws_az
+    availability_zone   = "${var.region}a"
     
 network_interface {
     network_interface_id = aws_network_interface.ftd01mgmt.id
@@ -424,11 +291,6 @@ network_interface {
     network_interface {
     network_interface_id = aws_network_interface.ftd01inside.id
     device_index         = 3
-  }
-
-    network_interface {
-    network_interface_id = aws_network_interface.ftd01dmz.id
-    device_index         = 4
   }
   
   user_data = data.template_file.startup_file.rendered
