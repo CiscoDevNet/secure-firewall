@@ -10,18 +10,25 @@
 
 ## Overview
 
-Using this Terraform template, a single instance of Virtual Cisco Secure Threat Defense Firewall (FTDv) can be deployed in a new VPC with the following components: 
+Using this Terraform template, a single instance of Virtual Cisco Secure Threat Defense Firewall (FTDv) can be deployed in a new or existing VPC with the following components: 
 
-* 1x new VPC with 5 network subnets (2 Managment networks, 3 Data networks)
+* 1x new VPC with 4 network subnets (2 Managment networks, 2 Data networks)
 * 1x Availability Zone (AZ)
-* 2x Network Security Groups/SG's (one default and other one is created to allow all traffic)
+* 1x Network Security Groups/SG's (to allow all traffic)
 
 *Note*: It is important to change the security group to allow only the traffic to and from the specific IP address/es and ports. 
 
 * Routing table attachment to the specified subnets 
 * Elastic IP address (EIP) attachment to the Managment and Outside network subnets 
 
-The following variables should be defined with the values in the "<strong>terraform.tfvars</strong>" file before using the templates. 
+We have provided the following two different example implementations for your convinience.
+
+* **new_vpc.tfvars.example**: Creates a new VPC for the whole deployment.
+* **existing_vpc.tfvars.example**: Uses your existing VPC for the deployment.
+
+
+The following variables should be defined with the values in the "<strong>terraform.tfvars</strong>" file before using the templates, you can reference the above example files for the same.  
+
 *Please note the value provided below is just for example, change it based on your requirements.*  
 
 Specify your access key and secret key credentials:
@@ -33,37 +40,43 @@ aws_access_key      = "enter your value here"
 
 aws_secret_key      = "enter your value here"
 </code></pre>
-
   
-## Define a new VPC name in a specific AWS Region and Availability Zone (AZ) 
+## Define your VPC name & existing KeyPair in a specific AWS Region & define FTD version 
 <pre><code>
 vpc_name            = "enter VPC name here"
 
+existing_vpc        = false
+
 region              = "enter AWS region here"
 
-aws_az              = "enter AWS AZ here"
-</code></pre>
+key_name            = "enter key pair name without pem extension here"
 
-## Define VPC CIDR block, Network Subnets for Managment(Maagement and Diagnostic) and Data networks (Inside, Outside and DMZ)
+FTD_version         = "ftdv-7.3.0"
+
+</code></pre>
+*Note*: Key pair (in .pem format) are optional in nature & should be generated prior running Terraform template. 
+
+## <ins> For existing VPC </ins>
+>Note:The **existing_vpc** variable must be set to **true** if you intend to use your own, already created VPC. Skip this section otherwise.
+
+### Define VPC CIDR block, Network Subnets for Managment(Maagement and Diagnostic) and Data networks (Inside and Outside)
+
 
 <pre><code>
-vpc_cidr           = "enter VPC CIDR bock value here"
+vpc_cidr           =  "enter VPC CIDR bock value here"
 
-mgmt_subnet        = "enter Management Network Subnet here"
+mgmt_subnet        =  "enter Management Network Subnet here"
+outside_subnet     =  "enter Outside Network Subnet here"
+diag_subnet        =  "enter Management/Diagnostic Network Subnet here"
+inside_subnet      =  "enter Inside Network Subnet here"
 
-outside_subnet     = "enter Outside Network Subnet here"
-
-diag_subnet        = "enter Management/Diagnostic Network Subnet here"
-
-inside_subnet      = "enter Inside Network Subnet here"
-
-dmz_subnet         = "enter DMZ Network Subnet here" 
-
-key_name           = "enter key pair name without pem extension here"
+ftd01_mgmt_ip       =  "enter management interface IP address
+ftd01_outside_ip    =  "enter outside interface IP address"
+ftd01_inside_ip     =  "enter inside interface IP address"
+ftd01_diag_ip       =  "enter diagnostic interface IP address"
 </code></pre>
-*Note*: Key pair (in .pem format) should be generated prior running Terraform template. 
 
-## Define the Instance size for FTD and attach the interfaces and day0 configuration
+### Define the Instance size for FTD and attach the interfaces and day0 configuration
 
 <pre><code>
 size                = "enter FTDv instance size here"
@@ -72,54 +85,47 @@ size                = "enter FTDv instance size here"
 Please refer the below FTDv in AWS Cloud Installation Guide to review the supported instance sizes: 
 https://www.cisco.com/c/en/us/td/docs/security/firepower/quick_start/aws/ftdv-aws-gsg/ftdv-aws-intro.html#Cisco_Concept.dita_3c4cfbdd-bdc1-4669-a892-31f5f7540e3e
 
-<pre><code>
-//Allowed Values = ftdv-<version>
-FTD_version         = "enter FTDv software version that you plan to deploy"
 
-ftd01_mgmt_ip       =  "enter management interface IP address"
 
-ftd01_outside_ip    =  "enter outside interface IP address"
-
-ftd01_inside_ip     =  "enter inside interface IP address"
-
-ftd01_dmz_ip        =  "enter dmz interface IP address"
-</code></pre>
 
 Note: For updating FTDv 0-day configuration edit following file <strong>startup_file.json</strong>, that is part of this GitHub repository.
 
 
 ## Deployment Procedure
 
-1) Clone or Download the Repository 
+1. Clone or Download the Repository 
 <pre><code>
-$ git clone https://github.com/CiscoDevNet/Cisco-FTD-PublicCloud.git
+$ git clone https://github.com/CiscoDevNet/secure-firewall.git
 </code></pre>
 
-2) Customize the variables in the terraform.tfvars and variables.tf (only to change the default value)
+2. Navigate to this specific terraform folder from the cli 
+<pre><code>
+$ cd <~folder path> 
+</code></pre>
+
+3. Customize the variables in the terraform.tfvars file by using any one of the 2 provided example files. 
 <pre><code>
 $ vim terraform.tfvars 
 </code></pre>
 
-3) Initialize the providers and modules:
-   Navigate to the specific terraform folder from the cli 
+4. Initialize the providers and modules:
 <pre><code>
-$ cd <enter folder name>
 $ terraform init 
 </code></pre>
    
-4) Submit the terraform plan 
+5. Submit the terraform plan 
 <pre><code>
-$ terraform plan -out "filename"
+$ terraform plan --out filename
 </code></pre>
    
-5) Verify the output of the plan in the terminal, if everything is fine then apply the plan
+6. Verify the output of the plan in the terminal, if everything is fine then apply the plan
 <pre><code> 
-$ terraform apply "out filename used in previous step"
+$ terraform apply filename
 </code></pre>
    
-6) If output is fine, configure it by typing "<strong>yes</strong>"
+7. If output is fine, configure it by typing "<strong>yes</strong>"
 
-7) Once if exected, it will <strong>show you the ip addresss of the managment interface configured</strong>. use this to access the FTDv over HTTPs/SSH.
+8. Once if executed, it will <strong>show you the ip addresss of the managment interface configured</strong>. use this to access the FTDv over HTTPs/SSH.
 
 Note: Please don't delete or modify the file with the extension "<strong>.tfstate</strong>" file. This file maintained the current deployment status and used while modifying any parameters or while destroying this setup. 
 
