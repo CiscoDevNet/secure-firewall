@@ -5,6 +5,5 @@ key_name            = ""
 
 region              = "us-east-1"
 
-existing_vpc        = false
-vpc_name            = "CiscoFTDv-VPC"
+// "Valid values for FTD_version are ftdv-7.0.5, ftdv-7.1.0, ftdv-7.2.4, ftdv-7.3.0."
 FTD_version         = "ftdv-7.3.0"

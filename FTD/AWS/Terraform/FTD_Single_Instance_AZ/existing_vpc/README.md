@@ -21,11 +21,7 @@ Using this Terraform template, a single instance of Virtual Cisco Secure Threat 
 * Routing table attachment to the specified subnets 
 * Elastic IP address (EIP) attachment to the Managment and Outside network subnets 
 
-We have provided the following two different example implementations for your convinience.
-
-* **new_vpc.tfvars.example**: Creates a new VPC for the whole deployment.
-* **existing_vpc.tfvars.example**: Uses your existing VPC for the deployment.
-
+We have also provided an example .tfavrs file for your convinience.
 
 The following variables should be defined with the values in the "<strong>terraform.tfvars</strong>" file before using the templates, you can reference the above example files for the same.  
 
@@ -56,10 +52,8 @@ FTD_version         = "ftdv-7.3.0"
 </code></pre>
 *Note*: Key pair (in .pem format) are optional in nature & should be generated prior running Terraform template. 
 
-## <ins> For existing VPC </ins>
->Note:The **existing_vpc** variable must be set to **true** if you intend to use your own, already created VPC. Skip this section otherwise.
 
-### Define VPC CIDR block, Network Subnets for Managment(Maagement and Diagnostic) and Data networks (Inside and Outside)
+## Define VPC CIDR block, Network Subnets for Managment(Maagement and Diagnostic) and Data networks (Inside and Outside)
 
 
 <pre><code>
@@ -76,18 +70,6 @@ ftd01_inside_ip     =  "enter inside interface IP address"
 ftd01_diag_ip       =  "enter diagnostic interface IP address"
 </code></pre>
 
-### Define the Instance size for FTD and attach the interfaces and day0 configuration
-
-<pre><code>
-size                = "enter FTDv instance size here"
-</code></pre>
-
-Please refer the below FTDv in AWS Cloud Installation Guide to review the supported instance sizes: 
-https://www.cisco.com/c/en/us/td/docs/security/firepower/quick_start/aws/ftdv-aws-gsg/ftdv-aws-intro.html#Cisco_Concept.dita_3c4cfbdd-bdc1-4669-a892-31f5f7540e3e
-
-
-
-
 Note: For updating FTDv 0-day configuration edit following file <strong>startup_file.json</strong>, that is part of this GitHub repository.
 
 
@@ -100,7 +82,7 @@ $ git clone https://github.com/CiscoDevNet/secure-firewall.git
 
 2. Navigate to this specific terraform folder from the cli 
 <pre><code>
-$ cd <~folder path> 
+$ cd secure-firewall/FTD/AWS/Terraform/FTD_Single_Instance_AZ/existing_vpc
 </code></pre>
 
 3. Customize the variables in the terraform.tfvars file by using any one of the 2 provided example files. 

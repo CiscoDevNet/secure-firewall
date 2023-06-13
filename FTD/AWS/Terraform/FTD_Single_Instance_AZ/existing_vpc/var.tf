@@ -11,11 +11,18 @@ variable "region" {
 
 variable "FTD_version" {
     default = "ftdv-7.3.0"
+    validation {
+        condition     = contains(["ftdv-7.0.5", "ftdv-7.1.0", "ftdv-7.2.4","ftdv-7.3.0"], var.FTD_version)
+        error_message = "Valid values for var: FTD_version are (ftdv-7.0.5, ftdv-7.1.0, ftdv-7.2.4, ftdv-7.3.0)."
+    } 
 } 
 variable "existing_vpc" {
     type    = bool
+    default = true
 }
-
+variable "create_igw" {
+    type    = bool
+}
 variable "vpc_name" {
     default = "Cisco-FTDv-VPC"
 }
