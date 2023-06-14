@@ -38,6 +38,13 @@ data "aws_vpc" "ftd_vpc" {
   }
 }
 
+data "aws_internet_gateway" "default" {
+  count = var.create_igw ? 0 : 1
+  filter {
+    name   = "attachment.vpc-id"
+    values = [data.aws_vpc.ftd_vpc[0].id]
+  }
+}
 #########################################################################################################################
 # providers
 #########################################################################################################################
@@ -53,6 +60,7 @@ provider "aws" {
 ###########################################################################################################################
 locals {
   nw = var.existing_vpc ? data.aws_vpc.ftd_vpc[0].id : aws_vpc.ftd_vpc[0].id
+  igw = var.create_igw ? aws_internet_gateway.int_gw[0].id : data.aws_internet_gateway.default[0].id
 }
 
 resource "aws_vpc" "ftd_vpc" {
@@ -183,6 +191,7 @@ resource "aws_network_interface_sg_attachment" "ftd_inside_attachment" {
 
 //define the internet gateway
 resource "aws_internet_gateway" "int_gw" {
+  count = var.create_igw ? 1 : 0
   vpc_id = local.nw
   tags = {
     Name = "Internet Gateway"
@@ -209,7 +218,7 @@ resource "aws_route_table" "ftd_inside_route" {
 resource "aws_route" "ext_default_route" {
   route_table_id         = aws_route_table.ftd_outside_route.id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.int_gw.id
+  gateway_id             = local.igw
 }
 
 //To define the default route for inside network thur FTDv inside interface 
