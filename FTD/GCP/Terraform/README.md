@@ -104,3 +104,42 @@ To be changed from terraform.tfvars as per the requirements.
 |------|-------------|
 | FMC_Public_IP | The external IP of FMC |
 | FTD_Public_IP| The external IPs of FTDs|
+    
+    
+
+> **_NOTE:_ NIC Mapping to Data Interfaces**     
+
+ 
+On Secure Firewall version 7.1 and earlier releases, the mapping of Network Interface Cards (NICs) to data interfaces is as given below:
+
+nic0 – Management interface
+
+nic1 – Diagnostic interface
+
+nic2 – Gigabit Ethernet 0/0
+
+nic3 – Gigabit Ethernet 0/1
+
+From Secure Firewall version 7.2, a data interface is required on nic0 to facilitate movement of north-south traffic because the external load balancer (ELB) forwards packets only to nic0.
+
+The mapping of NICs and data interfaces on Secure Firewall version 7.2 is as given below:
+
+nic0 – Gigabit Ethernet 0/0
+
+nic1 – Gigabit Ethernet 0/1
+
+nic2 – Management interface
+
+nic3 – Diagnostic interface
+
+nic4 – Gigabit Ethernet 0/2
+
+.
+
+.
+
+.
+
+nic(N-2) – Gigabit Ethernet 0/N-4
+
+nic(N-1) – Gigabit Ethernet 0/N-3
