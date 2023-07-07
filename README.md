@@ -132,6 +132,9 @@ Each specific usecase contains a README file with installation instructions.
   * _Deployment Manager templates:_
     * [FMC Deployment in New or Existing newtwork](https://github.com/CiscoDevNet/secure-firewall/tree/main/FMC/OCI/Resource_Manager/resource-manager)
 
+* **Cisco Defense Orchestrator (CDO):**
+  * [Secure Event Connector Terraform module](https://github.com/CiscoDevNet/terraform-aws-cdo-sec)
+
  * **Cloud Native:**
    * [SFCN GitHub Repository](https://github.com/CiscoDevNet/sfcn)
  
