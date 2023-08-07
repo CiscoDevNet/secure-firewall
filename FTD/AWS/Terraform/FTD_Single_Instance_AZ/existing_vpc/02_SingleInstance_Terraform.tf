@@ -280,7 +280,7 @@ resource "aws_eip_association" "ftd01-outside-ip-association" {
 resource "aws_instance" "ftdv" {
     ami                 = data.aws_ami.ftdv.id
     instance_type       = var.size 
-    key_name            = var.key_name
+    key_name            = aws_key_pair.deployer.key_name
     availability_zone   = "${var.region}a"
     
 network_interface {
@@ -309,10 +309,30 @@ network_interface {
     Name = "Cisco FTDv"
   }
 }
+################################################
 
+resource "tls_private_key" "key_pair" {
+algorithm = "RSA"
+rsa_bits  = 4096
+}
+
+resource "local_file" "private_key" {
+content       = tls_private_key.key_pair.private_key_openssh
+filename      = "cisco-ftdv-key"
+file_permission = 0700
+}
+
+resource "aws_key_pair" "deployer" {
+  key_name   = "cisco-ftdv-key"
+  public_key = tls_private_key.key_pair.public_key_openssh
+}
 ##################################################################################################################################
 #Output
 ##################################################################################################################################
 output "ip" {
   value = aws_eip.ftd01mgmt-EIP.public_ip
+}
+
+output "SSHCommand" {
+  value = "ssh -i cisco-ftdv-key admin@${aws_eip.ftd01mgmt-EIP.public_ip}"
 }
