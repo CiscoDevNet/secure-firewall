@@ -4,6 +4,9 @@
 
 variable "aws_access_key" {}
 variable "aws_secret_key" {}
+variable "admin_password" {
+    default = "Admin123"
+}
 variable "region" {
         default = "us-east-1"
 }
