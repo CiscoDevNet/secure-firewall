@@ -28,6 +28,9 @@ data "aws_ami" "ftdv" {
 
 data "template_file" "startup_file" {
   template = file("startup_file.txt")
+  vars = {
+    admin_password       = var.admin_password
+  }
 }
 
 data "aws_vpc" "ftd_vpc" {
