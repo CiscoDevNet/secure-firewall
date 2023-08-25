@@ -1,0 +1,293 @@
+- hosts: vfmc
+  connection: httpapi
+  tasks:
+    - name: Get Domain UUID
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: Get Devices
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDevice
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        query_params:
+          filter: "name:NGFW1" 
+        register_as: device_list 
+    
+    - name: Get Physical Interfaces
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllFTDPhysicalInterface
+        path_params:
+          containerUUID: '{{ device_list[0].id }}'
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: physical_interfaces
+        query_params:
+          expanded: true
+
+    - name: Get Sec Zone
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllSecurityZoneObject
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: getZones
+
+    - name: Setup Outside Interface
+      cisco.fmcansible.fmc_configuration:
+        operation: updateFTDPhysicalInterface
+        data:
+          ifname: Outside
+          ipv4:
+            static:
+              address: "{{ outside_ip | default('198.18.133.81') }}"
+              netmask: "{{ outside_netmask | default('18') }}"
+          securityZone: "{{(getZones | selectattr('name','==','OutZone'))[0] }}" 
+          MTU: 1500
+          enabled: True
+          mode: NONE
+          type: physicalinterface
+          name: GigabitEthernet0/0
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+          containerUUID: '{{ device_list[0].id }}'
+          objectId: '{{ physical_interfaces[0].id }}'
+    
+    - name: Setup in10 Interface
+      cisco.fmcansible.fmc_configuration:
+        operation: updateFTDPhysicalInterface
+        data:
+          ifname: in10
+          ipv4:
+            static:
+              address: "{{ in10_ip | default('198.19.10.1') }}"
+              netmask: "{{ in10_netmask | default('24') }}"
+          securityZone: "{{(getZones | selectattr('name','==','InZone1'))[0] }}" 
+          MTU: 1500
+          enabled: True
+          mode: NONE
+          type: physicalinterface
+          name: GigabitEthernet0/1
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+          containerUUID: '{{ device_list[0].id }}'
+          objectId: '{{ physical_interfaces[1].id }}'
+    
+    - name: Setup in20 Interface
+      cisco.fmcansible.fmc_configuration:
+        operation: updateFTDPhysicalInterface
+        data:
+          ifname: in20
+          ipv4:
+            static:
+              address: "{{ in20_ip | default('198.19.20.1') }}"
+              netmask: "{{ in20_netmask | default('24') }}"
+          securityZone: "{{(getZones | selectattr('name','==','InZone2'))[0] }}" 
+          MTU: 1500
+          enabled: True
+          mode: NONE
+          type: physicalinterface
+          name: GigabitEthernet0/2
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+          containerUUID: '{{ device_list[0].id }}'
+          objectId: '{{ physical_interfaces[2].id }}'
+
+    - name: Setup in30 Interface
+      cisco.fmcansible.fmc_configuration:
+        operation: updateFTDPhysicalInterface
+        data:
+          ifname: in30
+          ipv4:
+            static:
+              address: "{{ in30_ip | default('198.19.30.1') }}"
+              netmask: "{{ in30_netmask | default('24') }}"
+          securityZone: "{{(getZones | selectattr('name','==','InZone3'))[0] }}" 
+          MTU: 1500
+          enabled: True
+          mode: NONE
+          type: physicalinterface
+          name: GigabitEthernet0/3
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+          containerUUID: '{{ device_list[0].id }}'
+          objectId: '{{ physical_interfaces[3].id }}'
+
+    - name: Setup in40 Interface
+      cisco.fmcansible.fmc_configuration:
+        operation: updateFTDPhysicalInterface
+        data:
+          ifname: in40
+          ipv4:
+            static:
+              address: "{{ in40_ip | default('198.19.40.1') }}"
+              netmask: "{{ in40_netmask | default('24') }}"
+          securityZone: "{{(getZones | selectattr('name','==','InZone4'))[0] }}" 
+          MTU: 1500
+          enabled: True
+          mode: NONE
+          type: physicalinterface
+          name: GigabitEthernet0/4
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+          containerUUID: '{{ device_list[0].id }}'
+          objectId: '{{ physical_interfaces[4].id }}'
+    
+    - name: Get any-ipv4
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllNetworkObject
+        query_params:
+          filter: 'nameOrValue:any-ipv4'
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: getIpv4
+
+    - name: Get dmz GW
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllHostObject
+        query_params:
+          filter: 'nameOrValue:DMZ-Gateway'
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: getdmzgw
+    
+    - name: Setup default route
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertIPv4StaticRouteModel
+        data:
+          interfaceName: "Outside"
+          selectedNetworks:
+            - id: "{{ getIpv4[0].id }}"
+          gateway: 
+            object:
+              id: "{{ getdmzgw[0].id }}"
+          name: "defualt_route"
+          metricValue: 1
+          type: IPv4StaticRoute
+        path_params:
+          containerUUID: '{{ device_list[0].id }}'
+          domainUUID: '{{ domain[0].uuid }}'
+
+    - name: Get Corp Lan
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllNetworkObject
+        query_params:
+          filter: 'nameOrValue:Corp-LAN'
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: corp
+
+    - name: Create NAT Policy
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertFTDNatPolicy
+        data:
+          name: NGFW1
+          type: FTDNatPolicy
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: NAT
+
+    # - name: Setup a NAT Rule
+    #   cisco.fmcansible.fmc_configuration:
+    #     operation: upsertFTDAutoNatRule
+    #     data:
+    #       natType: DYNAMIC
+    #       destinationInterface: "{{ (getZones | selectattr('name','==','OutZone'))[0] }}" 
+    #       originalNetwork: '{{ corp[0] }}'
+    #       translatedNetwork: '{{ corp[0] }}'
+    #       interfaceInTranslatedNetwork: True
+    #       dns: False
+    #       type: ftdautonatrule
+    #     path_params:
+    #       containerUUID: '{{ NAT.id }}'
+    #       domainUUID: '{{ domain[0].uuid }}'
+    #     register_as: nat1
+
+    # - name: Execute 'createMultipleFTDAutoNatRule' operation
+    #   cisco.fmcansible.fmc_configuration:
+    #     operation: "createMultipleFTDAutoNatRule"
+    #     data:
+    #       originalNetwork: '{{ corp[0] }}'
+    #       interfaceInTranslatedNetwork: True
+    #       type: "FTDAutoNatRule"
+    #       natType: "DYNAMIC"
+    #       dns: False
+    #       destinationInterface: "{{ (getZones | selectattr('name','==','OutZone'))[0] }}" 
+    #     path_params:
+    #       containerUUID: '{{ NAT.id }}'
+    #       domainUUID: '{{ domain[0].uuid }}'
+    #     register_as: nat2
+
+    - name: Get Access Policy
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllAccessPolicy
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        filters:
+          name: NGFW1
+        register_as: accesspolicy
+
+    - name: Access Rule for ACP
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertAccessRule
+        data:
+          name: Allow Outbound
+          type: accessrule
+          enabled: true
+          sourceZones:
+            objects: 
+              - id: '{{ getZones[0].id }}'
+                name: '{{ getZones[0].name }}'
+                type: '{{ getZones[0].type }}'
+              - id: '{{ getZones[1].id }}'
+                name: '{{ getZones[1].name }}'
+                type: '{{ getZones[1].type }}'
+              - id: '{{ getZones[2].id }}'
+                name: '{{ getZones[2].name }}'
+                type: '{{ getZones[2].type }}'
+              - id: '{{ getZones[3].id }}'
+                name: '{{ getZones[3].name }}'
+                type: '{{ getZones[3].type }}'
+          destinationZones:
+            objects: 
+              - id: '{{ getZones[4].id }}'
+                name: '{{ getZones[4].name }}'
+                type: '{{ getZones[4].type }}'
+          action: ALLOW
+          logBegin: true 
+          sendEventsToFMC: true
+        path_params:
+          containerUUID: '{{ accesspolicy[0].id }}'
+          domainUUID: '{{ domain[0].uuid }}'
+
+    - name: Associate NAT
+      cisco.fmcansible.fmc_configuration:
+        operation: createPolicyAssignment
+        data:
+          name: assignment
+          policy: 
+            name: '{{ NAT.name }}'
+            type: '{{ NAT.type }}'
+            id: '{{ NAT.id }}'
+          targets: [ '{{ device_list[0] }}' ]  
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+
+    - name: Execute 'getDeployableDevice' operation
+      cisco.fmcansible.fmc_configuration:
+        operation: "getDeployableDevice"
+        path_params:
+          domainUUID: "{{ domain[0].uuid }}"
+        register_as: versionss
+
+    - name: Execute 'createDeploymentRequest' operation
+      cisco.fmcansible.fmc_configuration:
+        operation: "createDeploymentRequest"
+        data:
+          type: "DeploymentRequest"
+          forceDeploy: False
+          version: "{{ versionss[0].version }}"
+          ignoreWarning: True
+          deviceList: ['{{ device_list[0].id }}']
+          deploymentNote: "Deployment via automation"
+        path_params:
+          domainUUID: "{{ domain[0].uuid }}"
