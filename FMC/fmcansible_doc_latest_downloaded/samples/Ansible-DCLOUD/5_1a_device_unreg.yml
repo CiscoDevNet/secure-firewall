@@ -1,0 +1,24 @@
+- hosts: vfmc2
+  connection: httpapi
+  tasks:
+    - name: Get Domain UUID
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: Get Devices
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDevice
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        query_params:
+          filter: "name:NGFW1" 
+        register_as: device_list 
+
+    - name: Execute 'deleteDevice' operation
+      cisco.fmcansible.fmc_configuration:
+        operation: "deleteDevice"
+        path_params:
+            objectId: "{{ device_list[0].id }}"
+            domainUUID: "{{ domain[0].uuid }}"
+        

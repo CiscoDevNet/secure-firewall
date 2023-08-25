@@ -1,0 +1,43 @@
+- hosts: vfmc
+  connection: httpapi
+  tasks:
+    - name: Get Domain UUID
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: Create Host Objects
+      cisco.fmcansible.fmc_configuration:
+        operation: createMultipleHostObject
+        data:
+          - name: Splunk-Server
+            value: "198.19.10.15"
+          - name: DMZ-Gateway
+            value: "198.18.128.1" 
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        query_params:
+          bulk: true
+        register_as: hostObj
+
+    - name: Creating network objects
+      cisco.fmcansible.fmc_configuration:
+        operation: createMultipleNetworkObject
+        data:
+          - name: "Lab-Networks"
+            value: "198.18.0.0/15"
+            type: "networkobject"
+          - name: "Corp-LAN"
+            value: "198.19.10.0/24"
+            type: "networkobject"
+          - name: "Branch-LAN"
+            value: "198.19.11.0/24"
+            type: "networkobject"
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        query_params:
+          bulk: true
+
+    
+# Manual Config -- In the left panel, click on **Variable Set**
+

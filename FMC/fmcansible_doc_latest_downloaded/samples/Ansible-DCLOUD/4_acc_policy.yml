@@ -1,0 +1,41 @@
+- hosts: vfmc
+  connection: httpapi
+  tasks:
+    - name: Get Domain UUID
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: Creating Parent ACP
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertAccessPolicy
+        data:
+          name: Global Parent
+          defaultAction:
+            action: BLOCK
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: acp1
+
+    - name: Creating Child ACP
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertAccessPolicy
+        data:
+          name: NGFW1
+          defaultAction:
+            action: BLOCK
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: acp2
+
+    - name: Updating inheritance settings
+      cisco.fmcansible.fmc_configuration:
+        operation: "updateAccessPolicyInheritanceSetting"
+        data:
+          type: "AccessPolicyInheritanceSetting"
+          id: "{{ acp2.id }}"
+          basePolicy: "{{ acp1 }}"
+        path_params:
+          objectId: "{{ acp2.id }}"
+          containerUUID: "{{ acp2.id }}"
+          domainUUID: "{{ domain[0].uuid }}"

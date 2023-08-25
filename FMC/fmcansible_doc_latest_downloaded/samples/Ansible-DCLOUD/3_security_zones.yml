@@ -1,0 +1,32 @@
+- hosts: vfmc
+  connection: httpapi
+  tasks:
+    - name: Get Domain UUID
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: Create security zones
+      cisco.fmcansible.fmc_configuration:
+        operation: createMultipleSecurityZoneObject
+        data:
+          - name: OutZone
+            interfaceMode: ROUTED
+            type: SecurityZone
+          - name: InZone1
+            interfaceMode: ROUTED
+            type: SecurityZone
+          - name: InZone2
+            interfaceMode: ROUTED
+            type: SecurityZone
+          - name: InZone3
+            interfaceMode: ROUTED
+            type: SecurityZone
+          - name: InZone4
+            interfaceMode: ROUTED
+            type: SecurityZone
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        query_params:
+          bulk: true
+        register_as: zones
