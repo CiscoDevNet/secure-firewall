@@ -8,6 +8,7 @@ compartment_id    = ""
 label_prefix      = "ASAv"
 day_0_config      = "oob.txt"
 admin_ssh_pub_key = ""
+// Please provide a password
 enable_password   = ""
 # nic0 needs to be the management interface
 num_instances = 2
