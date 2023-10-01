@@ -1,10 +1,14 @@
 
-variable "aws_access_key" {}
- 
-variable "aws_secret_key" {}
+variable "aws_access_key" {
+  default = null
+}
+
+variable "aws_secret_key" {
+  default = null
+}
 
 variable "region" {
-  type = string
+  type    = string
   default = "us-east-1"
 }
 
@@ -122,12 +126,12 @@ variable "fmc_interface_id" {
 }
 
 variable "FTD_version" {
-  type = string
+  type    = string
   default = "ftdv-7.1.0"
 }
 
 variable "FMC_version" {
-  type = string
+  type    = string
   default = "fmcv-7.1.0"
 }
 
@@ -141,24 +145,24 @@ variable "ftd_size" {
 
 variable "external_listener_ports" {
   default = [{
-    protocol = "TCP"
-    port = 80
+    protocol    = "TCP"
+    port        = 80
     target_type = "ip"
   }]
 }
 
 variable "internal_listener_ports" {
   default = [{
-    protocol = "TCP"
-    port = 80
+    protocol    = "TCP"
+    port        = 80
     target_type = "ip"
-  }
+    }
   ]
 }
 
 #list the possible options as allowed values
-variable "create"{
-  type = string
+variable "create" {
+  type    = string
   default = "both"
 }
 
@@ -301,4 +305,10 @@ variable "app_interface_sg" {
     to_port     = 0
     cidr_blocks = ["0.0.0.0/0"]
   }]
+}
+
+variable "ftd_ami_id" {
+  description = "AMI id for syndey region"
+  default     = "ami-0b1e3b793700d6a54"
+
 }

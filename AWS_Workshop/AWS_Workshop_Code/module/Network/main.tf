@@ -57,8 +57,8 @@ resource "aws_subnet" "diag_subnet" {
 # # #################################################################################################################################
 
 resource "aws_security_group" "outside_sg" {
-  name        = "Outside Interface SG"
-  vpc_id      = local.con
+  name   = "Outside Interface SG"
+  vpc_id = local.con
 
   dynamic "ingress" {
     for_each = var.outside_interface_sg
@@ -72,16 +72,16 @@ resource "aws_security_group" "outside_sg" {
   }
 
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
 resource "aws_security_group" "inside_sg" {
-  name        = "Inside Interface SG"
-  vpc_id      = local.con
+  name   = "Inside Interface SG"
+  vpc_id = local.con
 
   dynamic "ingress" {
     for_each = var.inside_interface_sg
@@ -95,16 +95,16 @@ resource "aws_security_group" "inside_sg" {
   }
 
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
 resource "aws_security_group" "mgmt_sg" {
-  name        = "FTD Management Interface SG"
-  vpc_id      = local.con
+  name   = "FTD Management Interface SG"
+  vpc_id = local.con
 
   dynamic "ingress" {
     for_each = var.mgmt_interface_sg
@@ -118,16 +118,16 @@ resource "aws_security_group" "mgmt_sg" {
   }
 
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
 resource "aws_security_group" "fmc_mgmt_sg" {
-  name        = "FMC Management Interface SG"
-  vpc_id      = local.con
+  name   = "FMC Management Interface SG"
+  vpc_id = local.con
 
   dynamic "ingress" {
     for_each = var.fmc_mgmt_interface_sg
@@ -141,16 +141,16 @@ resource "aws_security_group" "fmc_mgmt_sg" {
   }
 
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
 resource "aws_security_group" "no_access" {
-  name        = "No Access"
-  vpc_id      = local.con
+  name   = "No Access"
+  vpc_id = local.con
 }
 
 # # ##################################################################################################################################
@@ -284,7 +284,7 @@ resource "aws_eip_association" "ftd-mgmt-ip-assocation" {
 }
 
 resource "aws_eip" "fmcmgmt-EIP" {
-  vpc   = true
+  vpc = true
   tags = {
     "Name" = "FMCv Management IP"
   }

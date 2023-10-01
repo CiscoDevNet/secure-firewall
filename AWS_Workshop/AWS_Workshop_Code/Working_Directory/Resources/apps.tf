@@ -2,10 +2,6 @@ locals {
   app_subnet = var.app_subnet_cidr != [] ? aws_subnet.app_subnet : data.aws_subnet.appftd
 }
 
-data "template_file" "apache_install" {
-  template = file("${path.module}/apache_install.tpl")
-}
-
 data "aws_subnet" "appftd" {
   count = var.app_subnet_cidr == [] ? length(var.app_subnet_name) : 0
   filter {
@@ -34,8 +30,8 @@ resource "aws_network_interface" "ftd_app" {
 }
 
 resource "aws_security_group" "app_sg" {
-  name        = "App SG"
-  vpc_id      = module.network.vpc_id
+  name   = "App SG"
+  vpc_id = module.network.vpc_id
 
 
   dynamic "ingress" {
@@ -50,10 +46,10 @@ resource "aws_security_group" "app_sg" {
   }
 
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
@@ -82,18 +78,19 @@ resource "aws_instance" "EC2-Ubuntu" {
     aws_instance.testLinux
   ]
   count         = 2
-  ami           = "ami-0851b76e8b1bce90b" 
+  ami           = data.aws_ami.ubuntu.image_id
   instance_type = "t2.micro"
   key_name      = var.keyname
-  
-  user_data = data.template_file.apache_install.rendered
+
+  user_data = base64encode(templatefile("${path.module}/apache_install.tpl", {}))
+
   network_interface {
     network_interface_id = aws_network_interface.ftd_app[count.index].id
     device_index         = 0
   }
 
   tags = {
-    Name = "Ec2-Ubuntu${count.index+1}"
+    Name = "Ec2-Ubuntu${count.index + 1}"
   }
 }
 
@@ -114,19 +111,19 @@ resource "aws_lb" "app-lb" {
 }
 
 resource "aws_lb_listener" "app_listener" {
-  for_each = { for k, v in var.internal_listener_ports : k => v }
+  for_each          = { for k, v in var.internal_listener_ports : k => v }
   load_balancer_arn = aws_lb.app-lb.arn
   port              = each.value.port
   protocol          = each.value.protocol
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.app_front_end[each.key].arn
- }
+  }
 }
 
 resource "aws_lb_target_group" "app_front_end" {
   #for_each    = var.create == "both"  || var.create == "internal" ? var.internal_listener_ports : []
-  for_each = { for k, v in var.internal_listener_ports : k => v }
+  for_each    = { for k, v in var.internal_listener_ports : k => v }
   name        = tostring("fe2-1-${each.key}")
   port        = each.value.port
   protocol    = each.value.protocol
