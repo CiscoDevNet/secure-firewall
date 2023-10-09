@@ -1,0 +1,321 @@
+- name: Provisioning Secure Firewall in Azure
+  hosts: localhost
+  connection: local
+  vars_files:
+    - vars.yaml
+  tasks:
+    # Resouce Group
+    - name: Create resource group
+      azure_rm_resourcegroup:
+        name: "{{ prefix }}-RG"
+        location: "{{ location }}"
+      when: create_rg
+      register: created_rg_name
+    
+    - name: Set resource group
+      ansible.builtin.set_fact:
+        rg: "{{ rg_name if created_rg_name.state is not defined else created_rg_name.state.name }}"
+    
+    # Virtual Network
+    - name: Create virtual network
+      azure_rm_virtualnetwork:
+        resource_group: "{{ rg }}"
+        name: "{{ prefix }}-Network"
+        address_prefixes: "{{ vn_cidr }}"
+      when: create_vn
+      register: created_vn_name
+
+    - name: Set virtual network
+      ansible.builtin.set_fact:
+        vn: "{{ vn_name if created_vn_name.state is not defined else created_vn_name.state.name }}"
+
+    # Route Tables
+    - name: Create route tables
+      azure_rm_routetable:
+        resource_group: "{{ rg }}"
+        name: "{{ prefix }}-rt-{{item.key}}"
+      with_dict: "{{ subnet_list }}"
+
+    # Subnets
+    - name: Create subnets from input and associate route tables
+      azure_rm_subnet:
+        resource_group: "{{ rg }}"
+        virtual_network_name: "{{ vn }}"
+        name: "{{ prefix }}-{{ item.key }}"
+        address_prefix_cidr: "{{ subnets[item.value] }}"
+        route_table: "{{ prefix }}-rt-{{item.key}}"
+      with_dict: "{{ subnet_list }}"
+      when: subnets != []
+    
+    - name: Create subnets automatically and associate route tables
+      azure_rm_subnet:
+        resource_group: "{{ rg }}"
+        virtual_network_name: "{{ vn }}"
+        name: "{{ prefix }}-{{ item.key }}"
+        address_prefix_cidr: "{{ vn_cidr | ansible.utils.ipsubnet(subnet_size, item.value+2) }}"
+        route_table: "{{ prefix }}-rt-{{item.key}}"
+      with_dict: "{{ subnet_list }}"
+      when: subnets == []
+
+    # Security Groups
+    - name: Create security group allow-all
+      azure_rm_securitygroup:
+        resource_group: "{{ rg }}"
+        name: "{{ prefix }}-allow-all"
+        rules:
+            - name: TCP-Allow-All
+              priority: 1001
+              direction: Inbound
+              access: Allow
+              protocol: "*"
+              source_port_range: "*"
+              destination_port_range: "*"
+              source_address_prefix: "*"
+              destination_address_prefix: "*"
+            - name: Outbound-Allow-All
+              priority: 1002
+              direction: Outbound
+              access: Allow
+              protocol: "*"
+              source_port_range: "*"
+              destination_port_range: "*"
+              source_address_prefix: "{{ source_address }}"
+              destination_address_prefix: "*"
+
+    - name: Create security group ilb-allow-all
+      azure_rm_securitygroup:
+        resource_group: "{{ rg }}"
+        name: "{{ prefix }}-ilb-allow-all"
+        rules:
+            - name: TCP-Allow-All-Internal-Inbound
+              priority: 1001
+              direction: Inbound
+              access: Allow
+              protocol: "*"
+              source_port_range: "*"
+              destination_port_range: "*"
+              source_address_prefix: "*"
+              destination_address_prefix: "*"
+            - name: TCP-Allow-All-Internal-Outbound
+              priority: 1001
+              direction: Outbound
+              access: Allow
+              protocol: "*"
+              source_port_range: "*"
+              destination_port_range: "*"
+              source_address_prefix: "*"
+              destination_address_prefix: "*"
+            
+    - name: Create security group elb-allow-all
+      azure_rm_securitygroup:
+        resource_group: "{{ rg }}"
+        name: "{{ prefix }}-elb-allow-all"
+        rules:
+            - name: TCP-Allow-All-External-Inbound
+              priority: 1001
+              direction: Inbound
+              access: Allow
+              protocol: "*"
+              source_port_range: "*"
+              destination_port_range: "*"
+              source_address_prefix: "*"
+              destination_address_prefix: "*"
+            - name: TCP-Allow-All-External-Outbound
+              priority: 1001
+              direction: Outbound
+              access: Allow
+              protocol: "*"
+              source_port_range: "*"
+              destination_port_range: "*"
+              source_address_prefix: "*"
+              destination_address_prefix: "*"
+
+    # Public IP Addresses
+    - name: Create a public ip address for FTDv Management Interface
+      azure_rm_publicipaddress:
+        resource_group: "{{ rg }}"
+        name: "{{ prefix }}-instance-mgmt-public-ip{{ '-'+item if instances > 1 else '' }}"
+        sku: "{{ 'Standard' if instances > 1 else 'Basic' }}"
+        allocation_method: "{{ 'static' if instances > 1 else 'dynamic' }}"
+      with_sequence: "count={{ instances }}"
+      register: ftd_public_ip
+    
+    - name: Create a public ip address for FTDv Outside Interface
+      azure_rm_publicipaddress:
+        resource_group: "{{ rg }}"
+        name: "{{ prefix }}-instance-outside-public-ip{{ '-'+item if instances > 1 else '' }}"
+        sku: "{{ 'Standard' if instances > 1 else 'Basic' }}"
+        allocation_method: "{{ 'static' if instances > 1 else 'dynamic' }}"
+      with_sequence: "count={{ instances }}"
+
+    - name: Create a public ip address for FMC Management Interface
+      azure_rm_publicipaddress:
+        resource_group: "{{ rg }}"
+        name: "{{ prefix }}-fmc-public-ip"
+        sku: "{{ 'Standard' if instances > 1 else 'Basic' }}"
+        allocation_method: "{{ 'static' if instances > 1 else 'dynamic' }}"
+      with_sequence: "count={{ 1 if create_fmc else 0 }}"
+      register: fmc_public_ip
+    
+    # Network Interfaces
+    - name: Create a network interface for FTDv Management Interface
+      azure_rm_networkinterface:
+        name: "{{ prefix }}-management{{ '-'+item if instances > 1 else '' }}"
+        resource_group: "{{ rg }}"
+        virtual_network: "{{ vn }}"
+        subnet_name: "{{prefix}}-management"
+        security_group: "{{ prefix }}-allow-all"
+        ip_configurations:
+          - name: "Management{{ '-'+item if instances > 1 else '' }}"
+            private_ip_allocation_method: "Static"
+            private_ip_address: "{{ ftd_mgmt_ip[item | int-1] }}"
+            public_ip_address_name: "{{ prefix }}-instance-mgmt-public-ip{{ '-'+item if instances > 1 else '' }}"
+      with_sequence: "count={{ instances }}"
+    
+    - name: Create a network interface for FTDv Diagnostic Interface
+      azure_rm_networkinterface:
+        name: "{{ prefix }}-diagnostic{{ '-'+item if instances > 1 else '' }}"
+        resource_group: "{{ rg }}"
+        virtual_network: "{{ vn }}"
+        subnet_name: "{{prefix}}-diagnostic"
+        security_group: "{{ prefix }}-allow-all"
+        ip_configurations:
+          - name: "Diagnostic{{ '-'+item if instances > 1 else '' }}"
+            private_ip_allocation_method: "Dynamic"
+      with_sequence: "count={{ instances }}"
+    
+    - name: Create a network interface for FTDv Outside Interface
+      azure_rm_networkinterface:
+        name: "{{ prefix }}-outside{{ '-'+item if instances > 1 else '' }}"
+        resource_group: "{{ rg }}"
+        virtual_network: "{{ vn }}"
+        subnet_name: "{{prefix}}-outside"
+        security_group: "{{ prefix }}-elb-allow-all"
+        ip_configurations:
+          - name: "Outside{{ '-'+item if instances > 1 else '' }}"
+            private_ip_allocation_method: "Dynamic"
+            public_ip_address_name: "{{ prefix }}-instance-outside-public-ip{{ '-'+item if instances > 1 else '' }}"
+      with_sequence: "count={{ instances }}"
+
+    - name: Create a network interface for FMC Management Interface
+      azure_rm_networkinterface:
+        name: "{{ prefix }}-fmc-management"
+        resource_group: "{{ rg }}"
+        virtual_network: "{{ vn }}"
+        subnet_name: "{{prefix}}-management"
+        security_group: "{{ prefix }}-elb-allow-all"
+        ip_configurations:
+          - name: "FMC-Management"
+            private_ip_allocation_method: "Static"
+            private_ip_address: "10.0.2.18"
+            public_ip_address_name: "{{ prefix }}-fmc-public-ip"
+      with_sequence: "count={{ 1 if create_fmc else 0 }}"
+
+    - name: Create a network interface for FTDv Inside Interface
+      azure_rm_networkinterface:
+        name: "{{ prefix }}-inside{{ '-'+item if instances > 1 else '' }}"
+        resource_group: "{{ rg }}"
+        virtual_network: "{{ vn }}"
+        subnet_name: "{{prefix}}-inside"
+        security_group: "{{ prefix }}-ilb-allow-all"
+        ip_configurations:
+          - name: "Inside{{ '-'+item if instances > 1 else '' }}"
+            private_ip_allocation_method: "Dynamic"
+      with_sequence: "count={{ instances }}"
+    
+    # Key Pair
+    - name: Generate a keypair for FTDs
+      community.crypto.openssh_keypair:
+        path: ftd-key
+        size: 4096
+        type: rsa
+        mode: 0700
+      register: ftdv_key
+
+    # FTD Instances
+    - name: Create FTDv instances
+      azure_rm_virtualmachine:
+        resource_group: "{{ rg }}"
+        name: "{{ prefix }}-FTD{{ '-'+item if instances > 1 else '' }}"
+        short_hostname: "{{ instancename }}{{ '-'+item if instances > 1 else '' }}"
+        image:
+          publisher: cisco
+          offer: cisco-ftdv
+          sku: ftdv-azure-byol
+          version: "{{ ftd_image_version }}"
+        vm_size: "{{ vm_size }}"
+        network_interface_names:
+          - "{{ prefix }}-management{{ '-'+item if instances > 1 else '' }}"
+          - "{{ prefix }}-diagnostic{{ '-'+item if instances > 1 else '' }}"
+          - "{{ prefix }}-outside{{ '-'+item if instances > 1 else '' }}"
+          - "{{ prefix }}-inside{{ '-'+item if instances > 1 else '' }}"
+        plan:
+          name: ftdv-azure-byol
+          publisher: cisco
+          product: cisco-ftdv
+        os_disk_name: "{{ prefix }}-ftd-osdisk{{ '-'+item if instances > 1 else '' }}"
+        os_disk_caching: ReadWrite
+        managed_disk_type: Standard_LRS
+        custom_data: "{{ lookup('ansible.builtin.template', 'ftd_startup_file.txt') }}"
+        admin_username: "{{ username }}"
+        admin_password: "{{ ftd_password }}"
+        ssh_public_keys:
+          - path: "/home/{{ username }}/.ssh/authorized_keys"
+            key_data: "{{ ftdv_key.public_key }}"
+      with_sequence: "count={{ instances }}"
+    
+    # FMC
+    - name: Create FMC
+      azure_rm_virtualmachine:
+        resource_group: "{{ rg }}"
+        name: "{{ prefix }}-FMC"
+        short_hostname: "FMC"
+        image:
+          publisher: cisco
+          offer: cisco-fmcv
+          sku: fmcv-azure-byol
+          version: "{{ fmc_image_version }}"
+        vm_size: "Standard_D4_v2"
+        network_interface_names:
+          - "{{ prefix }}-fmc-management"
+        plan:
+          name: fmcv-azure-byol
+          publisher: cisco
+          product: cisco-fmcv
+        os_disk_name: "{{ prefix }}-fmc-osdisk"
+        os_disk_caching: ReadWrite
+        managed_disk_type: Standard_LRS
+        custom_data: "{{ lookup('ansible.builtin.template', 'ftd_startup_file.txt') }}"
+        admin_username: "{{ username }}"
+        admin_password: "{{ fmc_password }}"
+      with_sequence: "count={{ 1 if create_fmc else 0 }}"
+    
+    # Lab Info File
+    - name: Store lab info in a file
+      ansible.builtin.copy:
+        dest: lab_info.txt
+        content: |
+          FMC URL         = https://<FMC_PUBLIC_IP>
+          FTD SSH         = ssh -i ftd-key {{ username }}@<FTD_PUBLIC_IP>
+          FTD Console SSH = ssh admin@<FTD_PUBLIC_IP>
+    
+    # Hosts File
+    - name: Create hosts.yaml file for configuration
+      copy:
+        content: |
+          ---
+          all:
+            hosts:
+              fmc:
+                ansible_host: <FMC_PUBLIC_IP>
+                ansible_network_os: cisco.fmcansible.fmc
+                ansible_user: admin
+                ansible_password: "{{ fmc_password }}"
+                ansible_httpapi_port: 443
+                ansible_httpapi_use_ssl: True
+                ansible_httpapi_validate_certs: False
+                ftd_mgmt_ip: 10.0.2.11
+                ftd_reg_key: "{{ reg_key }}"
+                ftd_nat_id: "{{ fmc_nat_id }}"
+                auth_string: "admin:{{ftd_password}}"
+        dest: hosts.yaml
