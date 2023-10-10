@@ -1,0 +1,9 @@
+  #Sensor
+  {
+      "AdminPassword": "{{ftd_password}}",
+      "Hostname":       "FTD-{{item}}",
+      "ManageLocally":  "No",
+      "FmcIp":          "{{fmc_ip}}",
+      "FmcRegKey":      "{{reg_key}}",
+      "FmcNatId":       "{{fmc_nat_id}}",
+}
