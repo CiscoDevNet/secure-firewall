@@ -1,9 +1,22 @@
 // AWS Environment -- Remove the # to before configure a value to it. 
 // If you dont provide any value, it will take the default value 
-pod_prefix = "pod-1"
+
+
 ############################################################
+Enter your pod number below. Important you use the correct 
+number otherwise you will try to overwrite someone else's
+lab!
+############################################################
+
+
+pod_prefix = "pod-X"
+
+
+
+#############################################################
 #AWS Creditials to access the AWS Cloud
 #############################################################
+
 aws_access_key = ""
 
 aws_secret_key = ""
