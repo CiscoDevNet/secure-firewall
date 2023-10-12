@@ -71,7 +71,7 @@ c_create_igw    = false
 c_subnet_cidr   = ["172.17.1.0/24"]
 c_subnet_name   = ["Third-Party-VPC"]
 
-keyname = "kadadhic-Nvirginia"
+keyname = "gwlb-adv-key"
 
 instances_per_az        = 1
 availability_zone_count = 2
