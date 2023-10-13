@@ -130,4 +130,9 @@ tgw_appliance_mode = "enable" //"disable"
 
 
 cdo_token = ""
+
+# Uncomment only the CDO instance where your CDO token comes from.
+
 cdo_url = "https://apj.cdo.cisco.com"
+#cdo_url = "https://eu.cdo.cisco.com"
+#cdo_url = "https://us.cdo.cisco.com"
