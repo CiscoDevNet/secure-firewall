@@ -78,11 +78,11 @@ rsa_bits  = 4096
 
 resource "local_file" "private_key" {
 content       = tls_private_key.key_pair.private_key_openssh
-filename      = var.keyname
+filename      = "${var.pod_prefix}-key"
 file_permission = 0700
 }
 
 resource "aws_key_pair" "deployer" {
-  key_name   = var.keyname
+  key_name   = "${var.pod_prefix}-key"
   public_key = tls_private_key.key_pair.public_key_openssh
 }

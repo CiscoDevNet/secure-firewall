@@ -374,11 +374,6 @@ variable "ftd_size" {
   default     = "c5.xlarge"
 }
 
-variable "keyname" {
-  type        = string
-  description = "key to be used for the instances"
-}
-
 ########################################################################
 ## GatewayLoadbalncer 
 ########################################################################
