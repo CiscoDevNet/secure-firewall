@@ -22,7 +22,7 @@ resource "aws_instance" "EC2-Ubuntu1" {
   # depends_on = [ aws_instance.testLinux ]
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
-  key_name      = var.keyname
+  key_name      = aws_key_pair.deployer.key_name
   
   user_data = data.template_file.apache_install.rendered
   network_interface {
@@ -38,7 +38,7 @@ resource "aws_instance" "EC2-Ubuntu2" {
   # depends_on = [ aws_instance.testLinux ]
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
-  key_name      = var.keyname
+  key_name      = aws_key_pair.deployer.key_name
   
   user_data = data.template_file.apache_install.rendered
   network_interface {
@@ -54,7 +54,7 @@ resource "aws_instance" "EC2-Ubuntu3" {
   # depends_on = [ aws_instance.testLinux ]
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
-  key_name      = var.keyname
+  key_name      = aws_key_pair.deployer.key_name
   
   user_data = data.template_file.apache_install.rendered
   network_interface {
@@ -65,4 +65,24 @@ resource "aws_instance" "EC2-Ubuntu3" {
   tags = {
     Name = "${var.pod_prefix}-Ec2-Ubuntu3"
   }
+}
+
+
+
+########################
+
+resource "tls_private_key" "key_pair" {
+algorithm = "RSA"
+rsa_bits  = 4096
+}
+
+resource "local_file" "private_key" {
+content       = tls_private_key.key_pair.private_key_openssh
+filename      = var.keyname
+file_permission = 0700
+}
+
+resource "aws_key_pair" "deployer" {
+  key_name   = var.keyname
+  public_key = tls_private_key.key_pair.public_key_openssh
 }
