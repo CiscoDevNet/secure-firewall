@@ -22,7 +22,7 @@ resource "aws_instance" "EC2-Ubuntu1" {
   # depends_on = [ aws_instance.testLinux ]
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
-  key_name      = "kadadhic-Nvirginia"
+  key_name      = var.keyname
   
   user_data = data.template_file.apache_install.rendered
   network_interface {
@@ -38,7 +38,7 @@ resource "aws_instance" "EC2-Ubuntu2" {
   # depends_on = [ aws_instance.testLinux ]
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
-  key_name      = "kadadhic-Nvirginia"
+  key_name      = var.keyname
   
   user_data = data.template_file.apache_install.rendered
   network_interface {
@@ -54,7 +54,7 @@ resource "aws_instance" "EC2-Ubuntu3" {
   # depends_on = [ aws_instance.testLinux ]
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
-  key_name      = "kadadhic-Nvirginia"
+  key_name      = var.keyname
   
   user_data = data.template_file.apache_install.rendered
   network_interface {
