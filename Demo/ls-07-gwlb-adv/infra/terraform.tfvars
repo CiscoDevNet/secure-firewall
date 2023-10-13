@@ -3,9 +3,9 @@
 
 
 ############################################################
-Enter your pod number below. Important you use the correct 
-number otherwise you will try to overwrite someone else's
-lab!
+# Enter your pod number below. Important you use the correct 
+# number otherwise you will try to overwrite someone else's
+# lab!
 ############################################################
 
 
@@ -132,3 +132,4 @@ tgw_appliance_mode = "enable" //"disable"
 
 
 cdo_token = ""
+cdo_url = "https://apj.cdo.cisco.com"

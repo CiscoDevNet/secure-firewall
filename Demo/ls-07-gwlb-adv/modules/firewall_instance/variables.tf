@@ -117,3 +117,7 @@ variable "cdo_token"{
   type = string
   default = null
 }
+variable "base_url"{
+  type = string
+  default = null
+}

@@ -11,7 +11,7 @@
 # }
 
 provider "cdo" {
-  base_url = "https://apj.cdo.cisco.com"
+  base_url = var.base_url
   api_token = var.cdo_token
 }
 resource "cdo_ftd_device" "test" {

@@ -68,6 +68,7 @@ module "instance" {
   create_fmc              = var.create_fmc
   fmcmgmt_interface       = module.service_network.fmcmgmt_interface
   cdo_token               = var.cdo_token
+  base_url                = var.cdo_url
 }
 
 module "nat_gw" {
