@@ -56,7 +56,7 @@ module "instance" {
   source                  = "../modules/firewall_instance"
   pod_prefix          = var.pod_prefix
   ftd_version             = var.ftd_version
-  keyname                 = var.keyname
+  keyname                 = aws_key_pair.deployer.key_name
   ftd_size                = var.ftd_size
   instances_per_az        = var.instances_per_az
   availability_zone_count = var.availability_zone_count
@@ -68,6 +68,7 @@ module "instance" {
   create_fmc              = var.create_fmc
   fmcmgmt_interface       = module.service_network.fmcmgmt_interface
   cdo_token               = var.cdo_token
+  base_url                = var.cdo_url
 }
 
 module "nat_gw" {
