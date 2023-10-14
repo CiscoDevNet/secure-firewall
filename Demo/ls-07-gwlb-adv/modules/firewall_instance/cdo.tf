@@ -16,7 +16,7 @@ provider "cdo" {
 }
 resource "cdo_ftd_device" "test" {
   count              = 2
-  name               = "FTD${count.index+1}"
+  name               = "${var.pod_prefix}-FTD${count.index+1}"
   access_policy_name = "Default Access Control Policy"
   performance_tier   = "FTDv5"
   virtual            = true
