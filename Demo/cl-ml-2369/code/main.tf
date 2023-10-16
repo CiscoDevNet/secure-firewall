@@ -72,8 +72,8 @@ resource "fmc_access_policies" "access_policy" {
 }
 resource "fmc_access_rules" "access_rule" {
     acp = fmc_access_policies.access_policy.id
-    section = "Allow in-out"
-    name = "Rule-1"
+    section = "mandatory"
+    name = "allow-in-out"
     action = "allow"
     enabled = true
     send_events_to_fmc = true
@@ -115,7 +115,7 @@ resource "fmc_ftd_manualnat_rules" "new_rule" {
         type = "SecurityZone"
     }
 
-    interface_in_original_destination = true
+    # interface_in_original_destination = true
     interface_in_translated_source = true
 }
 ################################################################################################
@@ -126,8 +126,7 @@ resource "fmc_devices" "device"{
   name = "NGFW1"
   hostname = var.ftd_ips[0]
   regkey = "cisco"
-  type = "Device"
-  license_caps = [ "MALWARE"]
+  license_caps = [ "MALWARE", "THREAT"]
   nat_id = "cisco"
   access_policy {
       id = fmc_access_policies.access_policy.id
@@ -183,9 +182,9 @@ resource "fmc_staticIPv4_route" "route" {
   device_id  = fmc_devices.device.id
   interface_name = "outside"
   selected_networks {
-      id = fmc_network_objects.any-ipv4.id
-      type = fmc_network_objects.any-ipv4.type
-      name = fmc_network_objects.any-ipv4.name
+      id = data.fmc_network_objects.any-ipv4.id
+      type = data.fmc_network_objects.any-ipv4.type
+      name = data.fmc_network_objects.any-ipv4.name
   }
   gateway {
     object {
@@ -218,4 +217,3 @@ resource "fmc_ftd_deploy" "ftd" {
     ignore_warning = true
     force_deploy = false
 }
-
