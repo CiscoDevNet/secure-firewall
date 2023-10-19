@@ -1,0 +1,32 @@
+- hosts: all
+  vars:
+    changeid: ""
+  connection: httpapi
+  tasks:
+    - name: Get Domain uuid 
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: Get ticket
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllTicket
+        path_params:
+          domainUUID: "{{domain[0].uuid}}"
+        query_params:
+          filter: "State:PENDING_APPROVAL"
+          allUsers: true
+        register_as: NewTicket
+    - debug: 
+        var: NewTicket
+
+
+    - name: Update ticket --- Approved
+      cisco.fmcansible.fmc_configuration:
+        operation: updateTicket
+        path_params:
+          domainUUID: "{{domain[0].uuid}}"
+          objectId: "{{ (NewTicket | selectattr('id','==',changeid))[0].id }}"
+        data:
+          id: "{{ (NewTicket | selectattr('id','==',changeid))[0].id }}"
+          status: "REJECTED"

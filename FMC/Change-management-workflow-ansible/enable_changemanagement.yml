@@ -1,0 +1,21 @@
+- hosts: all
+  connection: httpapi
+  tasks:
+    - name: Get Domain uuid 
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: Enable Changemanagement
+      cisco.fmcansible.fmc_configuration:
+        operation: updateChangeManagementSystemConfig
+        path_params:
+          domainUUID: "{{domain[0].uuid}}"
+          objectId: "1"
+        data:
+          changeMgmtWorkflowEnabled: true
+          senderEmail: "abc@cisco.com"
+          ticketApproverEmail: "xyz@cisco.com"
+          ticketPurgeInterval: 5
+          noOfApprover: 1
+          type: "ChangeManagementConfig"

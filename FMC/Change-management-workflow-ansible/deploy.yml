@@ -1,0 +1,42 @@
+- hosts: all
+  connection: httpapi
+  tasks:
+    - name: Get Domain uuid 
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+  
+    - name: Get Deployable Devices
+      cisco.fmcansible.fmc_configuration:
+        operation: "getDeployableDevice"
+        path_params:
+          domainUUID: "{{ domain[0].uuid }}"
+        register_as: Versionsss
+    - debug:
+        var: Versionsss
+
+    - name: Get Devices
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDevice
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        query_params:
+          filter: "name:FTD" 
+        register_as: devicesss
+    - debug:
+        var: devicesss
+
+    - name: Deploy FTD
+      cisco.fmcansible.fmc_configuration:
+        operation: "createDeploymentRequest"
+        data:
+          type: "DeploymentRequest"
+          version:  "{{ Versionsss[0].version }}"
+          forceDeploy: False
+          ignoreWarning: True
+          deviceList: ['{{ devicesss[0].id }}']
+          deploymentNote: "Deployed using ansible"
+        path_params:
+          domainUUID: "{{ domain[0].uuid }}"
+
+
