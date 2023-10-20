@@ -1,13 +1,9 @@
-data "template_file" "bastion_install" {
-  template = file("${path.module}/bastion_install.tpl")
-}
-
 data "aws_availability_zones" "available" {}
 
 resource "aws_subnet" "bastion_subnet" {
-  vpc_id            = module.network.vpc_id
-  cidr_block        = var.bastion_subnet_cidr
-  availability_zone = data.aws_availability_zones.available.names[0]
+  vpc_id                  = module.network.vpc_id
+  cidr_block              = var.bastion_subnet_cidr
+  availability_zone       = data.aws_availability_zones.available.names[0]
   map_public_ip_on_launch = true
 
   tags = merge({
@@ -16,9 +12,9 @@ resource "aws_subnet" "bastion_subnet" {
 }
 
 resource "aws_network_interface" "bastion_interface" {
-  description       = "bastion-interface"
-  subnet_id         = aws_subnet.bastion_subnet.id
-  private_ips       = [var.bastion_ip]
+  description = "bastion-interface"
+  subnet_id   = aws_subnet.bastion_subnet.id
+  private_ips = [var.bastion_ip]
 }
 
 resource "aws_network_interface_sg_attachment" "bastion_attachment" {
@@ -46,10 +42,10 @@ resource "aws_route" "bastion_default_route" {
 }
 
 resource "aws_instance" "testLinux" {
-  ami           = "ami-0851b76e8b1bce90b" 
+  ami           = data.aws_ami.ubuntu.image_id
   instance_type = "t2.micro"
-  key_name      = var.keyname 
-  user_data = data.template_file.bastion_install.rendered
+  key_name      = var.keyname
+  user_data     = base64encode(templatefile("${path.module}/bastion_install.tfpl", {}))
   network_interface {
     network_interface_id = aws_network_interface.bastion_interface.id
     device_index         = 0
@@ -61,8 +57,8 @@ resource "aws_instance" "testLinux" {
 }
 
 resource "aws_security_group" "bastion_sg" {
-  name        = "Bastion SG"
-  vpc_id      = module.network.vpc_id
+  name   = "Bastion SG"
+  vpc_id = module.network.vpc_id
 
 
   dynamic "ingress" {
@@ -77,10 +73,10 @@ resource "aws_security_group" "bastion_sg" {
   }
 
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 

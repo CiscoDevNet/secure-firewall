@@ -5,7 +5,7 @@ variable "vpc_cidr" {
 
 variable "vpc_name" {
   type    = string
-  default = "IAC-VPC" 
+  default = "IAC-VPC"
 }
 
 variable "create_igw" {
@@ -58,24 +58,24 @@ variable "ftd_inside_ip" {
 }
 
 variable "fmc_ip" {
-  type = string
+  type    = string
   default = ""
 }
 
 #provide default values for subnet name as it is used in both cases
 variable "mgmt_subnet_name" {
   type    = list(string)
-  default = ["mgmt1","mgmt2"]
+  default = ["mgmt1", "mgmt2"]
 }
 
 variable "outside_subnet_name" {
   type    = list(string)
-  default = ["outside1","outside2"]
+  default = ["outside1", "outside2"]
 }
 
 variable "inside_subnet_name" {
   type    = list(string)
-  default = ["inside1","inside2"]
+  default = ["inside1", "inside2"]
 }
 
 variable "diag_subnet_name" {
