@@ -278,12 +278,12 @@ data "aws_route_table" "ftd_inside_route" {
 # }
 
 //To define the default route for inside network thur FTDv inside interface 
-# resource "aws_route" "inside_default_route" {
-#   depends_on             = [aws_instance.ftdv]
-#   route_table_id         = aws_route_table.ftd_inside_route.id
-#   destination_cidr_block = "0.0.0.0/0"
-#   network_interface_id   = aws_network_interface.ftd01inside.id
-# }
+resource "aws_route" "inside_default_route" {
+  depends_on             = [aws_instance.ftdv]
+  route_table_id         = data.aws_route_table.ftd_inside_route.id
+  destination_cidr_block = "0.0.0.0/0"
+  network_interface_id   = aws_network_interface.ftd01inside.id
+}
 
 resource "aws_route_table_association" "outside_association" {
   subnet_id      = data.aws_subnet.outside_subnet.id
