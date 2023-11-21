@@ -46,7 +46,7 @@ resource "aws_route" "bastion_default_route" {
 }
 
 resource "aws_instance" "testLinux" {
-  ami           = "ami-086cae3329a3f7d75" 
+  ami           = "ami-09a81b370b76de6a2" 
   instance_type = "t3.micro"
   key_name      = var.keyname 
   user_data = data.template_file.bastion_install.rendered

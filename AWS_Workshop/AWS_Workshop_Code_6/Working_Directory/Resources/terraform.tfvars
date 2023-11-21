@@ -15,7 +15,7 @@ vpc_name = ""
 vpc_cidr = ""
 create_igw = false
 # Generate the key if you want to login thru the  key
-keyname = "ln"
+keyname = "keypair6"
 instances_per_az        = 1
 availability_zone_count = 2
 

@@ -82,7 +82,7 @@ resource "aws_instance" "EC2-Ubuntu" {
     aws_instance.testLinux
   ]
   count         = 2
-  ami           = "ami-086cae3329a3f7d75" 
+  ami           = "ami-078c1149d8ad719a7" 
   instance_type = "t3.micro"
   key_name      = var.keyname
   

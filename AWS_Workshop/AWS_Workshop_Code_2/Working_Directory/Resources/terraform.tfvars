@@ -6,7 +6,7 @@
 #############################################################
 aws_access_key = ""
 aws_secret_key = ""
-region = "ap-northeast-2"
+region = "ap-south-1"
 
 ############################################################
 #Define New VPC in a specific Region and Avilability Zone 
