@@ -312,22 +312,22 @@ resource "aws_eip" "ftd01mgmt-EIP" {
   }
 }
 
-resource "aws_eip" "ftd01outside-EIP" {
-  #   domain     = "vpc"
-  depends_on = [aws_internet_gateway.int_gw, aws_instance.ftdv]
-  tags = {
-    "Name" = "pod${var.pod_number}FTDv-01 outside IP"
-  }
-}
+# resource "aws_eip" "ftd01outside-EIP" {
+#   #   domain     = "vpc"
+#   depends_on = [aws_internet_gateway.int_gw, aws_instance.ftdv]
+#   tags = {
+#     "Name" = "pod${var.pod_number}FTDv-01 outside IP"
+#   }
+# }
 
 resource "aws_eip_association" "ftd01-mgmt-ip-assocation" {
   network_interface_id = aws_network_interface.ftd01mgmt.id
   allocation_id        = aws_eip.ftd01mgmt-EIP.id
 }
-resource "aws_eip_association" "ftd01-outside-ip-association" {
-  network_interface_id = aws_network_interface.ftd01outside.id
-  allocation_id        = aws_eip.ftd01outside-EIP.id
-}
+# resource "aws_eip_association" "ftd01-outside-ip-association" {
+#   network_interface_id = aws_network_interface.ftd01outside.id
+#   allocation_id        = aws_eip.ftd01outside-EIP.id
+# }
 
 ##################################################################################################################################
 # Create the Cisco NGFW Instances 
