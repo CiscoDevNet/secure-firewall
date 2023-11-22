@@ -160,7 +160,7 @@ resource "fmc_devices" "device1"{
   name = "FTD1"
   hostname = var.ftd_mgmt_ip[0]
   regkey = "cisco"
-  type = "Device"
+  #type = "Device"
   #license_caps = [ "MALWARE"]
   #nat_id = "cisco"
   access_policy {
@@ -173,7 +173,7 @@ resource "fmc_devices" "device2"{
   name = "FTD2"
   hostname = var.ftd_mgmt_ip[1]
   regkey = "cisco"
-  type = "Device"
+  #type = "Device"
   #license_caps = [ "MALWARE"]
   #nat_id = "cisco"
   access_policy {
