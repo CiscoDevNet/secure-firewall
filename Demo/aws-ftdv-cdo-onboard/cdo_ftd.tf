@@ -13,7 +13,7 @@ provider "cdo" {
 }
 
 resource "cdo_ftd_device" "ftd" {
-  name               = "${var.prefix}-aws-ftd"
+  name               = "pod${var.pod_number}-aws-ftd"
   access_policy_name = "Default Access Control Policy"
   performance_tier   = "FTDv10"
   virtual            = true
@@ -21,9 +21,10 @@ resource "cdo_ftd_device" "ftd" {
 }
 
 resource "cdo_ftd_device_onboarding" "ftd_onboard" {
-  ftd_uid = cdo_ftd_device.ftd.id
+  depends_on = [aws_instance.ftdv]
+  ftd_uid    = cdo_ftd_device.ftd.id
 }
 
 output "cdo_ftd" {
-  value = "${var.prefix}-aws-ftd"
+  value = "pod${var.pod_number}-aws-ftd"
 }

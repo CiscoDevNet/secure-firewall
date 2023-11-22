@@ -2,8 +2,10 @@
 # Variables 
 #####################################################################################################################
 
-# variable "aws_access_key" {}
-# variable "aws_secret_key" {}
+variable "aws_access_key" {}
+
+variable "aws_secret_key" {}
+
 variable "admin_password" {
   default = "Admin123"
 }
@@ -12,8 +14,8 @@ variable "region" {
   default = "us-east-1"
 }
 
-variable "prefix" {
-  type = string
+variable "pod_number" {
+  type = number
 }
 
 variable "FTD_version" {

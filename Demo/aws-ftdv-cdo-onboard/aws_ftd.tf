@@ -56,7 +56,9 @@ data "aws_internet_gateway" "default" {
 #########################################################################################################################
 
 provider "aws" {
-  region = var.region
+  region     = var.region
+  secret_key = var.aws_secret_key
+  access_key = var.aws_access_key
 }
 
 ###########################################################################################################################
@@ -74,73 +76,109 @@ resource "aws_vpc" "ftd_vpc" {
   enable_dns_hostnames = true
   instance_tenancy     = "default"
   tags = {
-    Name = "${var.prefix}-${var.vpc_name}"
+    Name = "pod${var.pod_number}-${var.vpc_name}"
   }
 }
 
-resource "aws_subnet" "mgmt_subnet" {
-  vpc_id            = local.nw
-  cidr_block        = var.mgmt_subnet
-  availability_zone = "${var.region}a"
-  tags = {
-    Name = "Managment subnet"
+# resource "aws_subnet" "mgmt_subnet" {
+#   vpc_id            = local.nw
+#   cidr_block        = var.mgmt_subnet
+#   availability_zone = "${var.region}a"
+#   tags = {
+#     Name = "Managment subnet"
+#   }
+# }
+
+# resource "aws_subnet" "diag_subnet" {
+#   vpc_id            = local.nw
+#   cidr_block        = var.diag_subnet
+#   availability_zone = "${var.region}a"
+#   tags = {
+#     Name = "diag subnet"
+#   }
+# }
+
+# resource "aws_subnet" "outside_subnet" {
+#   vpc_id            = local.nw
+#   cidr_block        = var.outside_subnet
+#   availability_zone = "${var.region}a"
+#   tags = {
+#     Name = "outside subnet"
+#   }
+# }
+
+# resource "aws_subnet" "inside_subnet" {
+#   vpc_id            = local.nw
+#   cidr_block        = var.inside_subnet
+#   availability_zone = "${var.region}a"
+#   tags = {
+#     Name = "inside subnet"
+#   }
+# }
+
+data "aws_subnet" "mgmt_subnet" {
+  vpc_id = local.nw
+  filter {
+    name   = "tag:Name"
+    values = ["Managment subnet"]
   }
 }
 
-resource "aws_subnet" "diag_subnet" {
-  vpc_id            = local.nw
-  cidr_block        = var.diag_subnet
-  availability_zone = "${var.region}a"
-  tags = {
-    Name = "diag subnet"
+data "aws_subnet" "diag_subnet" {
+  vpc_id = local.nw
+  filter {
+    name   = "tag:Name"
+    values = ["diag subnet"]
   }
 }
 
-resource "aws_subnet" "outside_subnet" {
-  vpc_id            = local.nw
-  cidr_block        = var.outside_subnet
-  availability_zone = "${var.region}a"
-  tags = {
-    Name = "outside subnet"
+data "aws_subnet" "outside_subnet" {
+  vpc_id = local.nw
+  filter {
+    name   = "tag:Name"
+    values = ["outside subnet"]
   }
 }
 
-resource "aws_subnet" "inside_subnet" {
-  vpc_id            = local.nw
-  cidr_block        = var.inside_subnet
-  availability_zone = "${var.region}a"
-  tags = {
-    Name = "inside subnet"
+data "aws_subnet" "inside_subnet" {
+  vpc_id = local.nw
+  filter {
+    name   = "tag:Name"
+    values = ["inside subnet"]
   }
 }
-
 
 #################################################################################################################################
 # Security Group
 #################################################################################################################################
 
-resource "aws_security_group" "allow_all" {
-  name        = "Allow All"
-  description = "Allow all traffic"
-  vpc_id      = local.nw
+# resource "aws_security_group" "allow_all" {
+#   name        = "Allow All"
+#   description = "Allow all traffic"
+#   vpc_id      = local.nw
 
-  ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+#   ingress {
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = "-1"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+#   egress {
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = "-1"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
 
-  tags = {
-    Name = "Public Allow"
-  }
+#   tags = {
+#     Name = "Public Allow"
+#   }
+# }
+
+data "aws_security_group" "allow_all" {
+  vpc_id = local.nw
+  name   = "Allow All"
 }
 
 ##################################################################################################################################
@@ -148,44 +186,44 @@ resource "aws_security_group" "allow_all" {
 ##################################################################################################################################
 resource "aws_network_interface" "ftd01mgmt" {
   description = "ftd01-mgmt"
-  subnet_id   = aws_subnet.mgmt_subnet.id
-  private_ips = [var.ftd01_mgmt_ip]
+  subnet_id   = data.aws_subnet.mgmt_subnet.id
+  private_ips = ["${var.ftd01_mgmt_ip}${var.pod_number + 100}"]
 }
 
 resource "aws_network_interface" "ftd01diag" {
   description = "ftd01-diag"
-  subnet_id   = aws_subnet.diag_subnet.id
+  subnet_id   = data.aws_subnet.diag_subnet.id
 }
 
 resource "aws_network_interface" "ftd01outside" {
   description       = "ftd01-outside"
-  subnet_id         = aws_subnet.outside_subnet.id
-  private_ips       = [var.ftd01_outside_ip]
+  subnet_id         = data.aws_subnet.outside_subnet.id
+  private_ips       = ["${var.ftd01_outside_ip}${var.pod_number + 100}"]
   source_dest_check = false
 }
 
 resource "aws_network_interface" "ftd01inside" {
   description       = "ftd01-inside"
-  subnet_id         = aws_subnet.inside_subnet.id
-  private_ips       = [var.ftd01_inside_ip]
+  subnet_id         = data.aws_subnet.inside_subnet.id
+  private_ips       = ["${var.ftd01_inside_ip}${var.pod_number + 100}"]
   source_dest_check = false
 }
 
 resource "aws_network_interface_sg_attachment" "ftd_mgmt_attachment" {
   depends_on           = [aws_network_interface.ftd01mgmt]
-  security_group_id    = aws_security_group.allow_all.id
+  security_group_id    = data.aws_security_group.allow_all.id
   network_interface_id = aws_network_interface.ftd01mgmt.id
 }
 
 resource "aws_network_interface_sg_attachment" "ftd_outside_attachment" {
   depends_on           = [aws_network_interface.ftd01outside]
-  security_group_id    = aws_security_group.allow_all.id
+  security_group_id    = data.aws_security_group.allow_all.id
   network_interface_id = aws_network_interface.ftd01outside.id
 }
 
 resource "aws_network_interface_sg_attachment" "ftd_inside_attachment" {
   depends_on           = [aws_network_interface.ftd01inside]
-  security_group_id    = aws_security_group.allow_all.id
+  security_group_id    = data.aws_security_group.allow_all.id
   network_interface_id = aws_network_interface.ftd01inside.id
 }
 
@@ -202,51 +240,64 @@ resource "aws_internet_gateway" "int_gw" {
   }
 }
 //create the route table for outsid & inside
-resource "aws_route_table" "ftd_outside_route" {
-  vpc_id = local.nw
+# resource "aws_route_table" "ftd_outside_route" {
+#   vpc_id = local.nw
 
+#   tags = {
+#     Name = "outside network Routing table"
+#   }
+# }
+
+# resource "aws_route_table" "ftd_inside_route" {
+#   vpc_id = local.nw
+
+#   tags = {
+#     Name = "inside network Routing table"
+#   }
+# }
+
+data "aws_route_table" "ftd_outside_route" {
+  vpc_id = local.nw
   tags = {
     Name = "outside network Routing table"
   }
 }
 
-resource "aws_route_table" "ftd_inside_route" {
+data "aws_route_table" "ftd_inside_route" {
   vpc_id = local.nw
-
   tags = {
     Name = "inside network Routing table"
   }
 }
 
 //To define the default routes thru IGW
-resource "aws_route" "ext_default_route" {
-  route_table_id         = aws_route_table.ftd_outside_route.id
-  destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = local.igw
-}
+# resource "aws_route" "ext_default_route" {
+#   route_table_id         = aws_route_table.ftd_outside_route.id
+#   destination_cidr_block = "0.0.0.0/0"
+#   gateway_id             = local.igw
+# }
 
 //To define the default route for inside network thur FTDv inside interface 
 resource "aws_route" "inside_default_route" {
   depends_on             = [aws_instance.ftdv]
-  route_table_id         = aws_route_table.ftd_inside_route.id
+  route_table_id         = data.aws_route_table.ftd_inside_route.id
   destination_cidr_block = "0.0.0.0/0"
   network_interface_id   = aws_network_interface.ftd01inside.id
-
 }
 
 resource "aws_route_table_association" "outside_association" {
-  subnet_id      = aws_subnet.outside_subnet.id
-  route_table_id = aws_route_table.ftd_outside_route.id
+  subnet_id      = data.aws_subnet.outside_subnet.id
+  route_table_id = data.aws_route_table.ftd_outside_route.id
 }
 
 resource "aws_route_table_association" "mgmt_association" {
-  subnet_id      = aws_subnet.mgmt_subnet.id
-  route_table_id = aws_route_table.ftd_outside_route.id
+  subnet_id      = data.aws_subnet.mgmt_subnet.id
+  route_table_id = data.aws_route_table.ftd_outside_route.id
 }
 
 resource "aws_route_table_association" "inside_association" {
-  subnet_id      = aws_subnet.inside_subnet.id
-  route_table_id = aws_route_table.ftd_inside_route.id
+  subnet_id      = data.aws_subnet.inside_subnet.id
+  route_table_id = data.aws_route_table.ftd_inside_route.id
 }
 ##################################################################################################################################
 # AWS External IP address creation and associating it to the mgmt and outside interface. 
@@ -257,26 +308,26 @@ resource "aws_eip" "ftd01mgmt-EIP" {
   #   domain     = "vpc"
   depends_on = [aws_internet_gateway.int_gw, aws_instance.ftdv]
   tags = {
-    "Name" = "FTDv-01 Management IP"
+    "Name" = "pod${var.pod_number}FTDv-01 Management IP"
   }
 }
 
-resource "aws_eip" "ftd01outside-EIP" {
-  #   domain     = "vpc"
-  depends_on = [aws_internet_gateway.int_gw, aws_instance.ftdv]
-  tags = {
-    "Name" = "FTDv-01 outside IP"
-  }
-}
+# resource "aws_eip" "ftd01outside-EIP" {
+#   #   domain     = "vpc"
+#   depends_on = [aws_internet_gateway.int_gw, aws_instance.ftdv]
+#   tags = {
+#     "Name" = "pod${var.pod_number}FTDv-01 outside IP"
+#   }
+# }
 
 resource "aws_eip_association" "ftd01-mgmt-ip-assocation" {
   network_interface_id = aws_network_interface.ftd01mgmt.id
   allocation_id        = aws_eip.ftd01mgmt-EIP.id
 }
-resource "aws_eip_association" "ftd01-outside-ip-association" {
-  network_interface_id = aws_network_interface.ftd01outside.id
-  allocation_id        = aws_eip.ftd01outside-EIP.id
-}
+# resource "aws_eip_association" "ftd01-outside-ip-association" {
+#   network_interface_id = aws_network_interface.ftd01outside.id
+#   allocation_id        = aws_eip.ftd01outside-EIP.id
+# }
 
 ##################################################################################################################################
 # Create the Cisco NGFW Instances 
@@ -310,7 +361,7 @@ resource "aws_instance" "ftdv" {
 
 
   tags = {
-    Name = "${var.prefix}-Cisco FTDv"
+    Name = "pod${var.pod_number}-Cisco FTDv"
   }
 }
 ################################################
@@ -322,12 +373,12 @@ resource "tls_private_key" "key_pair" {
 
 resource "local_file" "private_key" {
   content         = tls_private_key.key_pair.private_key_openssh
-  filename        = "${var.prefix}-cisco-ftdv-key"
+  filename        = "pod${var.pod_number}-cisco-ftdv-key"
   file_permission = 0700
 }
 
 resource "aws_key_pair" "deployer" {
-  key_name   = "${var.prefix}-cisco-ftdv-key"
+  key_name   = "pod${var.pod_number}-cisco-ftdv-key"
   public_key = tls_private_key.key_pair.public_key_openssh
 }
 ##################################################################################################################################
@@ -337,5 +388,5 @@ output "ip" {
   value = aws_eip.ftd01mgmt-EIP.public_ip
 }
 output "SSHCommand" {
-  value = "ssh -i ${var.prefix}-cisco-ftdv-key admin@${aws_eip.ftd01mgmt-EIP.public_ip}"
+  value = "ssh -i pod${var.pod_number}-cisco-ftdv-key admin@${aws_eip.ftd01mgmt-EIP.public_ip}"
 }
