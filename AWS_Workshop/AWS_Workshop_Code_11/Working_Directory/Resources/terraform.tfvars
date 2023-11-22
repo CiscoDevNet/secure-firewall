@@ -36,7 +36,7 @@ ftd_inside_ip = ["10.11.3.10","10.11.30.10"]
 ftd_diag_ip = ["10.11.4.10","10.11.40.10"]
 ftd_app_ip = ["10.11.5.10","10.11.50.10"]
 bastion_ip = "10.11.6.10"
-fmc_ip = "10.11.0.136"
+fmc_ip = ""
 
 inside_subnet_name = ["inside111","inside211"]
 outside_subnet_name = ["outside111","outside211"]
@@ -76,7 +76,7 @@ mgmt_interface_sg = [
         from_port = 8305
         protocol = "TCP"
         to_port = 8305
-        cidr_blocks = ["10.11.0.136/32"]
+        cidr_blocks = ["10.11.0.0/24"]
     }
 ]
 
