@@ -44,15 +44,10 @@ Run the below command to make Terraform download the required providers
 terraform init
 ```
 
-3. Fill in all required variables in terraform.tfvars file
+3. Review variables in terraform.tfvars file
 
-For all the mentioned lines, fill in the variable as indicated. Use usernames, passwords and ip addresses from the provided table with credentials. 
-Ensure to replace podXX with your assigned pod number.
+For the mentioned line numbers below, fill in the variable as indicated. Use usernames, passwords and ip addresses from the provided table with credentials.
 The folder should also contain a file called terraform.tfvars.example where most of the fields will be filled in, however they will NOT be specific for your pod!!
-
-line 2: devnet_pod = "podXX"
-
-line 14: ftd_hostname = "devnet-ftd-"
 
 For line 16 you will need to add the public key you created, use the following command to show the public key, replacing userXX with your user number.
 ```
