@@ -12,7 +12,7 @@ git clone https://github.com/CiscoDevNet/secure-firewall.git
 ```
 3. Access the FMC
 
-Check if you can access the [FMC](https://35.247.118.180) with the provided username and password.
+Check if you can access the FMC with the provided username and password.
 
 4. Create an SSH key
 
@@ -32,7 +32,7 @@ After having cloned the Secure Firewall examples repository, navigate to task02 
 Make sure you navigate to the directory for your assigned pod or you will cause conflicting changes with other users.
 Ensure you replace podXX in the example below with your assigned pod.
 ```
-cd secure-firewall/Demo/devwks-2983/podXX/task02/
+cd /home/devnet/workshop/DEVWKS-2983/podXX/task02/
 ```
 
 Next, in the Webex chat for the session you will be given the ip and credentials of the jumphost. Make sure to copy the pod information for your assigned pod!
@@ -57,9 +57,6 @@ cat devnet-userXX-key.pub
 line 16: admin_ssh_pub_key = "contents_of_devnet-userXX-key.pub_goes_here"
 
 line 17: admin_password = "provided_FMC_admin_password_goes_here"
-
-lines 24, 30, 36, 42 and 49: Replace XX with 200 plus your provided pod number. 
-So for example if your pod number is 04 than XX becomes 204, if your pod number is 11 than XX becomes 211.
 
 lines 54-58: replace XX with your pod number
 
