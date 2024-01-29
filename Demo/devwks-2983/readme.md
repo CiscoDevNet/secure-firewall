@@ -58,10 +58,6 @@ line 16: admin_ssh_pub_key = "contents_of_devnet-userXX-key.pub_goes_here"
 
 line 17: admin_password = "provided_FMC_admin_password_goes_here"
 
-lines 54-58: replace XX with your pod number
-
-line 59: replace XX with 150 plus your pod number.
-So for example if your pod number is 05 than XX becomes 155, if your pod number is 12, than XX becomes 162.
 
 4. Verify provders.tf file
 
