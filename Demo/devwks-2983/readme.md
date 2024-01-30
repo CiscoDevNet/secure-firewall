@@ -40,6 +40,45 @@ This will set up Terraform ready for use. If you get an error like: 'Terraform i
 
 You should see something like this when doing terraform init:
 ```
+JWITTOCK:task02 jwittock$ terraform init
+
+Initializing the backend...
+Initializing modules...
+- networking in modules/networking
+Downloading registry.terraform.io/terraform-google-modules/network/google 3.5.0 for networking.vpc-module...
+- networking.vpc-module in .terraform/modules/networking.vpc-module
+- networking.vpc-module.firewall_rules in .terraform/modules/networking.vpc-module/modules/firewall-rules
+- networking.vpc-module.routes in .terraform/modules/networking.vpc-module/modules/routes
+- networking.vpc-module.subnets in .terraform/modules/networking.vpc-module/modules/subnets
+- networking.vpc-module.vpc in .terraform/modules/networking.vpc-module/modules/vpc
+- vm in modules/vm
+
+Initializing provider plugins...
+- Finding hashicorp/google-beta versions matching "~> 3.45, ~> 3.79, < 4.0.0"...
+- Finding hashicorp/template versions matching "~> 2.2.0"...
+- Finding hashicorp/google versions matching ">= 2.12.0, ~> 3.45, ~> 3.79, < 4.0.0"...
+- Installing hashicorp/google-beta v3.90.1...
+- Installed hashicorp/google-beta v3.90.1 (signed by HashiCorp)
+- Installing hashicorp/template v2.2.0...
+- Installed hashicorp/template v2.2.0 (signed by HashiCorp)
+- Installing hashicorp/google v3.90.1...
+- Installed hashicorp/google v3.90.1 (signed by HashiCorp)
+
+Terraform has created a lock file .terraform.lock.hcl to record the provider
+selections it made above. Include this file in your version control repository
+so that Terraform can guarantee to make the same selections by default when
+you run "terraform init" in the future.
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+JWITTOCK:task02 jwittock$ 
 ```
 
 3. Review variables in terraform.tfvars file
