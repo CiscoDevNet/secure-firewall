@@ -6,13 +6,16 @@
 ```
 terraform version
 ```
-2. Clone the secure-firewall repository
-```
-git clone https://github.com/CiscoDevNet/secure-firewall.git
-```
-3. Access the FMC
+2. Access the FMC
 
-Check if you can access the FMC with the provided username and password.
+Check if you can access the FMC. This is a pre-created FMC that we will use to register the FTD instance into that you will create in task 02. The reason is that it will take too long for the FMC you deploy to become fully initialized. You can find the ip address, username and password in the directory for your pod number.
+Replace podXX in the example below with your assigned pod.
+```
+cd /home/devnet/workshop/DEVWKS-2983/podXX/
+cat FMC_access.txt
+```
+
+That should show the address, username and password to use to access your own domain inside the FMC.
 
 ## Task 02: Deploy an FMCv and an FTDv
 
@@ -20,14 +23,12 @@ In this task we will deploy a virtual FMC instance and a virtual FTD instance on
 
 1. Go to your directory
 
-After having cloned the Secure Firewall examples repository, navigate to task02 directory in your assigned pod. 
+Navigate to task02 directory in your assigned pod. 
 Make sure you navigate to the directory for your assigned pod or you will cause conflicting changes with other users.
-Ensure you replace podXX in the example below with your assigned pod.
+Replace podXX in the example below with your assigned pod.
 ```
 cd /home/devnet/workshop/DEVWKS-2983/podXX/task02/
 ```
-
-Next, in the Webex chat for the session you will be given the ip and credentials of the jumphost. Make sure to copy the pod information for your assigned pod!
 
 2. Initialize Terraform
 
@@ -35,19 +36,23 @@ Run the below command to make Terraform download the required providers
 ```
 terraform init
 ```
+This will set up Terraform ready for use. If you get an error like: 'Terraform initialized in an empty directory!' than you did not go into the correct directory. Please follow the steps listed above to go to the right directory.
+
+You should see something like this when doing terraform init:
+```
+```
 
 3. Review variables in terraform.tfvars file
 
 Most of the variables should be filled in for you already.
 
-line 17: admin_password = "provided_FMC_admin_password_goes_here"
+```
+cat terraform.tfvars
+```
+This command should list out all the variables, have a look and if you have any questions regarding what these do, feel free to ask.
 
 
-4. Verify provders.tf file
-
-Validate that the filename of credentials.json on lines 5 and 11 matches with what you downloaded into this folder in an earlier step.
-
-5. Verify that Terraform knows what to do
+4. Verify that Terraform knows what to do
 
 To check what Terraform will actually do when we go and deploy everything, run the following command:
 ```
@@ -55,7 +60,7 @@ terraform plan
 ```
 It should show a list of new resources to create.
 
-6. Deploy the two instances
+5. Deploy the two instances
 
 Now we will actually go and deploy the virtual FMC and the virtual FTD. Use the below command to start the process.
 ```
