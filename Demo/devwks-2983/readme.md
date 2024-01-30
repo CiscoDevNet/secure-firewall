@@ -14,14 +14,6 @@ git clone https://github.com/CiscoDevNet/secure-firewall.git
 
 Check if you can access the FMC with the provided username and password.
 
-4. Create an SSH key
-
-In the example below, replace XX with your assigned pod number.
-```
-ssh-keygen -b 2048 -t rsa -f devnet-userXX-key -C devnet-userXX
-```
-Do not use a password to press enter without providing any input when asked.
-
 ## Task 02: Deploy an FMCv and an FTDv
 
 In this task we will deploy a virtual FMC instance and a virtual FTD instance onto GCP.
@@ -46,15 +38,7 @@ terraform init
 
 3. Review variables in terraform.tfvars file
 
-For the mentioned line numbers below, fill in the variable as indicated. Use usernames, passwords and ip addresses from the provided table with credentials.
-The folder should also contain a file called terraform.tfvars.example where most of the fields will be filled in, however they will NOT be specific for your pod!!
-
-For line 16 you will need to add the public key you created, use the following command to show the public key, replacing userXX with your user number.
-```
-cat devnet-userXX-key.pub
-```
-
-line 16: admin_ssh_pub_key = "contents_of_devnet-userXX-key.pub_goes_here"
+Most of the variables should be filled in for you already.
 
 line 17: admin_password = "provided_FMC_admin_password_goes_here"
 
