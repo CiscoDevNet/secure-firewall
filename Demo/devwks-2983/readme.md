@@ -110,6 +110,8 @@ Enter yes when asked.
 
 ## Task03: Create an access-policy and register the pre-created FTDv into the provided FMC instance.
 
+This Terraform script will create an access policy on the FMC that was pre-created (so you would not need to wait on your FMC to finish initializing). It will create an object and it will register the pre-created FTDv into the FMC.
+
 It will take upwards of 10 minutes for an FTD to fully initialize and over 30 minutes for a fresh FMC to initialize. 
 Therefore an FMC instance has been created and access to this instance was tested in Task01. In addition an FTDv instance was created for every pod.
 Every pod has it's own domain in the FMC and we will now create an access-policy in the pod domain and register the FTDv in the FMC instance.
@@ -178,9 +180,10 @@ Run the following command to have Terraform create the access-policy and registe
 ```
 terraform apply
 ```
-Enter yes when asked.
+Enter yes when asked. This will take some time.
 
 Log into the FMC to see the progress of the policy being created and the FTD being registered. This step takes on average about 5 minutes.
+
 
 ## Task04: Create a NAT policy and push it to the FTD.
 
@@ -225,7 +228,11 @@ Navigate back to directory called task02 and so that we can clean up everything 
 - Review the output before entering yes to continue with the cleanup. It should indicate that it will remove 20 resources.
 
 ```
-terraform destroy
+terraform destroy --auto-approve
+cd ../task03
+terraform destroy --auto-approve
+cd ../task02
+terraform destroy --auto-approve
 ```
 
 If everything goes according to plan, you should see something like this when asked to confirm the destroy action:
