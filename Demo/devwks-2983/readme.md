@@ -126,24 +126,13 @@ terraform init
 ```
 Note that since we are in a different directory from task02, terraform needs to be initialized again, and a new, separate statefile will be created and maintained
 
-3. Update the terraform.tfvars file:
-
-Replace XX with assigned pod number and fill in remaining values with inputs from table with credentials.
-
-4. Update the outputs.tf file:
-
-Ensure it will show the id of your FTDv, so change the FTDv number to your assigned FTDv.
-
-So for example if your assigned FTDv name is devnet-clus23-ftd-1, than the file should look like this:
+3. Review the terraform.tfvars file:
 
 ```
-output "fmc_device_id" {
-  value = fmc_devices.devnet-clus23-ftd-1.id
-  description = "ID of the registered FTD in FMC."
-}
+cat terraform.tfvars
 ```
 
-5. Verify the changes Terraform intends to make.
+4. Verify the changes Terraform intends to make.
 
 Before actually deploying the changes, it is always good to first check the proposed changes. Run the below command to evaluate what Terraform intends to do:
 ```
