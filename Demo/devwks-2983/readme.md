@@ -16,6 +16,7 @@ cat FMC_access.txt
 ```
 
 That should show the address, username and password to use to access your own domain inside the FMC.
+Note that we created a domain for each pod, so your username will look like devnet-domainXX\devnet-userXX.
 
 ## Task 02: Deploy an FMCv and an FTDv
 
@@ -124,9 +125,40 @@ Download the required providers by running the following command:
 ```
 terraform init
 ```
-Note that since we are in a different directory from task02, terraform needs to be initialized again, and a new, separate statefile will be created and maintained
+Note that since we are in a different directory from task02, terraform needs to be initialized again, and a new, separate statefile will be created and maintained.
+The output should look something like:
+```
+JWITTOCK:task03 jwittock$ terraform init
 
-3. Review the terraform.tfvars file:
+Initializing the backend...
+
+Initializing provider plugins...
+- Finding latest version of ciscodevnet/fmc...
+- Installing ciscodevnet/fmc v1.4.6...
+- Installed ciscodevnet/fmc v1.4.6 (self-signed, key ID 817ED05B1A758063)
+
+Partner and community providers are signed by their developers.
+If you'd like to know more about provider signing, you can read about it here:
+https://www.terraform.io/docs/cli/plugins/signing.html
+
+Terraform has created a lock file .terraform.lock.hcl to record the provider
+selections it made above. Include this file in your version control repository
+so that Terraform can guarantee to make the same selections by default when
+you run "terraform init" in the future.
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+JWITTOCK:task03 jwittock$
+```
+
+3. Review the terraform.tfvars file
 
 ```
 cat terraform.tfvars
@@ -148,7 +180,7 @@ terraform apply
 ```
 Enter yes when asked.
 
-Log into the [FMC](https://35.247.118.180) to see the progress of the policy being created and the FTD being registered. This step takes on average about 5 minutes.
+Log into the FMC to see the progress of the policy being created and the FTD being registered. This step takes on average about 5 minutes.
 
 ## Task04: Create a NAT policy and push it to the FTD.
 
