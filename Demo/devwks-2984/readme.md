@@ -57,13 +57,13 @@ Downloading https://galaxy.ansible.com/download/community-network-3.0.0.tar.gz t
 community.network (3.0.0) was installed successfully
 ```
 
-Next, go into the directory DEVWKS-2984 and clone the Cisco Secure Firewall Git repository where we store all our examples and demo's.
-You can do this with the git clone command:
+Next, go into the directory DEVWKS-2984 and go into your assigned pod directory.
+
 ```commandline
-git clone https://github.com/CiscoDevNet/secure-firewall.git
+cd /home/devnet/workshop/DEVWKS-2984/podXX/
 ```
 
-Now cd into the directory with you assigned pod number. This is the directory where the playbooks you will use are located.
+This is the directory where the playbooks you will use are located.
 
 ## Task 01: Create an Inventory
 
