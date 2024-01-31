@@ -10,12 +10,15 @@ ansible --version
 You should get something similar to:
 
 ```commandline
-ansible 2.10.8
+ansible [core 2.16.1]
   config file = None
-  configured module search path = ['/home/devnet/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
-  ansible python module location = /usr/lib/python3/dist-packages/ansible
-  executable location = /usr/bin/ansible
-  python version = 3.10.6 (main, Mar 10 2023, 10:55:28) [GCC 11.3.0]
+  configured module search path = ['/Users/jwittock/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+  ansible python module location = /usr/local/Cellar/ansible/9.1.0/libexec/lib/python3.12/site-packages/ansible
+  ansible collection location = /Users/jwittock/.ansible/collections:/usr/share/ansible/collections
+  executable location = /usr/local/bin/ansible
+  python version = 3.12.1 (main, Dec  7 2023, 20:45:44) [Clang 15.0.0 (clang-1500.1.0.2.5)] (/usr/local/Cellar/ansible/9.1.0/libexec/bin/python)
+  jinja version = 3.1.3
+  libyaml = True
 ```
 
 Next we need to install the Cisco FMC Ansible collection. You can do this as follows:
