@@ -67,7 +67,7 @@ This is the directory where the playbooks you will use are located.
 
 ## Task 01: Create an Inventory
 
-Open the inventory file named `hosts` and replace the placeholders with FMC credentials of your account like below-
+Open the inventory file named `hosts` and ensure there is an FMC ip address, username and password.
     ```
     [all:vars]
     ansible_network_os=cisco.fmcansible.fmc
@@ -78,7 +78,7 @@ Open the inventory file named `hosts` and replace the placeholders with FMC cred
     [vfmc:vars]
     network_type=HOST
     ```
-You will need to add the FMC ip address, FMC username and FMC password. You will find the values to use in the pod documentation.
+
 
 ## Task 02: Find the UUID of your assigned domain.
 
