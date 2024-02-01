@@ -120,13 +120,10 @@ The response should look something like below:
 This indicates that the UUID for domain devnet-d01 is 27f4034d-208f-c9b6-6724-000000000001. In different pods, the UUID will be different.
 Make sure you only use the UUID for your assigned domain!
 
-## Task 03: Update the required variables
+## Task 03: Update vars.yml with the UUID.
 
-Open `vars.yml` file and
-- replace the domain_uuid with the UUID you determined in Task 02.
-- Update the ftd_ip and the reg_key with the values documented in your Pod documentation. Note that you need to use the private ip and not the public ip. 
+Open `vars.yml` file and replace the domain_uuid with the UUID you determined in Task 02.
 
-Look in vars.yml.example for what a completed file could look like. Note the values in the example will not work for your pod.
 
 ## Task 04: Register the FTDv that was pre-created into your FMC domain
 
@@ -144,6 +141,11 @@ Than you might need to set a higher timeout on Ansible side, there are multiple 
 One easy way would be to create an environment variable:
 ```commandline
 export ANSIBLE_PERSISTENT_COMMAND_TIMEOUT=90
+```
+
+Or you can run the script I created for you
+```
+./set_ansible_timeout.sh
 ```
 
 Before we can start creating policy and pushing it to the firewall, we need to register the FTDv into FMC.
@@ -191,7 +193,7 @@ PLAY RECAP *********************************************************************
 35.247.118.180             : ok=6    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
 
-Log into the [FMC](https://35.247.118.180) with the credentials from the pod documentation to monitor the progress of the device registration.
+Log into the FMC with the credentials from the pod documentation to monitor the progress of the device registration.
 
 Note: You will see the playbook complete at the time the device registration completes. FMC will than still continue to deploy the access policy.
 
