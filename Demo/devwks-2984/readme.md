@@ -1,8 +1,14 @@
 # DEVWKS-2984 Manage FTDv and FMCv with Ansible
 
 ## Setting up the environment
+First let's navigate to the directory where all your files and scripts have been pre-created, replace podXX with your assigned pod number.
+
+```commandline
+cd /home/devnet/workshop/DEVWKS-2984/podXX/
+```
 
 Ensure that Ansible is installed.
+
 ```commandline
 ansible --version
 ```
@@ -57,11 +63,6 @@ Downloading https://galaxy.ansible.com/download/community-network-3.0.0.tar.gz t
 community.network (3.0.0) was installed successfully
 ```
 
-Next, go into the directory DEVWKS-2984 and go into your assigned pod directory.
-
-```commandline
-cd /home/devnet/workshop/DEVWKS-2984/podXX/
-```
 
 This is the directory where the playbooks you will use are located.
 
@@ -83,8 +84,12 @@ Open the inventory file named `hosts` and ensure there is an FMC ip address, use
 ## Task 02: Find the UUID of your assigned domain.
 
 Ansible will need to know the UUID of your assigned domain in order to run the plabyooks. 
-We need to open the [FMC api-explorer](https://35.247.118.180/api/api-explorer/) and log in with the provided credentials.
-The username will be devnet-userXX where XX is your assigned pod number.
+We need to open the FMC API explorer and log in with the credentials you will find in the FMC_access.txt file in directory.
+As always replace XX with your assigned pod number
+
+```commandline
+cat /home/devnet/workshop/DEVWKS-2984/podXX/FMC_access.txt
+```
 
 After authenticating, navigate to System Information,
 
