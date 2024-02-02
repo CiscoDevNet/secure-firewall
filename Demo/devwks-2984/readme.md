@@ -129,7 +129,7 @@ Open `vars.yml` file and ensure the domain_uuid is the UUID you determined in Ta
 ## Task 04: Register the FTDv that was pre-created into your FMC domain
 
 Note: You might encounter an error like the one below when running the playbooks.
-If you get an error that looks like the below error:
+
 ```commandline
 ConnectionError: Failed to download API specification. Status code: 500. Response: b'command timeout triggered, timeout value is 30 secs.\\nSee the timeout setting options in the Network Debug and Troubleshooting Guide.'\n",
     "module_stdout": "",
@@ -137,17 +137,7 @@ ConnectionError: Failed to download API specification. Status code: 500. Respons
     "rc": 1
 }
 ```
-
-Than you might need to set a higher timeout on Ansible side, there are multiple ways to do so as per the [Ansible documentation](https://docs.ansible.com/ansible/latest/network/user_guide/network_debug_troubleshooting.html#timeout-issues)
-One easy way would be to create an environment variable:
-```commandline
-export ANSIBLE_PERSISTENT_COMMAND_TIMEOUT=90
-```
-
-Or you can run the script I created for you
-```
-./set_ansible_timeout.sh
-```
+This is usually caused by wrong username and password in your hosts file. If you get this error, ensure you are using the right credentials. They should have been filled in for you so not need to change them.
 
 Before we can start creating policy and pushing it to the firewall, we need to register the FTDv into FMC.
 There is a playbook called playbook-register.yml that will do this. It will use the previously defined vars.yml file to learn the ip and registration key required to do so.
