@@ -83,8 +83,8 @@ Open the inventory file named `hosts` and ensure there is an FMC ip address, use
 
 ## Task 02: Find the UUID of your assigned domain.
 
-Ansible will need to know the UUID of your assigned domain in order to run the plabyooks. 
-We need to open the FMC API explorer and log in with the credentials you will find in the FMC_access.txt file in directory.
+Ansible will need to know the UUID of your assigned domain in order to run the plabyooks. We have already filled in the UUID of your domain so you will not need to make any changes, but this is how you can find the UUID of your domain:
+Open the FMC API explorer and log in with the credentials you will find in the FMC_access.txt file in directory.
 As always replace XX with your assigned pod number
 
 ```commandline
@@ -120,9 +120,10 @@ The response should look something like below:
 This indicates that the UUID for domain devnet-d01 is 27f4034d-208f-c9b6-6724-000000000001. In different pods, the UUID will be different.
 Make sure you only use the UUID for your assigned domain!
 
+
 ## Task 03: Update vars.yml with the UUID.
 
-Open `vars.yml` file and replace the domain_uuid with the UUID you determined in Task 02.
+Open `vars.yml` file and ensure the domain_uuid is the UUID you determined in Task 02.
 
 
 ## Task 04: Register the FTDv that was pre-created into your FMC domain
