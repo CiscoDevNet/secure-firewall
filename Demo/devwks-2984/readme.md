@@ -88,7 +88,7 @@ Open the FMC API explorer and log in with the credentials you will find in the F
 As always replace XX with your assigned pod number
 
 ```commandline
-cat /home/devnet/workshop/DEVWKS-2984/podXX/FMC_access.txt
+cat /home/workshop/DEVWKS-2984/podXX/FMC_access.txt
 ```
 
 After authenticating, navigate to System Information,
@@ -259,7 +259,7 @@ PLAY RECAP *********************************************************************
 35.247.118.180             : ok=7    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 ```
 
-Log into the [FMC](https://35.247.118.180) with the credentials from the pod documentation to verify the objects have been created. (Objects -> Object Management)
+Log into the FMC with the credentials from the pod documentation to verify the objects have been created. (Objects -> Object Management)
 
 ## Task 07: Deploy the objects you created to your FTD.
 
