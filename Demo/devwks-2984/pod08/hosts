@@ -1,8 +1,0 @@
-[all:vars]
-ansible_network_os=cisco.fmcansible.fmc
-
-[vfmc]
-FMC_PUB_IP_ADDRESS ansible_user=FMC_USERNAME ansible_password=FMC_PASSWORD ansible_httpapi_port=443 ansible_httpapi_use_ssl=True ansible_httpapi_validate_certs=False
-
-[vfmc:vars]
-network_type=HOST
