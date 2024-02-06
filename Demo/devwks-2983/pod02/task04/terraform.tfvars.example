@@ -1,9 +1,0 @@
-devnet_pod = "02"
-
-fmc_username = "devnet-user02"
-fmc_password = ""
-fmc_host = ""
-
-ftd_name = "devnet-clus23-ftd-2"
-inside_gw_ips = "172.16.29.1"
-
