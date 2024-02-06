@@ -4,7 +4,7 @@
 First let's navigate to the directory where all your files and scripts have been pre-created, replace podXX with your assigned pod number.
 
 ```commandline
-cd /home/devnet/workshop/DEVWKS-2984/podXX/
+cd /home/workshop/DEVWKS-2984/podXX/
 ```
 
 Ensure that Ansible is installed.
