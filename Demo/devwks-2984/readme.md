@@ -190,7 +190,7 @@ Note: You will see the playbook complete at the time the device registration com
 
 ## Task 05: Get the list of registered devices from the FMC
 
-Now that we have registered our first FTD into the FMC, let's run a playbook that will list all registerd devices.
+Now that we have registered our first FTD into the FMC, let's run a playbook that will list all registered devices.
 
 In the file called 'playbook-devices.yml', fill in the UUID of your domain. 
 Note that this is a different way of passing a variable into your playbook compared to the playbook we used to register the FTDv. 
