@@ -74,7 +74,7 @@ Open the inventory file named `hosts` and ensure there is an FMC ip address, use
     ansible_network_os=cisco.fmcansible.fmc
 
     [vfmc]
-    172.16.0.1 ansible_user=devnet-u01 ansible_password=Password@123 ansible_httpapi_port=443 ansible_httpapi_use_ssl=True ansible_httpapi_validate_certs=False
+    172.16.0.1 ansible_user=to_be_provided ansible_password=to_be_provided ansible_httpapi_port=443 ansible_httpapi_use_ssl=True ansible_httpapi_validate_certs=False
 
     [vfmc:vars]
     network_type=HOST
