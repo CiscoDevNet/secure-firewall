@@ -2,7 +2,7 @@
 // If you dont provide any value, it will take the default value 
 
 ############################################################
-#AWS Creditials to access the AWS Cloud
+#AWS Credentials to access the AWS Cloud
 #############################################################
 aws_access_key      = ""
 
