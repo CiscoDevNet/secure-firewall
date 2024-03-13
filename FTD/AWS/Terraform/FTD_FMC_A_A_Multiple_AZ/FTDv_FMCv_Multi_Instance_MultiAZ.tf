@@ -13,11 +13,11 @@ variable "region" {
         default = "us-east-1"
 }
 variable "FTD_version" {
-    default = "ftdv-6.7.0"
+    default = "ftdv-7.4.1"
 } 
 
 variable "FMC_version" {
-    default = "fmcv-6.7.0"
+    default = "fmcv-7.4.1"
 } 
 
 variable "vpc_name" {
