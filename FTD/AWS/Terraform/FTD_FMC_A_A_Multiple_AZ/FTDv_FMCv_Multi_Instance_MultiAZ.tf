@@ -602,7 +602,7 @@ resource "aws_route_table_association" "dmz02_association" {
 ##################################################################################################################################
 //External ip address creation 
 resource "aws_eip" "ftd01_mgmt-EIP" {
-  vpc   = true
+  domain = vpc
   depends_on = [aws_internet_gateway.int_gw,aws_instance.ftdv01]
   tags = {
     "Name" = "ftd01 Management IP"
@@ -610,7 +610,7 @@ resource "aws_eip" "ftd01_mgmt-EIP" {
 }
 
 resource "aws_eip" "ftd02_mgmt-EIP" {
-  vpc   = true
+  domain = vpc
   depends_on = [aws_internet_gateway.int_gw,aws_instance.ftdv02]
   tags = {
     "Name" = "ftd02 Management IP"
@@ -619,7 +619,7 @@ resource "aws_eip" "ftd02_mgmt-EIP" {
 
 
 resource "aws_eip" "ftd01_outside-EIP" {
-  vpc   = true
+  domain = vpc
   depends_on = [aws_internet_gateway.int_gw,aws_instance.ftdv01]
   tags = {
     "Name" = "ftd01 outside IP"
@@ -627,7 +627,7 @@ resource "aws_eip" "ftd01_outside-EIP" {
 }
 
 resource "aws_eip" "ftd02_outside-EIP" {
-  vpc   = true
+  domain = vpc
   depends_on = [aws_internet_gateway.int_gw,aws_instance.ftdv02]
   tags = {
     "Name" = "ftd02 outside IP"
@@ -636,7 +636,7 @@ resource "aws_eip" "ftd02_outside-EIP" {
 }
 
 resource "aws_eip" "fmcmgmt-EIP" {
-  vpc   = true
+  domain = vpc
   depends_on = [aws_internet_gateway.int_gw,aws_instance.fmcv]
   tags = {
     "Name" = "FMCv Management IP"
