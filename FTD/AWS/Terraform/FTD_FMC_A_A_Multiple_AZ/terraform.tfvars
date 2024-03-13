@@ -10,16 +10,16 @@ aws_secret_key      = ""
 
 ############################################################
 #Define New VPC in a specific Region and Avilability Zone 
-#############################################################
+############################################################
+key_name            = ""
+
 vpc_name            = "FTD-Service-VPC"
 
 region              = "us-east-1"
 
 FTD_version         = "ftdv-7.3.0"
 
-
 FMC_version         = "fmcv-7.3.0"
-
 
 ##################################################################################
 #Define CIDR, five Subnets. Two for managment and three for Inside, Outisde and DMZ 
