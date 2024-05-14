@@ -229,7 +229,7 @@ terraform apply
 ```
 Ensure to enter yes when asked.
 
-Log into the [FMC](https://35.247.118.180) and verify the NAT policy is created and applied.
+Log into the FMC and verify the NAT policy is created and applied.
 
 ## Task05: Check access to the FMC you created
 
