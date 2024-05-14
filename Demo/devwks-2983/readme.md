@@ -108,6 +108,21 @@ terraform apply
 ```
 Enter yes when asked.
 
+You should see an output that ends something like this:
+```
+Apply complete! Resources: 20 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+FMC_Public_IP = [
+  [
+    "1.2.3.4",
+  ],
+]
+
+```
+Take note of the ip address, that is the ip address you need to use to connect to your FMC. It will take a while for the FMC to finish booting as there is a lot of initialization that needs to be done. By the end of the lab you should be able to connect to it.
+
 ## Task03: Create an access-policy and register the pre-created FTDv into the provided FMC instance.
 
 This Terraform script will create an access policy on the FMC that was pre-created (so you would not need to wait on your FMC to finish initializing). It will create an object and it will register the pre-created FTDv into the FMC.
