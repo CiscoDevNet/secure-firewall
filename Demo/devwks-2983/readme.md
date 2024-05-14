@@ -16,7 +16,6 @@ cat FMC_access.txt
 ```
 
 That should show the address, username and password to use to access your own domain inside the FMC.
-Note that we created a domain for each pod, so your username will look like devnet-domainXX\devnet-userXX.
 
 ## Task 02: Deploy an FMCv and an FTDv
 
@@ -122,6 +121,7 @@ FMC_Public_IP = [
 
 ```
 Take note of the ip address, that is the ip address you need to use to connect to your FMC. It will take a while for the FMC to finish booting as there is a lot of initialization that needs to be done. By the end of the lab you should be able to connect to it.
+You can find the credentials of your FMC in the FMC_access.txt file.
 
 ## Task03: Create an access-policy and register the pre-created FTDv into the provided FMC instance.
 
