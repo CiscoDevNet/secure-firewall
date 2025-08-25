@@ -1,0 +1,5 @@
+ #FMC
+ {
+"AdminPassword": "${admin_password}",
+"Hostname":      "FMC_01",
+}

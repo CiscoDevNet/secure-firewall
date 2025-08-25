@@ -3,7 +3,7 @@ data "aws_ami" "ftdv" {
   owners      = ["<Enter Owner Account ID"]
   filter {
     name   = "name"
-    values = ["${var.FTD_version}*"]
+    values = ["FTD73"]
   }
 }
 #one file should be good for all
@@ -22,7 +22,7 @@ data "aws_ami" "fmcv" {
   owners      = ["<Enter Owner Account ID"]
   filter {
     name   = "name"
-    values = ["${var.FMC_version}*"]
+    values = ["FMC73"]
   }
 }
 

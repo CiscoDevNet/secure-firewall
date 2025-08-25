@@ -31,7 +31,7 @@ inside_subnet_cidr = ["10.1.2.0/24"]
 
 dmz_subnet_cidr = ["10.1.3.0/24"]
 
-keyname = "kgreeshm-osaka"
+keyname = ""
 # Generate the key if you want to login thru the  key
 
 ###########################################################################################

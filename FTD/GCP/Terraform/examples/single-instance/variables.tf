@@ -67,6 +67,7 @@ variable "admin_password" {
   type        = string
   description = "password for admin"
   sensitive   = true
+  default = "Password@123"
 }
 
 variable "ftd_hostname" {

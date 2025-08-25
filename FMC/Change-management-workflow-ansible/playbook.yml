@@ -1,0 +1,80 @@
+- hosts: all
+  connection: httpapi
+  tasks:
+    - name: Get Domain uuid 
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: Create a ticket
+      cisco.fmcansible.fmc_configuration:
+        operation: createTicket
+        path_params:
+          domainUUID: "{{domain[0].uuid}}"
+        data:
+          name: "NewTicket4"
+          status: "NEW"
+          assignedTo: "ansible"
+        register_as: NewTicket
+   
+
+    - name: Update ticket -- In Progress
+      cisco.fmcansible.fmc_configuration:
+        operation: updateTicket
+        path_params:
+          domainUUID: "{{domain[0].uuid}}"
+          objectId: "{{ NewTicket.id }}"
+        data:
+          id:  "{{NewTicket.id}}"
+          status:  "IN_PROGRESS" 
+
+    - name: Create access policy
+      cisco.fmcansible.fmc_configuration:
+        operation: "createAccessPolicy"
+        data:
+          type: "AccessPolicy"
+          name: "AccessPolicy-test4"
+          defaultAction: {'action': 'BLOCK'}
+        path_params:
+          ticket-id: "{{ NewTicket.id }}"
+          domainUUID: "{{ domain[0].uuid }}"
+    
+    - name: Preview Changes 
+      cisco.fmcansible.fmc_configuration:
+        operation: "getTicketPreviewChange"
+        path_params:
+          containerUUID: "{{NewTicket.id}}"
+          domainUUID: "{{ domain[0].uuid }}"
+        register_as: Changes
+        query_params:
+          expanded: true
+    - debug:
+        var: Changes
+    
+    - name: Update ticket --- Pending Approval
+      cisco.fmcansible.fmc_configuration:
+        operation: updateTicket
+        path_params:
+          domainUUID: "{{domain[0].uuid}}"
+          objectId: "{{ NewTicket.id }}"
+        data:
+          id:  "{{ NewTicket.id }}"
+          status: "PENDING_APPROVAL" 
+
+
+    
+        
+
+
+    
+    
+
+    
+
+
+
+
+    
+
+
+    

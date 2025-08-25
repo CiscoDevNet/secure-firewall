@@ -1,0 +1,5 @@
+#FMC
+{
+"AdminPassword": "Cisco@123",
+"Hostname":      "admin",
+}

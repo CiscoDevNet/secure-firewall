@@ -1,0 +1,6 @@
+  #Sensor
+  {
+      "AdminPassword": "${admin_password}",
+      "Hostname":       "FTD-01",
+      "ManageLocally":  "Yes",
+}

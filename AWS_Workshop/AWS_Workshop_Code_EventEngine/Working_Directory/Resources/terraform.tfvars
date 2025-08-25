@@ -7,16 +7,16 @@
 aws_access_key = ""
 aws_secret_key = ""
 aws_session_token = ""
-region = "ap-south-1"
+region = "us-east-1"
 
 ############################################################
 #Define New VPC in a specific Region and Avilability Zone 
 #############################################################
-vpc_name = "IAC-VPC"
+vpc_name = "IAC-vpc"
 vpc_cidr = ""
 create_igw = false
 # Generate the key if you want to login thru the  key
-keyname = "lx1"
+keyname = "kp1"
 instances_per_az        = 1
 availability_zone_count = 2
 

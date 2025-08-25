@@ -12,7 +12,8 @@ vm_instance_labels = {
 #vm_instance_tags  = ["allow-lb"]
 day_0_config      = "shared-mgmt-config.txt"
 admin_ssh_pub_key = ""
-enable_password   = "C8Npp2E61Az@6z3L"
+// Please provide a password
+enable_password   = ""
 # nic0 needs to be the management interface
 networks = [
   {

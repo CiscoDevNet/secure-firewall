@@ -1,0 +1,41 @@
+- hosts: vfmc
+  connection: httpapi
+  tasks:
+    - name: Get Domain UUID
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: Get Access Policy
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllAccessPolicy
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        filters:
+          name: NGFW1
+        register_as: accesspolicy
+
+    - name: FTD Onboarding
+      cisco.fmcansible.fmc_configuration:
+        operation: upsertDevice
+        data:
+          hostName: "3.142.207.89"
+          license_caps:
+            - 'MALWARE'
+            - 'THREAT' 
+            - 'URLFilter'
+          ftdMode: 'ROUTED'
+          type: Device
+          regKey: cisco123
+          performanceTier: "FTDv"
+          name: "NGFW1"
+          accessPolicy:
+            id: '{{ accesspolicy[0].id }}'
+            type: 'AccessPolicy'
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: ngfw1
+    
+    - name: Waiting for device to register...... 
+      pause:
+        minutes: 4

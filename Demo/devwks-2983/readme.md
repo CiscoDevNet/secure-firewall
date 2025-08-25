@@ -6,21 +6,16 @@
 ```
 terraform version
 ```
-2. Clone the secure-firewall repository
-```
-git clone https://github.com/CiscoDevNet/secure-firewall.git
-```
-3. Access the FMC
+2. Access the FMC
 
-Check if you can access the [FMC](https://35.247.118.180) with the provided username and password.
-
-4. Create an SSH key
-
-In the example below, replace XX with your assigned pod number.
+Check if you can access the FMC. This is a pre-created FMC that we will use to register the FTD instance into that you will create in task 02. The reason is that it will take too long for the FMC you deploy to become fully initialized. You can find the ip address, username and password in the directory for your pod number.
+Replace podXX in the example below with your assigned pod.
 ```
-ssh-keygen -b 2048 -t rsa -f devnet-userXX-key -C devnet-userXX
+cd /home/devnet/workshop/DEVWKS-2983/podXX/
+cat FMC_access.txt
 ```
 
+That should show the address, username and password to use to access your own domain inside the FMC.
 
 ## Task 02: Deploy an FMCv and an FTDv
 
@@ -28,11 +23,11 @@ In this task we will deploy a virtual FMC instance and a virtual FTD instance on
 
 1. Go to your directory
 
-After having cloned the Secure Firewall examples repository, navigate to task02 directory in your assigned pod. 
+Navigate to task02 directory in your assigned pod. 
 Make sure you navigate to the directory for your assigned pod or you will cause conflicting changes with other users.
-Ensure you replace podXX in the example below with your assigned pod.
+Replace podXX in the example below with your assigned pod.
 ```
-cd secure-firewall/Demo/devwks-2983/podXX/task02/
+cd /home/devnet/workshop/DEVWKS-2983/podXX/task02/
 ```
 
 2. Initialize Terraform
@@ -41,39 +36,62 @@ Run the below command to make Terraform download the required providers
 ```
 terraform init
 ```
+This will set up Terraform ready for use. If you get an error like: 'Terraform initialized in an empty directory!' than you did not go into the correct directory. Please follow the steps listed above to go to the right directory.
 
-3. Fill in all required variables in terraform.tfvars file
-
-For all the mentioned lines, fill in the variable as indicated. Use usernames, passwords and ip addresses from the provided table with credentials. 
-Ensure to replace podXX with your assigned pod number.
-The folder should also contain a file called terraform.tfvars.example where most of the fields will be filled in, however they will NOT be specific for your pod!!
-
-line 2: devnet_pod = "podXX"
-
-line 14: ftd_hostname = "devnet-ftd-"
-
-For line 16 you will need to add the public key you created, use the following command to show the public key, replacing userXX with your user number.
+You should see something like this when doing terraform init:
 ```
-cat devnet-userXX-key.pub
+JWITTOCK:task02 jwittock$ terraform init
+
+Initializing the backend...
+Initializing modules...
+- networking in modules/networking
+Downloading registry.terraform.io/terraform-google-modules/network/google 3.5.0 for networking.vpc-module...
+- networking.vpc-module in .terraform/modules/networking.vpc-module
+- networking.vpc-module.firewall_rules in .terraform/modules/networking.vpc-module/modules/firewall-rules
+- networking.vpc-module.routes in .terraform/modules/networking.vpc-module/modules/routes
+- networking.vpc-module.subnets in .terraform/modules/networking.vpc-module/modules/subnets
+- networking.vpc-module.vpc in .terraform/modules/networking.vpc-module/modules/vpc
+- vm in modules/vm
+
+Initializing provider plugins...
+- Finding hashicorp/google-beta versions matching "~> 3.45, ~> 3.79, < 4.0.0"...
+- Finding hashicorp/template versions matching "~> 2.2.0"...
+- Finding hashicorp/google versions matching ">= 2.12.0, ~> 3.45, ~> 3.79, < 4.0.0"...
+- Installing hashicorp/google-beta v3.90.1...
+- Installed hashicorp/google-beta v3.90.1 (signed by HashiCorp)
+- Installing hashicorp/template v2.2.0...
+- Installed hashicorp/template v2.2.0 (signed by HashiCorp)
+- Installing hashicorp/google v3.90.1...
+- Installed hashicorp/google v3.90.1 (signed by HashiCorp)
+
+Terraform has created a lock file .terraform.lock.hcl to record the provider
+selections it made above. Include this file in your version control repository
+so that Terraform can guarantee to make the same selections by default when
+you run "terraform init" in the future.
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+JWITTOCK:task02 jwittock$ 
 ```
 
-line 16: admin_ssh_pub_key = "contents_of_devnet-userXX-key.pub_goes_here"
+3. Review variables in terraform.tfvars file
 
-line 17: admin_password = "provided_admin_password_goes_here"
+Most of the variables should be filled in for you already.
 
-lines 24, 30, 36, 42 and 49: Replace XX with 200 plus your provided pod number. 
-So for example if your pod number is 04 than XX becomes 204, if your pod number is 11 than XX becomes 211.
+```
+cat terraform.tfvars
+```
+This command should list out all the variables, have a look and if you have any questions regarding what these do, feel free to ask.
 
-lines 54-58: replace XX with your pod number
 
-line 59: replace XX with 150 plus your pod number.
-So for example if your pod number is 05 than XX becomes 155, if your pod number is 12, than XX becomes 162.
-
-4. Update provders.tf file
-
-Update the filename of credentials.json on lines 5 and 11
-
-5. Verify that Terraform knows what to do
+4. Verify that Terraform knows what to do
 
 To check what Terraform will actually do when we go and deploy everything, run the following command:
 ```
@@ -81,7 +99,7 @@ terraform plan
 ```
 It should show a list of new resources to create.
 
-6. Deploy the two instances
+5. Deploy the two instances
 
 Now we will actually go and deploy the virtual FMC and the virtual FTD. Use the below command to start the process.
 ```
@@ -89,7 +107,25 @@ terraform apply
 ```
 Enter yes when asked.
 
+You should see an output that ends something like this:
+```
+Apply complete! Resources: 20 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+FMC_Public_IP = [
+  [
+    "1.2.3.4",
+  ],
+]
+
+```
+Take note of the ip address, that is the ip address you need to use to connect to your FMC. It will take a while for the FMC to finish booting as there is a lot of initialization that needs to be done. By the end of the lab you should be able to connect to it.
+You can find the credentials of your FMC in the FMC_access.txt file.
+
 ## Task03: Create an access-policy and register the pre-created FTDv into the provided FMC instance.
+
+This Terraform script will create an access policy on the FMC that was pre-created (so you would not need to wait on your FMC to finish initializing). It will create an object and it will register the pre-created FTDv into the FMC.
 
 It will take upwards of 10 minutes for an FTD to fully initialize and over 30 minutes for a fresh FMC to initialize. 
 Therefore an FMC instance has been created and access to this instance was tested in Task01. In addition an FTDv instance was created for every pod.
@@ -106,11 +142,44 @@ Download the required providers by running the following command:
 ```
 terraform init
 ```
-Note that since we are in a different directory from task02, terraform needs to be initialized again, and a new, separate statefile will be created and maintained
+Note that since we are in a different directory from task02, terraform needs to be initialized again, and a new, separate statefile will be created and maintained.
+The output should look something like:
+```
+JWITTOCK:task03 jwittock$ terraform init
 
-3. Update the terraform.tfvars file:
+Initializing the backend...
 
-Replace XX with assigned pod number and fill in remaining values with inputs from table with credentials.
+Initializing provider plugins...
+- Finding latest version of ciscodevnet/fmc...
+- Installing ciscodevnet/fmc v1.4.6...
+- Installed ciscodevnet/fmc v1.4.6 (self-signed, key ID 817ED05B1A758063)
+
+Partner and community providers are signed by their developers.
+If you'd like to know more about provider signing, you can read about it here:
+https://www.terraform.io/docs/cli/plugins/signing.html
+
+Terraform has created a lock file .terraform.lock.hcl to record the provider
+selections it made above. Include this file in your version control repository
+so that Terraform can guarantee to make the same selections by default when
+you run "terraform init" in the future.
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+JWITTOCK:task03 jwittock$
+```
+
+3. Review the terraform.tfvars file
+
+```
+cat terraform.tfvars
+```
 
 4. Verify the changes Terraform intends to make.
 
@@ -126,9 +195,10 @@ Run the following command to have Terraform create the access-policy and registe
 ```
 terraform apply
 ```
-Enter yes when asked.
+Enter yes when asked. This will take some time.
 
-Log into the [FMC](https://35.247.118.180) to see the progress of the policy being created and the FTD being registered. This step takes on average about 5 minutes.
+Log into the FMC to see the progress of the policy being created and the FTD being registered. This step takes on average about 5 minutes.
+
 
 ## Task04: Create a NAT policy and push it to the FTD.
 
@@ -159,7 +229,42 @@ terraform apply
 ```
 Ensure to enter yes when asked.
 
-Log into the [FMC](https://35.247.118.180) and verify the NAT policy is created and applied.
+Log into the FMC and verify the NAT policy is created and applied.
 
+## Task05: Check access to the FMC you created
 
+By now the FMC should be up and running, so connect to the ip address that the output of task02 showed and try to go to the UI and log in with username admin and the password you provided in the terraform.tfvars file.
 
+## Task06: Remove the FTDv and FMCv you created
+
+Navigate back to directory called task02 and so that we can clean up everything you created. 
+
+- Make sure you are in the right directory before issuing this command to ensure you only remove what you created in task 02! 
+- Review the output before entering yes to continue with the cleanup. It should indicate that it will remove 20 resources.
+
+```
+terraform destroy --auto-approve
+cd ../task03
+terraform destroy --auto-approve
+cd ../task02
+terraform destroy --auto-approve
+```
+
+If everything goes according to plan, you should see something like this when asked to confirm the destroy action:
+
+```
+Plan: 0 to add, 0 to change, 20 to destroy.
+
+Changes to Outputs:
+  - FMC_Public_IP = [
+      - [
+          - "a.b.c.d",
+        ],
+    ] -> null
+
+Do you really want to destroy all resources?
+  Terraform will destroy all your managed infrastructure, as shown above.
+  There is no undo. Only 'yes' will be accepted to confirm.
+
+  Enter a value: yes
+  ```

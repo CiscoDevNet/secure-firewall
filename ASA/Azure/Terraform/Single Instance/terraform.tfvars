@@ -20,7 +20,8 @@ RGName = "cisco-asav-RG"
 // Instance Name and properties of ASAv
 instancename = "cisco-asav"
 
-instanceusername = "cisco"
-instancepassword = "Pa$$w0rd1234"
+// Please provide a username & password
+instanceusername = ""
+instancepassword = ""
 
 day-0-config  = "ASA_Running_Config.txt"
