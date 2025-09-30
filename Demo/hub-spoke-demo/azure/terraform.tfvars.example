@@ -1,0 +1,36 @@
+# Resource Configuration
+resource_prefix = "C15C0"
+
+# Security Configuration
+trusted_networks = [
+  "192.0.0.0/16",
+  "172.0.0.0/16", 
+  "10.0.0.0/16",
+  "151.0.0.0/8"
+]
+
+# Azure Authentication - Set via environment variables
+# ARM_CLIENT_ID
+# ARM_CLIENT_SECRET 
+# ARM_SUBSCRIPTION_ID
+# ARM_TENANT_ID
+
+# SCC/FMC Configuration
+scc_token = "your-scc-api-token-here"
+scc_host = "https://csce-staging.cisco.com"
+cdfmc_host = "your-fmc-hostname-or-ip"
+
+# FTDv Configuration  
+ftdv_admin_password = "your-secure-password"
+
+# Common Tags
+common_tags = {
+  Environment = "dev"
+  Project     = "C15C0-security"
+  Owner       = "security-team"
+}
+
+# Optional: Override default network CIDRs if needed
+# security_vnet_cidr = "10.0.0.0/16"
+# spoke1_vnet_cidr = "172.0.0.0/16"  
+# spoke2_vnet_cidr = "192.0.0.0/16"
