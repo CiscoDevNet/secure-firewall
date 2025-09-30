@@ -185,8 +185,8 @@ resource "google_compute_instance" "bastion" {
     # Create a welcome message
     echo "Welcome to the Bastion Host!" | sudo tee /etc/motd
     echo "Use this host to access spoke VMs:" | sudo tee -a /etc/motd
-    echo "- Spoke1 VM: ssh admin@172.0.0.10" | sudo tee -a /etc/motd  
-    echo "- Spoke2 VM: ssh admin@192.0.0.10" | sudo tee -a /etc/motd
+    echo "- Spoke1 VM: ssh admin@172.16.0.10" | sudo tee -a /etc/motd  
+    echo "- Spoke2 VM: ssh admin@192.168.0.10" | sudo tee -a /etc/motd
     EOF
     )
   }

@@ -467,35 +467,35 @@ resource "google_compute_instance" "ftdv_eastwest" {
 # COMMENTED OUT: This route causes routing loops when imported via VPC peering
 # East-west traffic between spokes should be handled through direct peering
 # or more specific routes that don't conflict with local routing
-#
-# resource "google_compute_route" "inside_to_spoke1" {
-#   name             = "${var.resource_prefix}-inside-to-spoke1-route"
-#   dest_range       = var.spoke1_vpc_cidr
-#   network          = google_compute_network.inside_vpc.name
-#   next_hop_instance = google_compute_instance.ftdv_eastwest.name
-#   next_hop_instance_zone = google_compute_instance.ftdv_eastwest.zone
-#   priority         = 100
-#   description      = "Route to Spoke1 via East-West firewall from inside VPC"
+# Route spoke1 traffic through east-west firewall (inside VPC perspective)
+resource "google_compute_route" "inside_to_spoke1" {
+  name             = "${var.resource_prefix}-inside-to-spoke1-route"
+  dest_range       = var.spoke1_vpc_cidr
+  network          = google_compute_network.inside_vpc.name
+  next_hop_instance = google_compute_instance.ftdv_eastwest.name
+  next_hop_instance_zone = google_compute_instance.ftdv_eastwest.zone
+  priority         = 100
+  description      = "Route to Spoke1 via East-West firewall from inside VPC"
   
-#   depends_on = [
-#     google_compute_instance.ftdv_eastwest
-#   ]
-# }
+  depends_on = [
+    google_compute_instance.ftdv_eastwest
+  ]
+}
 
-# # Route spoke2 traffic through east-west firewall (inside VPC perspective)
-# resource "google_compute_route" "inside_to_spoke2" {
-#   name             = "${var.resource_prefix}-inside-to-spoke2-route"
-#   dest_range       = var.spoke2_vpc_cidr
-#   network          = google_compute_network.inside_vpc.name
-#   next_hop_instance = google_compute_instance.ftdv_eastwest.name
-#   next_hop_instance_zone = google_compute_instance.ftdv_eastwest.zone
-#   priority         = 100
-#   description      = "Route to Spoke2 via East-West firewall from inside VPC"
+# Route spoke2 traffic through east-west firewall (inside VPC perspective)
+resource "google_compute_route" "inside_to_spoke2" {
+  name             = "${var.resource_prefix}-inside-to-spoke2-route"
+  dest_range       = var.spoke2_vpc_cidr
+  network          = google_compute_network.inside_vpc.name
+  next_hop_instance = google_compute_instance.ftdv_eastwest.name
+  next_hop_instance_zone = google_compute_instance.ftdv_eastwest.zone
+  priority         = 100
+  description      = "Route to Spoke2 via East-West firewall from inside VPC"
   
-#   depends_on = [
-#     google_compute_instance.ftdv_eastwest
-#   ]
-# }
+  depends_on = [
+    google_compute_instance.ftdv_eastwest
+  ]
+}
 
 # Route internet traffic through egress firewall (inside VPC perspective)
 resource "google_compute_route" "inside_internet_via_egress" {
