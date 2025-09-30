@@ -8,8 +8,8 @@ resource_prefix = "C15C0-gcp"
 
 # Network CIDR Blocks
 security_vpc_cidr = "10.0.0.0/16"
-spoke1_vpc_cidr   = "172.0.0.0/16"
-spoke2_vpc_cidr   = "192.0.0.0/16"
+spoke1_vpc_cidr   = "172.16.0.0/16"
+spoke2_vpc_cidr   = "192.168.0.0/16"
 
 # Security VPC Subnets
 management_subnet_cidr = "10.0.0.0/24"
@@ -18,8 +18,8 @@ outside_subnet_cidr    = "10.0.2.0/24"
 inside_subnet_cidr     = "10.0.3.0/24"
 
 # Spoke Subnet CIDR Blocks
-spoke1_private_subnet_cidr = "172.0.0.0/24"
-spoke2_private_subnet_cidr = "192.0.0.0/24"
+spoke1_private_subnet_cidr = "172.16.0.0/24"
+spoke2_private_subnet_cidr = "192.168.0.0/24"
 
 # FTDv Configuration
 ftdv_machine_type       = "c2-standard-8"

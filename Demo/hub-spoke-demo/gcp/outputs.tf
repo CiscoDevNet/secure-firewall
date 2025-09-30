@@ -134,7 +134,7 @@ output "ssh_connection_info" {
     
     Alternative (two-step access):
     1. SSH to bastion: ssh -i ${local_file.private_key.filename} admin@${google_compute_instance.bastion.network_interface[0].access_config[0].nat_ip}
-    2. From bastion SSH to VMs: ssh admin@172.0.0.10 (spoke1) or ssh admin@192.0.0.10 (spoke2)
+    2. From bastion SSH to VMs: ssh admin@172.16.0.10 (spoke1) or ssh admin@192.168.0.10 (spoke2)
     
     Note: Make sure to set appropriate file permissions: chmod 600 ${local_file.private_key.filename}
   EOT
@@ -161,8 +161,8 @@ output "architecture_summary" {
     - Private Subnet: 172.0.0.0/24
     - Ubuntu VM (no internet access)
     
-    Spoke2 VPC (192.0.0.0/16):
-    - Private Subnet: 192.0.0.0/24
+    Spoke2 VPC (192.168.0.0/16):
+    - Private Subnet: 192.168.0.0/24
     - Debian VM (no internet access)
     
     Bastion VPC (10.100.0.0/16):

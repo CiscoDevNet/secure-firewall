@@ -47,7 +47,7 @@
 #   count = 3
 #   ami           = data.aws_ami.ubuntu.id
 #   instance_type = "t2.micro"
-#   key_name      = "kadadhic-Nvirginia"
+#   key_name      = "test-Nvirginia"
 #   user_data = data.template_file.bastion_install.rendered
 #   network_interface {
 #     network_interface_id = aws_network_interface.bastion_interface[count.index].id

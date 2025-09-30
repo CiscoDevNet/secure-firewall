@@ -174,6 +174,8 @@ resource "google_compute_network_peering" "spoke1_to_inside" {
   network      = google_compute_network.spoke1_vpc.self_link
   peer_network = google_compute_network.inside_vpc.self_link
   
+  import_custom_routes = true
+  export_custom_routes = true
 }
 
 # Inside VPC to Spoke1 Peering
@@ -182,6 +184,8 @@ resource "google_compute_network_peering" "inside_to_spoke1" {
   network      = google_compute_network.inside_vpc.self_link
   peer_network = google_compute_network.spoke1_vpc.self_link
   
+  import_custom_routes = true
+  export_custom_routes = true
 }
 
 # Spoke2 to Inside VPC Peering
@@ -190,6 +194,8 @@ resource "google_compute_network_peering" "spoke2_to_inside" {
   network      = google_compute_network.spoke2_vpc.self_link
   peer_network = google_compute_network.inside_vpc.self_link
   
+  import_custom_routes = true
+  export_custom_routes = true
 }
 
 # Inside VPC to Spoke2 Peering
@@ -198,47 +204,9 @@ resource "google_compute_network_peering" "inside_to_spoke2" {
   network      = google_compute_network.inside_vpc.self_link
   peer_network = google_compute_network.spoke2_vpc.self_link
   
+  import_custom_routes = true
+  export_custom_routes = true
 }
-
-################################################################################
-# CUSTOM ROUTES FOR SPOKE2 - Direct FTDv instance routing
-################################################################################
-#<FLAGG>
-# Route internet traffic through egress FTDv instance
-# Note: This references the FTDv instance in the inside VPC, but routes in spoke2 VPC
-# This should work as GCP allows cross-VPC instance references for routing
-resource "google_compute_route" "spoke2_internet_via_egress_ftdv" {
-  name                   = "${var.resource_prefix}-spoke2-internet-via-egress-ftdv"
-  dest_range             = "0.0.0.0/0"
-  network                = google_compute_network.spoke2_vpc.name
-  next_hop_instance      = google_compute_instance.ftdv_egress.name
-  next_hop_instance_zone = google_compute_instance.ftdv_egress.zone
-  priority               = 800   # Higher priority than default route (1000)
-  description            = "Route internet traffic through egress FTDv instance"
-  tags                   = ["spoke2-vm"]
-  
-  depends_on = [
-    google_compute_instance.ftdv_egress,
-    google_compute_network_peering.spoke2_to_inside
-  ]
-}
-
-# # Route spoke1 traffic through east-west FTDv instance
-# resource "google_compute_route" "spoke2_to_spoke1_via_eastwest_ftdv" {
-#   name                   = "${var.resource_prefix}-spoke2-to-spoke1-via-eastwest-ftdv"
-#   dest_range             = "172.0.0.0/16"  # Spoke1 VPC CIDR
-#   network                = google_compute_network.spoke2_vpc.name
-#   next_hop_instance      = google_compute_instance.ftdv_eastwest.name
-#   next_hop_instance_zone = google_compute_instance.ftdv_eastwest.zone
-#   priority               = 100   # Higher priority than peering route
-#   description            = "Route spoke1 traffic through east-west FTDv instance"
-#   tags                   = ["spoke2-vm"]
-  
-#   depends_on = [
-#     google_compute_instance.ftdv_eastwest,
-#     google_compute_network_peering.spoke2_to_inside
-#   ]
-# }
 
 ################################################################################
 # VIRTUAL MACHINES
@@ -259,7 +227,7 @@ resource "google_compute_instance" "spoke1_vm" {
   network_interface {
     network    = google_compute_network.spoke1_vpc.name
     subnetwork = google_compute_subnetwork.spoke1_private.name
-    network_ip = "172.0.0.10"  # Static private IP for consistent connectivity
+    network_ip = "172.16.0.10"  # Static private IP for consistent connectivity
     # No access_config block = no external IP
   }
 
@@ -310,7 +278,7 @@ resource "google_compute_instance" "spoke2_vm" {
   network_interface {
     network    = google_compute_network.spoke2_vpc.name
     subnetwork = google_compute_subnetwork.spoke2_private.name
-    network_ip = "192.0.0.10"  # Static private IP for consistent connectivity
+    network_ip = "192.168.0.10"  # Static private IP for consistent connectivity
     # No access_config block = no external IP
   }
 
